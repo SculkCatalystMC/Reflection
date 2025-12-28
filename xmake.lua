@@ -1,5 +1,9 @@
 add_rules("mode.debug", "mode.release")
 
+add_repositories("littlecatgirlzimu-repo https://github.com/DivanadiumPentaoxide/xmake-repo.git")
+
+add_requires("jsonc 20251228-1")
+
 if is_plat("windows") and not has_config("vs_runtime") then
     set_runtimes("MD")
 end
@@ -8,8 +12,7 @@ target("test")
     set_kind("binary")
     set_languages("c++23")
     add_packages(
-        "binarystream",
-        "zlib"
+        "jsonc"
     )
     add_includedirs(
         "include",
