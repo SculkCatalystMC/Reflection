@@ -1,5 +1,5 @@
 #pragma once
-#include "endgate/base/FixedString.hpp"
+#include "jsonc-reflection/detail/FixedString.hpp"
 
 namespace jsonc_reflection {
 
@@ -77,21 +77,7 @@ public:
 
 } // namespace jsonc_reflection
 
-namespace fmt {
-template <typename T, endgate::FixedString AliasName>
-struct formatter<endgate::Renamed<T, AliasName>> : formatter<T> {
-    template <typename FormatContext>
-    auto format(const endgate::Renamed<T, AliasName>& value, FormatContext& ctx) const {
-        return formatter<T>::format(*value, ctx);
-    }
-};
-} // namespace fmt
-
-namespace std {
-template <typename T, endgate::FixedString AliasName>
-struct formatter<endgate::Renamed<T, AliasName>> : formatter<T> {
-    auto format(const endgate::Renamed<T, AliasName>& value, format_context& ctx) const {
-        return formatter<T>::format(*value, ctx);
-    }
-};
-} // namespace std
+// template <typename T, jsonc_reflection::FixedString AliasName>
+// struct std::formatter<jsonc_reflection::Renamed<T, AliasName>> : std::formatter<T> {
+//     auto format(auto&& value, auto&& ctx) const { return formatter::format(*value, ctx); }
+// };

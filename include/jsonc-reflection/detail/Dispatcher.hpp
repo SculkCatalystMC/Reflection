@@ -1,7 +1,7 @@
 #pragma once
 #include <concepts>
 
-namespace endgate::reflection {
+namespace jsonc_reflection {
 
 template <typename T, std::default_initializable Listener, bool CallInit = false>
 class Dispatcher {
@@ -17,9 +17,7 @@ public:
     template <class... Args>
     Dispatcher(Args&&... args) : mStorage(std::forward<Args>(args)...),
                                  mListener() {
-        if constexpr (CallInit) {
-            call();
-        }
+        if constexpr (CallInit) { call(); }
     }
 
     Dispatcher& operator=(T const& other) {
@@ -47,4 +45,4 @@ public:
     T* operator->() { return &mStorage; }
 };
 
-} // namespace endgate::reflection
+} // namespace jsonc_reflection

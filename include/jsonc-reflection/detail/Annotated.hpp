@@ -1,5 +1,5 @@
 #pragma once
-#include "FixedString.hpp"
+#include "jsonc-reflection/detail/FixedString.hpp"
 #include <vector>
 
 namespace jsonc_reflection {
@@ -92,11 +92,7 @@ public:
 
 } // namespace jsonc_reflection
 
-namespace std {
-template <typename T, jsonc_reflection::FixedString... Comments>
-struct formatter<jsonc_reflection::Annotated<T, Comments...>> : formatter<T> {
-    auto format(const jsonc_reflection::Annotated<T, Comments...>& obj, format_context& ctx) const {
-        return formatter<T>::format(obj.storage(), ctx);
-    }
-};
-} // namespace std
+// template <typename T, jsonc_reflection::FixedString... Comments>
+// struct std::formatter<jsonc_reflection::Annotated<T, Comments...>> : std::formatter<T> {
+//     auto format(auto&& obj, auto&& ctx) const { return formatter::format(obj.storage(), ctx); }
+// };

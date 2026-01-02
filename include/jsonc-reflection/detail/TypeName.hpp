@@ -1,12 +1,12 @@
 #pragma once
-#include "endgate/base/Concepts.hpp"
+#include "jsonc-reflection/detail/Concepts.hpp"
 #include <typeinfo>
 
 #ifndef _MSC_VER
-#  include <cxxabi.h>
+#include <cxxabi.h>
 #endif
 
-namespace endgate::reflection {
+namespace jsonc_reflection::reflection {
 
 template <class T>
 inline std::string getDynamicRawName(T const& value) noexcept {
@@ -57,40 +57,26 @@ consteval std::string_view getRawName() noexcept {
 }
 
 constexpr std::string_view removeTypePrefix(std::string_view s) noexcept {
-    if (s.starts_with("enum ")) {
-        s.remove_prefix(sizeof("enum"));
-    }
-    if (s.starts_with("class ")) {
-        s.remove_prefix(sizeof("class"));
-    }
-    if (s.starts_with("union ")) {
-        s.remove_prefix(sizeof("union"));
-    }
-    if (s.starts_with("struct ")) {
-        s.remove_prefix(sizeof("struct"));
-    }
+    if (s.starts_with("enum ")) { s.remove_prefix(sizeof("enum")); }
+    if (s.starts_with("class ")) { s.remove_prefix(sizeof("class")); }
+    if (s.starts_with("union ")) { s.remove_prefix(sizeof("union")); }
+    if (s.starts_with("struct ")) { s.remove_prefix(sizeof("struct")); }
     return s;
 }
 
 constexpr std::string_view removeTypeSuffix(std::string_view s) noexcept {
     auto k = s.find('<');
-    if (k != std::string_view::npos) {
-        return s.substr(0, k);
-    }
+    if (k != std::string_view::npos) { return s.substr(0, k); }
     return s;
 }
 
 constexpr std::string_view removeTypeNamespace(std::string_view s) noexcept {
     auto k = s.rfind("::", s.find('<'));
-    if (k != std::string_view::npos) {
-        return s.substr(k + 2);
-    }
+    if (k != std::string_view::npos) { return s.substr(k + 2); }
     return s;
 }
 
-constexpr std::string_view typeNameStem(std::string_view s) noexcept {
-    return removeTypeNamespace(removeTypeSuffix(removeTypePrefix(s)));
-}
+constexpr std::string_view typeNameStem(std::string_view s) noexcept { return removeTypeNamespace(removeTypeSuffix(removeTypePrefix(s))); }
 
 
 template <class T>
@@ -113,4 +99,4 @@ constexpr bool is_class_v = std::is_class_v<T> && type_raw_name_v<T>.starts_with
 
 template <class T>
 constexpr bool is_struct_v = std::is_class_v<T> && type_raw_name_v<T>.starts_with("struct ");
-} // namespace endgate::reflection
+} // namespace jsonc_reflection::reflection

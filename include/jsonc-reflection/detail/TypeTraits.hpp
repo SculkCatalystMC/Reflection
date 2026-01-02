@@ -1,5 +1,5 @@
 #pragma once
-#include "endgate/base/Ranged.hpp"
+#include "jsonc-reflection/detail/Ranged.hpp"
 #include <array>
 #include <concepts>
 #include <string>
@@ -18,8 +18,7 @@ template <typename T, size_t N>
 constexpr bool is_std_array_v<::std::array<T, N>> = true;
 
 template <typename T>
-constexpr bool is_reflectable_v =
-    std::is_aggregate_v<std::remove_cvref_t<T>> && !is_std_array_v<std::remove_cvref_t<T>>;
+constexpr bool is_reflectable_v = std::is_aggregate_v<std::remove_cvref_t<T>> && !is_std_array_v<std::remove_cvref_t<T>>;
 
 template <typename>
 struct is_ranged : std::false_type {};
@@ -86,8 +85,7 @@ template <class T>
 struct has_non_member_operator_co_await : std::bool_constant<has_non_member_operator_co_await_v<T>> {};
 
 template <class T>
-constexpr bool is_awaitable_v =
-    has_member_operator_co_await_v<T> || has_non_member_operator_co_await_v<T> || is_awaiter_v<T>;
+constexpr bool is_awaitable_v = has_member_operator_co_await_v<T> || has_non_member_operator_co_await_v<T> || is_awaiter_v<T>;
 
 template <class T>
 struct is_awaitable : std::bool_constant<is_awaitable_v<T>> {};

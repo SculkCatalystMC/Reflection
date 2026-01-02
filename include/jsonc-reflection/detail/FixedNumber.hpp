@@ -1,7 +1,7 @@
 #pragma once
 #include <algorithm>
 #include <cstdint>
-#include <fmt/format.h>
+#include <format>
 #include <format>
 #include <type_traits>
 
@@ -32,21 +32,7 @@ struct FixedNumber {
 
 } // namespace jsonc_reflection
 
-namespace fmt {
-template <typename T>
-struct formatter<endgate::FixedNumber<T>> : formatter<T> {
-    template <typename FormatContext>
-    auto format(const endgate::FixedNumber<T>& num, FormatContext& ctx) const {
-        return formatter<T>::format(*num, ctx);
-    }
-};
-} // namespace fmt
-
-namespace std {
-template <typename T>
-struct formatter<endgate::FixedNumber<T>> : formatter<T> {
-    auto format(const endgate::FixedNumber<T>& num, format_context& ctx) const {
-        return formatter<T>::format(*num, ctx);
-    }
-};
-} // namespace std
+// template <typename T>
+// struct std::formatter<jsonc_reflection::FixedNumber<T>> : std::formatter<T> {
+//     auto format(auto&& num, auto&& ctx) const { return formatter<T>::format(*num, ctx); }
+// };

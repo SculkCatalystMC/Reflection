@@ -1,13 +1,10 @@
 #pragma once
-#include "endgate/base/FixedNumber.hpp"
+#include "jsonc-reflection/detail/FixedNumber.hpp"
 #include <limits>
 
 namespace jsonc_reflection {
 
-template <
-    typename T,
-    FixedNumber<T> Min = std::numeric_limits<T>::min(),
-    FixedNumber<T> Max = std::numeric_limits<T>::max()>
+template <typename T, FixedNumber<T> Min = std::numeric_limits<T>::min(), FixedNumber<T> Max = std::numeric_limits<T>::max()>
     requires std::is_arithmetic_v<T>
 class Ranged {
     static_assert(*Min <= *Max, "Min must be less than Max");
@@ -44,21 +41,7 @@ public:
 
 } // namespace jsonc_reflection
 
-namespace fmt {
-template <typename T, endgate::FixedNumber<T> Min, endgate::FixedNumber<T> Max>
-struct formatter<endgate::Ranged<T, Min, Max>> : formatter<T> {
-    template <typename FormatContext>
-    auto format(const endgate::Ranged<T, Min, Max>& num, FormatContext& ctx) const {
-        return formatter<T>::format(num.storage(), ctx);
-    }
-};
-} // namespace fmt
-
-namespace std {
-template <typename T, endgate::FixedNumber<T> Min, endgate::FixedNumber<T> Max>
-struct formatter<endgate::Ranged<T, Min, Max>> : formatter<T> {
-    auto format(const endgate::Ranged<T, Min, Max>& num, format_context& ctx) const {
-        return formatter<T>::format(num.storage(), ctx);
-    }
-};
-} // namespace std
+// template <typename T, jsonc_reflection::FixedNumber<T> Min, jsonc_reflection::FixedNumber<T> Max>
+// struct std::formatter<jsonc_reflection::Ranged<T, Min, Max>> : std::formatter<T> {
+//     auto format(auto&& num, auto&& ctx) const { return formatter::format(num.storage(), ctx); }
+// };

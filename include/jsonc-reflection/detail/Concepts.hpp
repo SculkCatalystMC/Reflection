@@ -1,5 +1,5 @@
 #pragma once
-#include "TypeTraits.hpp"
+#include "jsonc-reflection/detail/TypeTraits.hpp"
 #include <variant>
 
 namespace jsonc_reflection {

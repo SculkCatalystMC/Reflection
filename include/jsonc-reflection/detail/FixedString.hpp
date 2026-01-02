@@ -40,9 +40,7 @@ FixedString(char const (&)[N]) -> FixedString<N - 1>;
 
 } // namespace jsonc_reflection
 
-namespace std {
-template <size_t N>
-struct formatter<jsonc_reflection::FixedString<N>> : formatter<string_view> {
-    auto format(const jsonc_reflection::FixedString<N>& str, format_context& ctx) const { return formatter<string_view>::format(str.view(), ctx); }
-};
-} // namespace std
+// template <size_t N>
+// struct std::formatter<jsonc_reflection::FixedString<N>> : std::formatter<string_view> {
+//     auto format(auto&& str, auto&& ctx) const { return formatter::format(str.view(), ctx); }
+// };

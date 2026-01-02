@@ -1,54 +1,55 @@
 #pragma once
-#include "endgate/base/Concepts.hpp"
-#include "endgate/base/Expected.hpp"
-#include "endgate/base/Meta.hpp"
-#include "endgate/reflection/Reflection.hpp"
+#include "jsonc-reflection/detail/Concepts.hpp"
+#include "jsonc-reflection/detail/Expected.hpp"
+#include "jsonc-reflection/detail/Meta.hpp"
+#include "jsonc-reflection/detail/Reflection.hpp"
+#include <jsonc/jsonc.hpp>
 #include <magic_enum/magic_enum.hpp>
 
-namespace endgate::reflection {
+namespace jsonc_reflection {
 
 namespace detail {
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& obj, meta::PriorityTag<6>)
+inline Expected<J> serialize_impl(T&& obj, PriorityTag<6>)
     requires(concepts::IsAnnotated<std::remove_cvref_t<T>>);
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& d, meta::PriorityTag<5>)
+inline Expected<J> serialize_impl(T&& d, PriorityTag<5>)
     requires(concepts::IsDispatcher<std::remove_cvref_t<T>>);
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& opt, meta::PriorityTag<5>)
+inline Expected<J> serialize_impl(T&& opt, PriorityTag<5>)
     requires(concepts::IsOptional<std::remove_cvref_t<T>>);
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& str, meta::PriorityTag<4>)
+inline Expected<J> serialize_impl(T&& str, PriorityTag<4>)
     requires(concepts::IsString<std::remove_cvref_t<T>>);
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& str, meta::PriorityTag<4>)
+inline Expected<J> serialize_impl(T&& str, PriorityTag<4>)
     requires(concepts::IsRanged<std::remove_cvref_t<T>>);
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& tuple, meta::PriorityTag<3>)
+inline Expected<J> serialize_impl(T&& tuple, PriorityTag<3>)
     requires(concepts::IsTupleLike<std::remove_cvref_t<T>>);
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& tuple, meta::PriorityTag<3>)
+inline Expected<J> serialize_impl(T&& tuple, PriorityTag<3>)
     requires(concepts::IsVariant<std::remove_cvref_t<T>>);
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& arr, meta::PriorityTag<2>)
+inline Expected<J> serialize_impl(T&& arr, PriorityTag<2>)
     requires(concepts::IsArrayLike<std::remove_cvref_t<T>>);
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& map, meta::PriorityTag<2>)
+inline Expected<J> serialize_impl(T&& map, PriorityTag<2>)
     requires(concepts::IsAssociative<std::remove_cvref_t<T>>);
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& obj, meta::PriorityTag<1>)
+inline Expected<J> serialize_impl(T&& obj, PriorityTag<1>)
     requires(concepts::IsReflectable<std::remove_cvref_t<T>>);
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& e, meta::PriorityTag<1>)
+inline Expected<J> serialize_impl(T&& e, PriorityTag<1>)
     requires(std::is_enum_v<std::remove_cvref_t<T>>);
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& obj, meta::PriorityTag<0>)
+inline Expected<J> serialize_impl(T&& obj, PriorityTag<0>)
     requires(std::convertible_to<std::remove_cvref_t<T>, J>);
 } // namespace detail
 
 template <class J, class T>
 [[nodiscard]] inline Expected<J> serialize(T&& t) try {
-    return detail::serialize_impl<J>(std::forward<T>(t), meta::PriorityTag<6>{});
+    return detail::serialize_impl<J>(std::forward<T>(t), PriorityTag<6>{});
 } catch (...) {
     return makeExceptionError();
 }
@@ -64,26 +65,24 @@ template <class J, class T>
     return {};
 }
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& obj, meta::PriorityTag<6>)
+inline Expected<J> serialize_impl(T&& obj, PriorityTag<6>)
     requires(concepts::IsAnnotated<std::remove_cvref_t<T>>)
 {
     Expected<J> res;
     res = serialize<J>(std::forward<decltype(*obj)>(*obj));
-    if constexpr (requires(J ins, jsonc::Node const& path, std::vector<std::string> const& comments) {
-                      ins.setComments(path, comments);
-                  }) {
-        res->setComments({}, obj.getComments());
+    if constexpr (requires(J ins, std::vector<std::string> const& comments) { ins.set_before_comments(comments); }) {
+        res->set_before_comments(obj.getComments());
     }
     return res;
 }
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& d, meta::PriorityTag<5>)
+inline Expected<J> serialize_impl(T&& d, PriorityTag<5>)
     requires(concepts::IsDispatcher<std::remove_cvref_t<T>>)
 {
     return serialize<J>(*std::forward<T>(d));
 }
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& opt, meta::PriorityTag<5>)
+inline Expected<J> serialize_impl(T&& opt, PriorityTag<5>)
     requires(concepts::IsOptional<std::remove_cvref_t<T>>)
 {
     if (!opt) {
@@ -92,19 +91,19 @@ inline Expected<J> serialize_impl(T&& opt, meta::PriorityTag<5>)
     return serialize<J>(*std::forward<T>(opt));
 }
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& str, meta::PriorityTag<4>)
+inline Expected<J> serialize_impl(T&& str, PriorityTag<4>)
     requires(concepts::IsString<std::remove_cvref_t<T>>)
 {
     return std::string{std::forward<T>(str)};
 }
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& num, meta::PriorityTag<4>)
+inline Expected<J> serialize_impl(T&& num, PriorityTag<4>)
     requires(concepts::IsRanged<std::remove_cvref_t<T>>)
 {
     return *num;
 }
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& tuple, meta::PriorityTag<3>)
+inline Expected<J> serialize_impl(T&& tuple, PriorityTag<3>)
     requires(concepts::IsTupleLike<std::remove_cvref_t<T>>)
 {
     Expected<J> res{J::array()};
@@ -128,7 +127,7 @@ inline Expected<J> serialize_impl(T&& tuple, meta::PriorityTag<3>)
     return res;
 }
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& variant, meta::PriorityTag<3>)
+inline Expected<J> serialize_impl(T&& variant, PriorityTag<3>)
     requires(concepts::IsVariant<std::remove_cvref_t<T>>)
 {
     Expected<J> res;
@@ -136,7 +135,7 @@ inline Expected<J> serialize_impl(T&& variant, meta::PriorityTag<3>)
     return res;
 }
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& arr, meta::PriorityTag<2>)
+inline Expected<J> serialize_impl(T&& arr, PriorityTag<2>)
     requires(concepts::IsArrayLike<std::remove_cvref_t<T>>)
 {
     Expected<J> res{J::array()};
@@ -153,7 +152,7 @@ inline Expected<J> serialize_impl(T&& arr, meta::PriorityTag<2>)
     return res;
 }
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& map, meta::PriorityTag<2>)
+inline Expected<J> serialize_impl(T&& map, PriorityTag<2>)
     requires(concepts::IsAssociative<std::remove_cvref_t<T>>)
 {
     using RT = std::remove_cvref_t<T>;
@@ -179,10 +178,10 @@ inline Expected<J> serialize_impl(T&& map, meta::PriorityTag<2>)
     return res;
 }
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& obj, meta::PriorityTag<1>)
+inline Expected<J> serialize_impl(T&& obj, PriorityTag<1>)
     requires(concepts::IsReflectable<std::remove_cvref_t<T>>)
 {
-    Expected<J> res{J::object()};
+    Expected<J> res{jsonc::object()};
     forEachFieldWithName(obj, [&](std::string_view name, auto const& member) {
         using MemberType = decltype(member);
         if constexpr (requires(MemberType m) { serialize<J>(m); }) {
@@ -199,7 +198,7 @@ inline Expected<J> serialize_impl(T&& obj, meta::PriorityTag<1>)
     return res;
 }
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& e, meta::PriorityTag<1>)
+inline Expected<J> serialize_impl(T&& e, PriorityTag<1>)
     requires(std::is_enum_v<std::remove_cvref_t<T>>)
 {
     using enum_type = std::remove_cvref_t<T>;
@@ -217,7 +216,7 @@ inline Expected<J> serialize_impl(T&& e, meta::PriorityTag<1>)
     return (std::underlying_type_t<enum_type>)e;
 }
 template <class J, class T>
-inline Expected<J> serialize_impl(T&& obj, meta::PriorityTag<0>)
+inline Expected<J> serialize_impl(T&& obj, PriorityTag<0>)
     requires(std::convertible_to<std::remove_cvref_t<T>, J>)
 {
     return std::forward<T>(obj);
