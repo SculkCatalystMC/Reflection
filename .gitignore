@@ -5,3 +5,4 @@ CmakeLists.txt
 build
 /.cache
 compile_commands.json
+test.jsonc

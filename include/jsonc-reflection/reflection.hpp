@@ -1,9 +1,5 @@
 #pragma once
 
-#ifndef JSONC_NO_EXCEPTION
-#define JSONC_NO_EXCEPTION
-#endif
-#include <jsonc/jsonc.hpp>
 
 #include "jsonc-reflection/detail/Annotated.hpp"
 #include "jsonc-reflection/detail/Deserialization.hpp"

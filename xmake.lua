@@ -2,12 +2,13 @@ add_rules("mode.debug", "mode.release")
 
 add_repositories("divanadiumpentaoxide-repo https://github.com/DivanadiumPentaoxide/xmake-repo.git")
 
-add_requires("jsonc 20251228-1")
-add_requires("boost_pfr 2.2.0")
+add_requires("jsonc 20250122-1")
+add_requires("boost_pfr 20260104")
 add_requires("magic_enum 0.9.7")
 
 if is_plat("windows") and not has_config("vs_runtime") then
     set_runtimes("MD")
+    set_toolchains("clang-cl")
 end
 
 target("test")
