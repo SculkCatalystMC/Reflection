@@ -4,16 +4,20 @@
 
 using namespace jsonc_reflection;
 
-struct Test {
+struct TestType {
     std::string data_;
 
-    Test() = default;
-    Test(std::string_view data) : data_(data) {}
+    TestType() = default;
+    TestType(std::string_view data) : data_(data) {}
 
     std::string to_string() const { return data_; }
 
-    static Test FromString(std::string_view data) { return Test(data); }
+    static TestType FromString(std::string_view data) { return TestType(data); }
 };
+
+enum class TestEnum { AAA = 0, BBB = 1, CCC = 2, DDD = 3 };
+
+enum class TestEnumFlag { AAA = 0, BBB = 1 << 0, CCC = 1 << 1, DDD = 1 << 2, EEE = 5 };
 
 struct Config {
     std::string                                                 test_1  = "test string";
@@ -25,8 +29,10 @@ struct Config {
     int16_t                                                     test_7  = -2671;
     std::optional<uint8_t>                                      test_8  = {};
     std::string_view                                            test_9  = "sv test";
-    Test                                                        test_10 = {"test custom type"};
+    TestType                                                    test_10 = {"test custom type"};
     Ranged<short, -3, 5678>                                     test_11 = 23345;
+    TestEnum                                                    test_12 = TestEnum(3);
+    TestEnumFlag                                                test_13 = TestEnumFlag(6);
 };
 
 std::optional<std::string> readFile(std::filesystem::path const& filePath, bool isBinary = false) {

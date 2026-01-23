@@ -4,6 +4,7 @@
 #include "jsonc-reflection/detail/Meta.hpp"
 #include <boost/pfr.hpp>
 #include <magic_enum/magic_enum.hpp>
+#include <magic_enum/magic_enum_flags.hpp>
 
 namespace jsonc_reflection {
 
@@ -29,6 +30,9 @@ inline jsonc::JsoncType serialize_impl(const T& t, bool&, PriorityTag<4>) noexce
 
 template <concepts::is_aggregate T>
 inline jsonc::JsoncType serialize_impl(const T& t, bool& status, PriorityTag<1>) noexcept;
+
+template <concepts::is_enum T>
+inline jsonc::JsoncType serialize_impl(const T& t, bool&, PriorityTag<1>) noexcept;
 
 template <concepts::is_jsonc_type_convertible T>
 inline jsonc::JsoncType serialize_impl(const T& t, bool&, PriorityTag<0>) noexcept;
@@ -108,6 +112,13 @@ inline jsonc::JsoncType serialize_impl(const T& t, bool& status, PriorityTag<1>)
     return result;
 }
 
+template <concepts::is_enum T>
+inline jsonc::JsoncType serialize_impl(const T& t, bool&, PriorityTag<1>) noexcept {
+    if (auto name = magic_enum::enum_name(t); !name.empty()) { return name; }
+    if (auto flag = magic_enum::enum_flags_name(t); !flag.empty()) { return flag; }
+    return std::to_underlying(t);
+}
+
 template <concepts::is_jsonc_type_convertible T>
 inline jsonc::JsoncType serialize_impl(const T& t, bool&, PriorityTag<0>) noexcept {
     return t;
@@ -135,12 +146,6 @@ inline jsonc::JsoncType serialize_impl(T&& arr, PriorityTag<2>)
 template <typename T>
 inline jsonc::JsoncType serialize_impl(T&& map, PriorityTag<2>)
     requires(concepts::IsAssociative<std::remove_cvref_t<T>>);
-template <typename T>
-inline jsonc::JsoncType serialize_impl(T&& obj, PriorityTag<1>)
-    requires(concepts::IsReflectable<std::remove_cvref_t<T>>);
-template <typename T>
-inline jsonc::JsoncType serialize_impl(T&& e, PriorityTag<1>)
-    requires(std::is_enum_v<std::remove_cvref_t<T>>);
 
 } // namespace detail
 
@@ -247,44 +252,6 @@ inline jsonc::JsoncType serialize_impl(T&& map, PriorityTag<2>)
         }
     }
     return res;
-}
-
-template <typename T>
-inline jsonc::JsoncType serialize_impl(T&& obj, PriorityTag<1>)
-    requires(concepts::IsReflectable<std::remove_cvref_t<T>>)
-{
-    jsonc::JsoncType res{jsonc::object()};
-    forEachFieldWithName(obj, [&](std::string_view name, auto const& member) {
-        using MemberType = decltype(member);
-        if constexpr (requires(MemberType m) { serialize(m); }) {
-            auto v = serialize(std::forward<MemberType>(member));
-            if (v) {
-                if (!v->is_null()) {
-                    auto& root = res->as<jsonc::Object>();
-                    root[name] = *std::move(v);
-                }
-            } else {
-                res = makeStringError("Couldn't serialize menber {0}: {1}", name, v.error());
-            }
-        } else {
-            static_assert(traits::always_false<MemberType>, "this type can't serialize");
-        }
-    });
-    return res;
-}
-template <typename T>
-inline jsonc::JsoncType serialize_impl(T&& e, PriorityTag<1>)
-    requires(std::is_enum_v<std::remove_cvref_t<T>>)
-{
-    using enum_type = std::remove_cvref_t<T>;
-    if constexpr (magic_enum::detail::supported<enum_type>::value) {
-        if constexpr (magic_enum::detail::subtype_v<enum_type> == magic_enum::detail::enum_subtype::flags) {
-            if (const auto name = magic_enum::enum_type_name<enum_type>(e); !name.empty()) { return name; }
-        } else {
-            if (const auto name = magic_enum::enum_name<enum_type>(e); !name.empty()) { return name; }
-        }
-    }
-    return (std::underlying_type_t<enum_type>)e;
 }
 
 } // namespace detail

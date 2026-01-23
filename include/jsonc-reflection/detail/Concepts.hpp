@@ -50,4 +50,7 @@ concept is_string_convertible = traits::is_string_convertible_v<std::remove_cvre
 template <typename T>
 concept is_string_type = traits::is_string_type_v<std::remove_cvref_t<T>>;
 
+template <typename T>
+concept is_enum = std::is_enum_v<std::remove_cvref_t<T>>;
+
 } // namespace jsonc_reflection::concepts
