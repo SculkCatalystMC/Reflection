@@ -1,84 +1,32 @@
-#include "jsonc-reflection/reflection.hpp"
+#include "jsonc-reflection/Reflection.hpp"
 #include <filesystem>
 #include <fstream>
 
 using namespace jsonc_reflection;
 
-struct ReverseProxySettings {
-    Renamed<Annotated<std::string, "Used as the server motd", "Allowed values: Any string without semicolon symbol.">, "server-motd"> motd =
-        "An EndGate Reverse Proxy Server";
+struct Test {
+    std::string data_;
 
-    Renamed<Annotated<bool, "If true then cheats like commands can be used.", "Allowed values: \"true\" or \"false\"">, "allow-cheats"> allowCheats =
-        false;
+    Test() = default;
+    Test(std::string_view data) : data_(data) {}
 
-    Renamed<Annotated<std::string, "Used as the world name displayed", "Allowed values: Any string without semicolon symbol.">, "level-name">
-        levelName = "EndGate Server";
+    std::string to_string() const { return data_; }
 
-    Renamed<Annotated<uint32_t, "The maximum number of players that can play on the server.", "Allowed values: Any positive integer">, "max-players">
-        maxPlayers = 20;
+    static Test FromString(std::string_view data) { return Test(data); }
+};
 
-    Renamed<
-        Annotated<
-            bool,
-            "If true then all connected players must be authenticated to Xbox Live.",
-            "Clients connecting to remote (non-LAN) servers will always require Xbox Live authentication regardless of "
-            "this setting.",
-            "If the server accepts connections from the Internet, then it's highly recommended to enable online-mode.",
-            "Allowed values: \"true\" or \"false\"">,
-        "online-mode">
-        onlineMode = true;
-
-    Renamed<
-        Annotated<
-            bool,
-            "If true then all connected players must be listed in the separate whitelist.json file.",
-            "Allowed values: \"true\" or \"false\"">,
-        "white-list">
-        whiteList = false;
-
-    Renamed<
-        Annotated<Ranged<uint16_t, 1, 65535>, "Which IPv4 port the server should listen to.", "Allowed values: Integers in the range [1, 65535]">,
-        "server-port">
-        serverPort = (uint16_t)19132;
-
-    Renamed<
-        Annotated<Ranged<uint16_t, 1, 65535>, "Which IPv6 port the server should listen to.", "Allowed values: Integers in the range [1, 65535]">,
-        "server-portv6">
-        serverPortv6 = (uint16_t)19133;
-
-    Renamed<
-        Annotated<bool, "Force clients to use texture packs provided by the server", "Allowed values: \"true\" or \"false\"">,
-        "texturepack-required">
-        texturepackRequired = false;
-
-    Annotated<std::string, "Used as server locale code", "Allowed values: Any locale code string (such as en_US)."> language = "Unknown";
-
-    struct ProtocolCheckOption {
-        Renamed<Annotated<bool, "Whether fetch ProtocolLib updates automatically.", "Allowed values: \"true\" or \"false\"">, "auto-update">
-            autoUpdate = true;
-
-        Renamed<Annotated<bool, "Whether fetch ProtocolLib pre-release version.", "Allowed values: \"true\" or \"false\"">, "fetch-prelease">
-            fetchPrelease = false;
-
-        Renamed<Annotated<std::string, "API host to fetch latest release tag.", "Allowed values: Any URL string">, "api-host"> apiHost =
-            "api.github.com";
-
-        Renamed<Annotated<std::string, "host to download latest ProtocolLib.", "Allowed values: Any URL string">, "download-host"> downloadHost =
-            "github.com";
-    };
-
-    Renamed<
-        Annotated<
-            ProtocolCheckOption,
-            "ProtocolLib download and update options",
-            "In general, you don't need to change these options unless GitHub isn't accessible in your region">,
-        "protocol">
-        protocolLibOptions;
-
-    Renamed<
-        Annotated<Ranged<int, 0>, "Maximum number of commands retained in console history.", "Allowed values: Any positive integer">,
-        "max-console-history-count">
-        maxConsoleHistory = 100;
+struct Config {
+    std::string                                                 test_1  = "test string";
+    Annotated<std::string, "xiwhgasdjjhoikwq">                  test_2  = "test string with comments";
+    Renamed<Annotated<std::string, "738whdbhahisdS">, "test-3"> test_3  = "test string with renamed key and comments";
+    int                                                         test_4  = 232123;
+    double                                                      test_5  = 3.526781;
+    float                                                       test_6  = 26781.234;
+    int16_t                                                     test_7  = -2671;
+    std::optional<uint8_t>                                      test_8  = {};
+    std::string_view                                            test_9  = "sv test";
+    Test                                                        test_10 = {"test custom type"};
+    Ranged<short, -3, 5678>                                     test_11 = 23345;
 };
 
 std::optional<std::string> readFile(std::filesystem::path const& filePath, bool isBinary = false) {
@@ -106,10 +54,11 @@ bool writeFile(std::filesystem::path const& filePath, std::string_view content, 
 }
 
 int main() {
-    ReverseProxySettings settings;
-    if (auto content = readFile("./test.jsonc"); content) {
-        if (auto json = jsonc::parse(*content, true); json) { jsonc_reflection::deserialize(settings, *json).value(); }
-    }
-    writeFile("./test.jsonc", jsonc_reflection::serialize(settings)->dump());
+    Config settings;
+    // if (auto content = readFile("./test.jsonc"); content) {
+    //     if (auto json = jsonc::parse(*content, true); json) { jsonc_reflection::deserialize(settings, *json).value(); }
+    // }
+    auto res = jsonc_reflection::serialize(settings);
+    writeFile("./test.jsonc", res.dump());
     return 0;
 }

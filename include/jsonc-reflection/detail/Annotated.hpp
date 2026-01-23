@@ -6,93 +6,88 @@ namespace jsonc_reflection {
 
 template <typename T, FixedString... Comments>
 class Annotated {
-    T                        mStorage;
-    std::vector<std::string> mComments{Comments.str()...};
+    T                        storage_;
+    std::vector<std::string> comments_{Comments.str()...};
 
 public:
-    [[nodiscard]] constexpr Annotated() = default;
+    [[nodiscard]] constexpr Annotated() noexcept = default;
 
     template <typename U>
         requires(std::convertible_to<T, U>)
-    [[nodiscard]] constexpr Annotated(U&& value) : mStorage(std::forward<U>(value)) {}
+    [[nodiscard]] constexpr Annotated(U&& value) noexcept : storage_(std::forward<U>(value)) {}
 
     template <typename U>
         requires(!std::convertible_to<T, U> && std::is_constructible_v<T, U>)
-    [[nodiscard]] constexpr Annotated(U&& value) : mStorage(std::forward<U>(value)) {}
+    [[nodiscard]] constexpr Annotated(U&& value) noexcept : storage_(std::forward<U>(value)) {}
 
     template <size_t N>
         requires(std::is_same_v<T, std::string>)
-    [[nodiscard]] constexpr Annotated(const char (&str)[N]) : mStorage(std::string(str)) {}
+    [[nodiscard]] constexpr Annotated(const char (&str)[N]) noexcept : storage_(std::string(str)) {}
 
     template <typename U>
         requires std::is_constructible_v<T, std::initializer_list<U>>
-    [[nodiscard]] constexpr Annotated(std::initializer_list<U> init) : mStorage(init) {}
+    [[nodiscard]] constexpr Annotated(std::initializer_list<U> init) noexcept : storage_(init) {}
 
-    constexpr Annotated(T&& value) : mStorage(std::move(value)) {}
+    constexpr Annotated(T&& value) noexcept : storage_(std::move(value)) {}
 
-    constexpr Annotated(T const& value) : mStorage(value) {}
+    constexpr Annotated(T const& value) noexcept : storage_(value) {}
 
-    constexpr Annotated& operator=(T const& value) {
-        mStorage = value;
+    constexpr Annotated& operator=(T const& value) noexcept {
+        storage_ = value;
         return *this;
     }
 
-    constexpr Annotated& operator=(T&& value) {
-        mStorage = std::move(value);
+    constexpr Annotated& operator=(T&& value) noexcept {
+        storage_ = std::move(value);
         return *this;
     }
 
-    [[nodiscard]] constexpr T&       storage() { return mStorage; }
-    [[nodiscard]] constexpr T const& storage() const { return mStorage; }
+    [[nodiscard]] constexpr T&       storage() noexcept { return storage_; }
+    [[nodiscard]] constexpr T const& storage() const noexcept { return storage_; }
 
-    [[nodiscard]] constexpr T&       operator*() { return mStorage; }
-    [[nodiscard]] constexpr T const& operator*() const { return mStorage; }
+    [[nodiscard]] constexpr T&       operator*() noexcept { return storage_; }
+    [[nodiscard]] constexpr T const& operator*() const noexcept { return storage_; }
 
-    [[nodiscard]] constexpr T*       operator->() { return &mStorage; }
-    [[nodiscard]] constexpr T const* operator->() const { return &mStorage; }
+    [[nodiscard]] constexpr T*       operator->() noexcept { return &storage_; }
+    [[nodiscard]] constexpr T const* operator->() const noexcept { return &storage_; }
 
-    [[nodiscard]] constexpr operator T const&() const { return mStorage; }
-    [[nodiscard]] constexpr operator T&() { return mStorage; }
+    [[nodiscard]] constexpr operator T const&() const noexcept { return storage_; }
+    [[nodiscard]] constexpr operator T&() noexcept { return storage_; }
 
     template <typename U>
         requires(std::convertible_to<T, U> && !std::is_same_v<T, U>)
-    [[nodiscard]] constexpr operator U() const {
-        return static_cast<U>(mStorage);
+    [[nodiscard]] constexpr operator U() const noexcept {
+        return static_cast<U>(storage_);
     }
 
     template <typename U>
         requires(std::is_same_v<T, U> && std::convertible_to<T, U>)
-    [[nodiscard]] constexpr operator const U&() const {
-        return mStorage;
+    [[nodiscard]] constexpr operator const U&() const noexcept {
+        return storage_;
     }
 
     template <typename U>
         requires(std::is_same_v<T, U> && std::convertible_to<T, U>)
-    [[nodiscard]] constexpr operator U&() {
-        return mStorage;
+    [[nodiscard]] constexpr operator U&() noexcept {
+        return storage_;
     }
 
-    [[nodiscard]] constexpr bool hasComments() const noexcept { return mComments.size() > 0; }
+    [[nodiscard]] constexpr bool has_comments() const noexcept { return comments_.size() > 0; }
 
-    [[nodiscard]] constexpr std::vector<std::string>&       getComments() noexcept { return mComments; }
-    [[nodiscard]] constexpr const std::vector<std::string>& getComments() const noexcept { return mComments; }
+    [[nodiscard]] constexpr std::vector<std::string>&       get_comments() noexcept { return comments_; }
+    [[nodiscard]] constexpr const std::vector<std::string>& get_comments() const noexcept { return comments_; }
 
-    constexpr void addComment(std::string_view comment) { mComments.emplace_back(comment); }
+    constexpr void add_comment(std::string_view comment) noexcept { comments_.emplace_back(comment); }
 
-    constexpr void setComment(size_t index, std::string_view newComment) {
-        if (index < mComments.size()) { mComments[index] = newComment; }
+    constexpr void set_comment(size_t index, std::string_view newComment) noexcept {
+        if (index < comments_.size()) { comments_[index] = newComment; }
     }
 
-    constexpr void removeComment(size_t index) {
-        if (index < mComments.size()) { mComments.erase(mComments.begin() + index); }
+    constexpr void remove_comment(size_t index) noexcept {
+        if (index < comments_.size()) { comments_.erase(comments_.begin() + index); }
     }
 
-    constexpr void clearComments() { mComments.clear(); }
+    constexpr void clear_comments() noexcept { comments_.clear(); }
 };
 
 } // namespace jsonc_reflection
-
-// template <typename T, jsonc_reflection::FixedString... Comments>
-// struct std::formatter<jsonc_reflection::Annotated<T, Comments...>> : std::formatter<T> {
-//     auto format(auto&& obj, auto&& ctx) const { return formatter::format(obj.storage(), ctx); }
-// };

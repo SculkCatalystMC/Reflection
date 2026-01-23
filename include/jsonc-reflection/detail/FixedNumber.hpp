@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <cstdint>
 #include <format>
-#include <format>
 #include <type_traits>
 
 namespace jsonc_reflection {
@@ -10,29 +9,24 @@ namespace jsonc_reflection {
 template <typename T>
     requires std::is_arithmetic_v<T>
 struct FixedNumber {
-    T mStorage;
+    T storage_;
 
     [[nodiscard]] consteval FixedNumber() noexcept = default;
-    [[nodiscard]] consteval FixedNumber(T num) noexcept : mStorage(num) {}
+    [[nodiscard]] consteval FixedNumber(T num) noexcept : storage_(num) {}
 
     template <typename U>
         requires std::is_arithmetic_v<U>
-    [[nodiscard]] consteval FixedNumber(U num) noexcept : mStorage(static_cast<T>(num)) {}
+    [[nodiscard]] consteval FixedNumber(U num) noexcept : storage_(static_cast<T>(num)) {}
 
-    [[nodiscard]] constexpr operator T() const noexcept { return mStorage; }
-    [[nodiscard]] constexpr operator T const&() const noexcept { return mStorage; }
-    [[nodiscard]] constexpr operator T&() noexcept { return mStorage; }
+    [[nodiscard]] constexpr operator T() const noexcept { return storage_; }
+    [[nodiscard]] constexpr operator T const&() const noexcept { return storage_; }
+    [[nodiscard]] constexpr operator T&() noexcept { return storage_; }
 
-    [[nodiscard]] constexpr T&       operator*() { return mStorage; }
-    [[nodiscard]] constexpr T const& operator*() const { return mStorage; }
+    [[nodiscard]] constexpr T&       operator*() { return storage_; }
+    [[nodiscard]] constexpr T const& operator*() const { return storage_; }
 
-    [[nodiscard]] constexpr T*       operator->() { return &mStorage; }
-    [[nodiscard]] constexpr T const* operator->() const { return &mStorage; }
+    [[nodiscard]] constexpr T*       operator->() { return &storage_; }
+    [[nodiscard]] constexpr T const* operator->() const { return &storage_; }
 };
 
 } // namespace jsonc_reflection
-
-// template <typename T>
-// struct std::formatter<jsonc_reflection::FixedNumber<T>> : std::formatter<T> {
-//     auto format(auto&& num, auto&& ctx) const { return formatter<T>::format(*num, ctx); }
-// };

@@ -1,54 +1,151 @@
 #pragma once
 #include "jsonc-reflection/detail/Concepts.hpp"
-#include "jsonc-reflection/detail/Expected.hpp"
+#include "jsonc-reflection/detail/Jsonc.hpp"
 #include "jsonc-reflection/detail/Meta.hpp"
-#include "jsonc-reflection/detail/Reflection.hpp"
-#include <jsonc/jsonc.hpp>
+#include <boost/pfr.hpp>
 #include <magic_enum/magic_enum.hpp>
 
 namespace jsonc_reflection {
 
 namespace detail {
+
+template <typename T, FixedString N>
+inline jsonc::JsoncType serialize_impl(const Renamed<T, N>& t, bool& status, PriorityTag<7>) noexcept;
+
+template <typename T, FixedString... Args>
+inline jsonc::JsoncType serialize_impl(const Annotated<T, Args...>& t, bool& status, PriorityTag<6>) noexcept;
+
+template <concepts::is_dispatcher T>
+inline jsonc::JsoncType serialize_impl(const T& t, bool& status, PriorityTag<5>) noexcept;
+
+template <concepts::is_optional T>
+inline jsonc::JsoncType serialize_impl(const T& t, bool& status, PriorityTag<5>) noexcept;
+
+template <concepts::is_string_type T>
+inline jsonc::JsoncType serialize_impl(const T& t, bool&, PriorityTag<4>) noexcept;
+
+template <concepts::is_ranged T>
+inline jsonc::JsoncType serialize_impl(const T& t, bool&, PriorityTag<4>) noexcept;
+
+template <concepts::is_aggregate T>
+inline jsonc::JsoncType serialize_impl(const T& t, bool& status, PriorityTag<1>) noexcept;
+
+template <concepts::is_jsonc_type_convertible T>
+inline jsonc::JsoncType serialize_impl(const T& t, bool&, PriorityTag<0>) noexcept;
+
+} // namespace detail
+
+template <concepts::is_reflectable T>
+[[nodiscard]] inline jsonc::JsoncType serialize(const T& t, bool& status) noexcept {
+    return detail::serialize_impl(t, status, PriorityTag<6>{});
+}
+
+template <concepts::is_reflectable T>
+[[nodiscard]] inline jsonc::JsoncType serialize(const T& t) noexcept {
+    bool status{};
+    return detail::serialize_impl(t, status, PriorityTag<6>{});
+}
+
+namespace detail {
+
+template <typename T, FixedString N>
+inline jsonc::JsoncType serialize_impl(const Renamed<T, N>& t, bool& status, PriorityTag<7>) noexcept {
+    return serialize_impl(*t, status, PriorityTag<6>{});
+}
+
+template <typename T, FixedString... Args>
+inline jsonc::JsoncType serialize_impl(const Annotated<T, Args...>& t, bool& status, PriorityTag<6>) noexcept {
+    auto result = serialize_impl(*t, status, PriorityTag<6>{});
+    if (t.has_comments()) { result.set_before_comments(t.get_comments()); }
+    return result;
+}
+
+template <concepts::is_dispatcher T>
+inline jsonc::JsoncType serialize_impl(const T& t, bool& status, PriorityTag<5>) noexcept {
+    return serialize_impl(*t, status, PriorityTag<5>{});
+}
+
+template <concepts::is_optional T>
+inline jsonc::JsoncType serialize_impl(const T& t, bool& status, PriorityTag<5>) noexcept {
+    if (t) { return serialize_impl(*t, status, PriorityTag<5>{}); }
+    return nullptr;
+}
+
+template <concepts::is_string_type T>
+inline jsonc::JsoncType serialize_impl(const T& t, bool&, PriorityTag<4>) noexcept {
+    if constexpr (traits::is_string_convertible_v<T>) {
+        return t;
+    } else {
+        if constexpr (traits::detail::has_to_string_v1<T>) {
+            return t.to_string();
+        } else if constexpr (traits::detail::has_to_string_v2<T>) {
+            return t.toString();
+        } else {
+            return t.ToString();
+        }
+    }
+}
+
+template <concepts::is_ranged T>
+inline jsonc::JsoncType serialize_impl(const T& t, bool& status, PriorityTag<4>) noexcept {
+    return serialize_impl(*t, status, PriorityTag<4>{});
+}
+
+template <concepts::is_aggregate T>
+inline jsonc::JsoncType serialize_impl(const T& t, bool& status, PriorityTag<1>) noexcept {
+    auto result = jsonc::JsoncType::object();
+    boost::pfr::for_each_field_with_name(t, [&](std::string_view name, const auto& val) {
+        if constexpr (traits::is_renamed_v<decltype(val)>) { name = val.view(); }
+        auto res = serialize_impl(val, status, PriorityTag<7>{});
+        if (!res.is_null()) {
+            result[name] = res;
+            if (res.has_before_comments()) {
+                result.set_key_before_comments(name, res.get_before_comments());
+                result[name].clear_before_comments();
+            }
+        }
+    });
+    return result;
+}
+
+template <concepts::is_jsonc_type_convertible T>
+inline jsonc::JsoncType serialize_impl(const T& t, bool&, PriorityTag<0>) noexcept {
+    return t;
+}
+
+} // namespace detail
+
+} // namespace jsonc_reflection
+
+
+/*
+namespace detail {
+
+
+
 template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& obj, PriorityTag<6>)
-    requires(concepts::IsAnnotated<std::remove_cvref_t<T>>);
-template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& d, PriorityTag<5>)
-    requires(concepts::IsDispatcher<std::remove_cvref_t<T>>);
-template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& opt, PriorityTag<5>)
-    requires(concepts::IsOptional<std::remove_cvref_t<T>>);
-template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& str, PriorityTag<4>)
-    requires(concepts::IsString<std::remove_cvref_t<T>>);
-template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& str, PriorityTag<4>)
-    requires(concepts::IsRanged<std::remove_cvref_t<T>>);
-template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& tuple, PriorityTag<3>)
+inline jsonc::JsoncType serialize_impl(T&& tuple, PriorityTag<3>)
     requires(concepts::IsTupleLike<std::remove_cvref_t<T>>);
 template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& tuple, PriorityTag<3>)
+inline jsonc::JsoncType serialize_impl(T&& tuple, PriorityTag<3>)
     requires(concepts::IsVariant<std::remove_cvref_t<T>>);
 template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& arr, PriorityTag<2>)
+inline jsonc::JsoncType serialize_impl(T&& arr, PriorityTag<2>)
     requires(concepts::IsArrayLike<std::remove_cvref_t<T>>);
 template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& map, PriorityTag<2>)
+inline jsonc::JsoncType serialize_impl(T&& map, PriorityTag<2>)
     requires(concepts::IsAssociative<std::remove_cvref_t<T>>);
 template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& obj, PriorityTag<1>)
+inline jsonc::JsoncType serialize_impl(T&& obj, PriorityTag<1>)
     requires(concepts::IsReflectable<std::remove_cvref_t<T>>);
 template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& e, PriorityTag<1>)
+inline jsonc::JsoncType serialize_impl(T&& e, PriorityTag<1>)
     requires(std::is_enum_v<std::remove_cvref_t<T>>);
-template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& obj, PriorityTag<0>)
-    requires(std::convertible_to<std::remove_cvref_t<T>, jsonc::JsoncType>);
+
 } // namespace detail
 
 template <typename T>
-[[nodiscard]] inline Expected<jsonc::JsoncType> serialize(T&& t) noexcept {
+[[nodiscard]] inline jsonc::JsoncType serialize(T&& t) noexcept {
     return detail::serialize_impl(std::forward<T>(t), PriorityTag<6>{});
 }
 
@@ -65,44 +162,22 @@ template <typename T>
 }
 
 template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& obj, PriorityTag<6>)
-    requires(concepts::IsAnnotated<std::remove_cvref_t<T>>)
-{
-    Expected<jsonc::JsoncType> res;
-    res = serialize(std::forward<decltype(*obj)>(*obj));
-    return res;
-}
-
-template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& d, PriorityTag<5>)
-    requires(concepts::IsDispatcher<std::remove_cvref_t<T>>)
-{
-    return serialize(*std::forward<T>(d));
-}
-template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& opt, PriorityTag<5>)
-    requires(concepts::IsOptional<std::remove_cvref_t<T>>)
-{
-    if (!opt) { return nullptr; }
-    return serialize(*std::forward<T>(opt));
-}
-template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& str, PriorityTag<4>)
+inline jsonc::JsoncType serialize_impl(T&& str, PriorityTag<4>)
     requires(concepts::IsString<std::remove_cvref_t<T>>)
 {
     return jsonc::JsoncType(std::string{std::forward<T>(str)});
 }
 template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& num, PriorityTag<4>)
+inline jsonc::JsoncType serialize_impl(T&& num, PriorityTag<4>)
     requires(concepts::IsRanged<std::remove_cvref_t<T>>)
 {
     return *num;
 }
 template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& tuple, PriorityTag<3>)
+inline jsonc::JsoncType serialize_impl(T&& tuple, PriorityTag<3>)
     requires(concepts::IsTupleLike<std::remove_cvref_t<T>>)
 {
-    Expected<jsonc::JsoncType> res{jsonc::array()};
+    jsonc::JsoncType res{jsonc::array()};
     std::apply(
         [&](auto&&... args) {
             size_t iter{0};
@@ -123,18 +198,18 @@ inline Expected<jsonc::JsoncType> serialize_impl(T&& tuple, PriorityTag<3>)
     return res;
 }
 template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& variant, PriorityTag<3>)
+inline jsonc::JsoncType serialize_impl(T&& variant, PriorityTag<3>)
     requires(concepts::IsVariant<std::remove_cvref_t<T>>)
 {
-    Expected<jsonc::JsoncType> res;
+    jsonc::JsoncType res;
     std::visit([&](auto&& arg) { res = serialize(std::forward<decltype(arg)>(arg)); }, variant);
     return res;
 }
 template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& arr, PriorityTag<2>)
+inline jsonc::JsoncType serialize_impl(T&& arr, PriorityTag<2>)
     requires(concepts::IsArrayLike<std::remove_cvref_t<T>>)
 {
-    Expected<jsonc::JsoncType> res{jsonc::array()};
+    jsonc::JsoncType res{jsonc::array()};
     size_t                     iter{0};
     for (auto&& val : std::forward<T>(arr)) {
         if (auto v = serialize(std::forward<decltype(val)>(val)); v) {
@@ -148,7 +223,7 @@ inline Expected<jsonc::JsoncType> serialize_impl(T&& arr, PriorityTag<2>)
     return res;
 }
 template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& map, PriorityTag<2>)
+inline jsonc::JsoncType serialize_impl(T&& map, PriorityTag<2>)
     requires(concepts::IsAssociative<std::remove_cvref_t<T>>)
 {
     using RT = std::remove_cvref_t<T>;
@@ -156,7 +231,7 @@ inline Expected<jsonc::JsoncType> serialize_impl(T&& map, PriorityTag<2>)
         (concepts::IsString<typename RT::key_type> || std::is_enum_v<typename RT::key_type>),
         "the key type of the associative container must be convertible to a string"
     );
-    Expected<jsonc::JsoncType> res{jsonc::object()};
+    jsonc::JsoncType res{jsonc::object()};
     for (auto&& [k, v] : map) {
         std::string key;
         if constexpr (concepts::IsString<typename RT::key_type>) {
@@ -175,10 +250,10 @@ inline Expected<jsonc::JsoncType> serialize_impl(T&& map, PriorityTag<2>)
 }
 
 template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& obj, PriorityTag<1>)
+inline jsonc::JsoncType serialize_impl(T&& obj, PriorityTag<1>)
     requires(concepts::IsReflectable<std::remove_cvref_t<T>>)
 {
-    Expected<jsonc::JsoncType> res{jsonc::object()};
+    jsonc::JsoncType res{jsonc::object()};
     forEachFieldWithName(obj, [&](std::string_view name, auto const& member) {
         using MemberType = decltype(member);
         if constexpr (requires(MemberType m) { serialize(m); }) {
@@ -198,7 +273,7 @@ inline Expected<jsonc::JsoncType> serialize_impl(T&& obj, PriorityTag<1>)
     return res;
 }
 template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& e, PriorityTag<1>)
+inline jsonc::JsoncType serialize_impl(T&& e, PriorityTag<1>)
     requires(std::is_enum_v<std::remove_cvref_t<T>>)
 {
     using enum_type = std::remove_cvref_t<T>;
@@ -211,12 +286,7 @@ inline Expected<jsonc::JsoncType> serialize_impl(T&& e, PriorityTag<1>)
     }
     return (std::underlying_type_t<enum_type>)e;
 }
-template <typename T>
-inline Expected<jsonc::JsoncType> serialize_impl(T&& obj, PriorityTag<0>)
-    requires(std::convertible_to<std::remove_cvref_t<T>, jsonc::JsoncType>)
-{
-    return std::forward<T>(obj);
-}
+
 } // namespace detail
 
-} // namespace jsonc_reflection
+*/

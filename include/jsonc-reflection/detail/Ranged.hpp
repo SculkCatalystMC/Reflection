@@ -9,32 +9,32 @@ template <typename T, FixedNumber<T> Min = std::numeric_limits<T>::min(), FixedN
 class Ranged {
     static_assert(*Min <= *Max, "Min must be less than Max");
 
-    T mStorage;
+    T storage_;
 
 public:
     [[nodiscard]] constexpr Ranged() = default;
 
-    [[nodiscard]] constexpr Ranged(T val) : mStorage(val) { fixRange(); }
+    [[nodiscard]] constexpr Ranged(T val) : storage_(val) { fix_range(); }
 
     constexpr Ranged& operator=(T value) {
-        mStorage = value;
-        fixRange();
+        storage_ = value;
+        fix_range();
         return *this;
     }
 
-    [[nodiscard]] constexpr T&       storage() { return mStorage; }
-    [[nodiscard]] constexpr T const& storage() const { return mStorage; }
+    [[nodiscard]] constexpr T&       storage() { return storage_; }
+    [[nodiscard]] constexpr T const& storage() const { return storage_; }
 
-    [[nodiscard]] constexpr T&       operator*() { return mStorage; }
-    [[nodiscard]] constexpr T const& operator*() const { return mStorage; }
+    [[nodiscard]] constexpr T&       operator*() { return storage_; }
+    [[nodiscard]] constexpr T const& operator*() const { return storage_; }
 
-    [[nodiscard]] constexpr T*       operator->() { return &mStorage; }
-    [[nodiscard]] constexpr T const* operator->() const { return &mStorage; }
+    [[nodiscard]] constexpr T*       operator->() { return &storage_; }
+    [[nodiscard]] constexpr T const* operator->() const { return &storage_; }
 
-    [[nodiscard]] constexpr operator T const&() const { return mStorage; }
-    [[nodiscard]] constexpr operator T&() { return mStorage; }
+    [[nodiscard]] constexpr operator T const&() const { return storage_; }
+    [[nodiscard]] constexpr operator T&() { return storage_; }
 
-    constexpr void fixRange() { mStorage = std::clamp(mStorage, *Min, *Max); }
+    constexpr void fix_range() { storage_ = std::clamp(storage_, *Min, *Max); }
 
     friend std::ostream& operator<<(std::ostream& os, const Ranged& num) { return os << num.storage(); }
 };
