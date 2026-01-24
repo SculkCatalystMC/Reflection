@@ -39,9 +39,6 @@ template <typename T>
 concept is_aggregate = std::is_aggregate_v<std::remove_cvref_t<T>>;
 
 template <typename T>
-concept is_jsonc_type_convertible = std::convertible_to<std::remove_cvref_t<T>, jsonc::JsoncType>;
-
-template <typename T>
 concept is_string_serializable = traits::is_string_serializable_v<std::remove_cvref_t<T>>;
 
 template <typename T>

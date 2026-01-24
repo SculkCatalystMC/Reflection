@@ -17,8 +17,8 @@ class Renamed;
 
 namespace traits {
 
-template <typename...>
-constexpr bool always_false = false;
+template <typename T>
+constexpr bool always_false_v = false;
 
 template <typename T>
 constexpr bool is_renamed_v = requires { []<typename U, FixedString N>(Renamed<U, N>) {}(std::declval<T>()); };
@@ -123,6 +123,9 @@ constexpr bool is_string_convertible_v = std::is_constructible_v<std::string, T>
 
 template <typename T>
 constexpr bool is_string_type_v = is_string_convertible_v<T> || is_string_serializable_v<T>;
+
+template <typename T>
+constexpr bool is_jsonc_type_v = std::convertible_to<std::remove_cvref_t<T>, jsonc::JsoncType>;
 
 } // namespace traits
 

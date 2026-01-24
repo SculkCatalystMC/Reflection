@@ -15,11 +15,16 @@ struct TestType {
     static TestType FromString(std::string_view data) { return TestType(data); }
 };
 
+// class TestErrorType {
+//     int x_;
+// };
+
 enum class TestEnum { AAA = 0, BBB = 1, CCC = 2, DDD = 3 };
 
 enum class TestEnumFlag { AAA = 0, BBB = 1 << 0, CCC = 1 << 1, DDD = 1 << 2, EEE = 5 };
 
 struct Config {
+    // TestErrorType                                               test_e  = {}; // compile error
     std::string                                                 test_1  = "test string";
     Annotated<std::string, "xiwhgasdjjhoikwq">                  test_2  = "test string with comments";
     Renamed<Annotated<std::string, "738whdbhahisdS">, "test-3"> test_3  = "test string with renamed key and comments";
@@ -33,6 +38,11 @@ struct Config {
     Ranged<short, -3, 5678>                                     test_11 = 23345;
     TestEnum                                                    test_12 = TestEnum(3);
     TestEnumFlag                                                test_13 = TestEnumFlag(6);
+    std::variant<bool, float>                                   test_14 = 2.345f;
+    std::tuple<int, int, std::string, float, TestEnum>          test_15 = {234, -3782, "wyuhdsj", 7.492f, TestEnum::BBB};
+    std::list<int>                                              test_16 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    std::vector<std::string>                                    test_17 = {"xxxxx", "yyyyy"};
+    std::array<short, 4>                                        test_18 = {22, 33, 44, 55};
 };
 
 std::optional<std::string> readFile(std::filesystem::path const& filePath, bool isBinary = false) {
