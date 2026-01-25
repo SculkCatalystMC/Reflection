@@ -9,8 +9,6 @@ namespace jsonc::reflection {
 
 template <size_t N>
 struct FixedString {
-    char buffer_[N + 1]{};
-
     [[nodiscard]] consteval FixedString() noexcept = default;
     [[nodiscard]] consteval FixedString(std::string_view str) noexcept { std::copy_n(str.data(), str.size(), buffer_); }
     [[nodiscard]] consteval FixedString(char const* str) noexcept { std::copy_n(str, N, buffer_); }
@@ -33,6 +31,8 @@ struct FixedString {
         std::copy_n(other.buffer_, Y, N + result.buffer_);
         return result;
     }
+
+    char buffer_[N + 1]{};
 };
 
 template <size_t N>

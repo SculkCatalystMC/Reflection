@@ -9,6 +9,9 @@ template <typename T>
 concept is_renamed = traits::is_renamed_v<std::remove_cvref_t<T>>;
 
 template <typename T>
+concept is_annotated = traits::is_annotated_v<std::remove_cvref_t<T>>;
+
+template <typename T>
 concept is_ranged = traits::is_ranged_v<std::remove_cvref_t<T>>;
 
 template <typename T>
@@ -49,5 +52,8 @@ concept is_string_type = traits::is_string_type_v<std::remove_cvref_t<T>>;
 
 template <typename T>
 concept is_enum = std::is_enum_v<std::remove_cvref_t<T>>;
+
+template <typename T>
+concept is_arithmetic = std::is_arithmetic_v<std::remove_cvref_t<T>>;
 
 } // namespace jsonc::reflection::concepts

@@ -11,21 +11,24 @@ namespace jsonc::reflection {
 namespace detail {
 
 template <typename T, FixedString N>
-inline JsoncType serialize_impl(const Renamed<T, N>& t, PriorityTag<7>) noexcept;
+inline JsoncType serialize_impl(const Renamed<T, N>& t, PriorityTag<8>) noexcept;
 
 template <typename T, FixedString... Args>
-inline JsoncType serialize_impl(const Annotated<T, Args...>& t, PriorityTag<6>) noexcept;
+inline JsoncType serialize_impl(const Annotated<T, Args...>& t, PriorityTag<7>) noexcept;
 
 template <concepts::is_dispatcher T>
-inline JsoncType serialize_impl(const T& t, PriorityTag<5>) noexcept;
+inline JsoncType serialize_impl(const T& t, PriorityTag<6>) noexcept;
 
 template <concepts::is_optional T>
+inline JsoncType serialize_impl(const T& t, PriorityTag<6>) noexcept;
+
+template <concepts::is_ranged T>
+inline JsoncType serialize_impl(const T& t, PriorityTag<5>) noexcept;
+
+template <concepts::is_arithmetic T>
 inline JsoncType serialize_impl(const T& t, PriorityTag<5>) noexcept;
 
 template <concepts::is_string_type T>
-inline JsoncType serialize_impl(const T& t, PriorityTag<4>) noexcept;
-
-template <concepts::is_ranged T>
 inline JsoncType serialize_impl(const T& t, PriorityTag<4>) noexcept;
 
 template <concepts::is_variant T>
@@ -51,34 +54,51 @@ inline JsoncType serialize_impl(const T& t, PriorityTag<0>) noexcept;
 
 } // namespace detail
 
-template <concepts::is_reflectable T>
-[[nodiscard]] inline JsoncType serialize(const T& t) noexcept {
-    return detail::serialize_impl(t, PriorityTag<6>{});
+template <typename T>
+[[nodiscard]] inline JsoncType serialize(const T& t) noexcept
+    requires(
+        traits::is_reflectable_v<std::remove_cvref_t<decltype(t)>>
+        || (traits::is_reflectable_v<std::remove_cvref_t<decltype(*t)>> && traits::is_annotated_v<std::remove_cvref_t<decltype(t)>>)
+    )
+{
+    auto result = detail::serialize_impl(*t, PriorityTag<8>{});
+    result.set_before_comments(t.get_comments());
+    return result;
 }
 
 namespace detail {
 
 template <typename T, FixedString N>
-inline JsoncType serialize_impl(const Renamed<T, N>& t, PriorityTag<7>) noexcept {
-    return serialize_impl(*t, PriorityTag<6>{});
+inline JsoncType serialize_impl(const Renamed<T, N>& t, PriorityTag<8>) noexcept {
+    return serialize_impl(*t, PriorityTag<7>{});
 }
 
 template <typename T, FixedString... Args>
-inline JsoncType serialize_impl(const Annotated<T, Args...>& t, PriorityTag<6>) noexcept {
-    auto result = serialize_impl(*t, PriorityTag<6>{});
+inline JsoncType serialize_impl(const Annotated<T, Args...>& t, PriorityTag<7>) noexcept {
+    auto result = serialize_impl(*t, PriorityTag<7>{});
     if (t.has_comments()) { result.set_before_comments(t.get_comments()); }
     return result;
 }
 
 template <concepts::is_dispatcher T>
+inline JsoncType serialize_impl(const T& t, PriorityTag<6>) noexcept {
+    return serialize_impl(*t, PriorityTag<6>{});
+}
+
+template <concepts::is_optional T>
+inline JsoncType serialize_impl(const T& t, PriorityTag<6>) noexcept {
+    if (t) { return serialize_impl(*t, PriorityTag<6>{}); }
+    return nullptr;
+}
+
+template <concepts::is_ranged T>
 inline JsoncType serialize_impl(const T& t, PriorityTag<5>) noexcept {
     return serialize_impl(*t, PriorityTag<5>{});
 }
 
-template <concepts::is_optional T>
+template <concepts::is_arithmetic T>
 inline JsoncType serialize_impl(const T& t, PriorityTag<5>) noexcept {
-    if (t) { return serialize_impl(*t, PriorityTag<5>{}); }
-    return nullptr;
+    return t;
 }
 
 template <concepts::is_string_type T>
@@ -86,37 +106,26 @@ inline JsoncType serialize_impl(const T& t, PriorityTag<4>) noexcept {
     if constexpr (traits::is_string_convertible_v<T>) {
         return t;
     } else {
-        if constexpr (traits::detail::has_to_string_v1<T>) {
-            return t.to_string();
-        } else if constexpr (traits::detail::has_to_string_v2<T>) {
-            return t.toString();
-        } else {
-            return t.ToString();
-        }
+        return Serializer<T>::to_string(t);
     }
-}
-
-template <concepts::is_ranged T>
-inline JsoncType serialize_impl(const T& t, PriorityTag<4>) noexcept {
-    return serialize_impl(*t, PriorityTag<4>{});
 }
 
 template <concepts::is_variant T>
 inline JsoncType serialize_impl(const T& t, PriorityTag<3>) noexcept {
-    return std::visit([&](const auto& val) { return serialize_impl(val, PriorityTag<7>{}); }, t);
+    return std::visit([&](const auto& val) { return serialize_impl(val, PriorityTag<8>{}); }, t);
 }
 
 template <concepts::is_tuple_like T>
 inline JsoncType serialize_impl(const T& t, PriorityTag<3>) noexcept {
     JsoncType res = JsoncType::array();
-    std::apply([&](const auto&... args) { (([&](const auto& arg) { res.push_back(serialize_impl(arg, PriorityTag<7>{})); }(args)), ...); }, t);
+    std::apply([&](const auto&... args) { (([&](const auto& arg) { res.push_back(serialize_impl(arg, PriorityTag<8>{})); }(args)), ...); }, t);
     return res;
 }
 
 template <concepts::is_array_like T>
 inline JsoncType serialize_impl(const T& t, PriorityTag<2>) noexcept {
     JsoncType res = JsoncType::array();
-    for (const auto& val : t) { res.push_back(serialize_impl(val, PriorityTag<7>{})); }
+    for (const auto& val : t) { res.push_back(serialize_impl(val, PriorityTag<8>{})); }
     return res;
 }
 
@@ -134,7 +143,7 @@ inline JsoncType serialize_impl(const T& t, PriorityTag<1>) noexcept {
     auto result = JsoncType::object();
     boost::pfr::for_each_field_with_name(t, [&](std::string_view name, const auto& val) {
         if constexpr (traits::is_renamed_v<decltype(val)>) { name = val.view(); }
-        auto res = serialize_impl(val, PriorityTag<7>{});
+        auto res = serialize_impl(val, PriorityTag<8>{});
         if (!res.is_null()) {
             result[name] = res;
             if (res.has_before_comments()) {

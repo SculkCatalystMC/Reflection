@@ -5,9 +5,6 @@ namespace jsonc::reflection {
 
 template <typename T, std::default_initializable _Listener, bool _CallInit = false>
 class Dispatcher {
-    T         storage_;
-    _Listener listener_;
-
 public:
     using storage_type  = T;
     using listener_type = _Listener;
@@ -43,6 +40,10 @@ public:
     T const* operator->() const { return &storage_; }
 
     T* operator->() { return &storage_; }
+
+private:
+    T         storage_;
+    _Listener listener_;
 };
 
 } // namespace jsonc::reflection

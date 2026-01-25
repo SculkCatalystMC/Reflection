@@ -5,15 +5,18 @@
 using namespace jsonc::reflection;
 
 struct TestType {
-    std::string data_;
-
     TestType() = default;
     TestType(std::string_view data) : data_(data) {}
-
-    std::string to_string() const { return data_; }
-
-    static TestType FromString(std::string_view data) { return TestType(data); }
+    std::string data_;
 };
+
+namespace jsonc::reflection {
+template <>
+struct Serializer<TestType> {
+    static std::string             to_string(const TestType& t) noexcept { return t.data_; }
+    static std::optional<TestType> from_string(std::string_view s) noexcept { return TestType(s); }
+};
+} // namespace jsonc::reflection
 
 // class TestErrorType {
 //     int x_;
@@ -45,36 +48,26 @@ struct Config {
     std::array<short, 4>                                        test_18 = {22, 33, 44, 55};
 };
 
-std::optional<std::string> readFile(std::filesystem::path const& filePath, bool isBinary = false) {
-    if (!std::filesystem::exists(filePath)) { return std::nullopt; }
-    std::ifstream           fRead;
-    std::ios_base::openmode mode = std::ios_base::in;
-    if (isBinary) mode |= std::ios_base::binary;
-    fRead.open(filePath, mode);
-    if (!fRead.is_open()) { return std::nullopt; }
-    std::string data((std::istreambuf_iterator<char>(fRead)), {});
-    fRead.close();
-    return data;
+std::optional<std::string> read_file(std::filesystem::path const& path) {
+    if (!std::filesystem::exists(path)) { return std::nullopt; }
+    auto file = std::ifstream(path, std::ios_base::in);
+    return std::string(std::istreambuf_iterator<char>(file), {});
 }
 
-bool writeFile(std::filesystem::path const& filePath, std::string_view content, bool isBinary = false) {
-    std::ofstream           fWrite;
-    std::ios_base::openmode mode = std::ios_base::out;
-    if (isBinary) mode |= std::ios_base::binary;
-    if (!std::filesystem::exists(filePath.parent_path())) { std::filesystem::create_directories(filePath.parent_path()); }
-    fWrite.open(filePath, mode);
-    if (!fWrite.is_open()) { return false; }
-    fWrite << content;
-    fWrite.close();
+bool write_file(std::filesystem::path const& path, std::string_view content) {
+    if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
+    auto file = std::ofstream(path, std::ios_base::out);
+    file << content;
     return true;
 }
 
 int main() {
-    Config settings;
-    // if (auto content = readFile("./test.jsonc"); content) {
+    Annotated<Config, "test config", "xxxxx"> settings;
+    // if (auto content = read_file("./test.jsonc"); content) {
     //     if (auto json = jsonc::parse(*content, true); json) { jsonc::reflection::deserialize(settings, *json).value(); }
     // }
+
     auto res = jsonc::reflection::serialize(settings);
-    writeFile("./test.jsonc", res.dump());
+    write_file("./test.jsonc", res.dump());
     return 0;
 }

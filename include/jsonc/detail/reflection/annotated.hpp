@@ -6,9 +6,6 @@ namespace jsonc::reflection {
 
 template <typename T, FixedString... Comments>
 class Annotated {
-    T                        storage_;
-    std::vector<std::string> comments_{Comments.str()...};
-
 public:
     [[nodiscard]] constexpr Annotated() noexcept = default;
 
@@ -88,6 +85,10 @@ public:
     }
 
     constexpr void clear_comments() noexcept { comments_.clear(); }
+
+private:
+    T                        storage_;
+    std::vector<std::string> comments_{Comments.str()...};
 };
 
 } // namespace jsonc::reflection

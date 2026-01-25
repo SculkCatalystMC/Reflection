@@ -1,5 +1,6 @@
 #pragma once
 #include "jsonc/detail/reflection/ranged.hpp"
+#include "jsonc/detail/reflection/serializer.hpp"
 #include <array>
 #include <concepts>
 #include <string>
@@ -21,7 +22,14 @@ template <typename T>
 constexpr bool always_false_v = false;
 
 template <typename T>
-constexpr bool is_renamed_v = requires { []<typename U, FixedString N>(Renamed<U, N>) {}(std::declval<T>()); };
+constexpr bool is_renamed_v = requires {
+    { std::declval<const T>().view() } -> std::convertible_to<std::string_view>;
+};
+
+template <typename T>
+constexpr bool is_annotated_v = requires {
+    { std::declval<const T>().get_comments() } -> std::convertible_to<std::vector<std::string>>;
+};
 
 template <typename>
 struct is_ranged_t : std::false_type {};
@@ -80,43 +88,13 @@ constexpr bool is_associative_v = is_range_loopable_v<T> && requires {
     typename std::remove_cvref_t<T>::mapped_type;
 };
 
-namespace detail {
-
 template <typename T>
-constexpr bool has_from_string_v1 = requires {
-    { T::from_string(std::declval<const std::string&>()) } -> std::convertible_to<T>;
+constexpr bool is_string_serializable_v = requires(const T& t, std::string_view sv) {
+    { ::jsonc::reflection::Serializer<T>::to_string(t) } -> std::same_as<std::string>;
+    requires noexcept(::jsonc::reflection::Serializer<T>::to_string(t));
+    { ::jsonc::reflection::Serializer<T>::from_string(sv) } -> std::same_as<std::optional<T>>;
+    requires noexcept(::jsonc::reflection::Serializer<T>::from_string(sv));
 };
-
-template <typename T>
-constexpr bool has_from_string_v2 = requires {
-    { T::fromString(std::declval<const std::string&>()) } -> std::convertible_to<T>;
-};
-
-template <typename T>
-constexpr bool has_from_string_v3 = requires {
-    { T::FromString(std::declval<const std::string&>()) } -> std::convertible_to<T>;
-};
-
-template <typename T>
-constexpr bool has_to_string_v1 = requires {
-    { std::declval<const T>().to_string() } -> std::convertible_to<std::string>;
-};
-
-template <typename T>
-constexpr bool has_to_string_v2 = requires {
-    { std::declval<const T>().toString() } -> std::convertible_to<std::string>;
-};
-
-template <typename T>
-constexpr bool has_to_string_v3 = requires {
-    { std::declval<const T>().ToString() } -> std::convertible_to<std::string>;
-};
-
-} // namespace detail
-
-template <typename T>
-constexpr bool is_string_serializable_v = (detail::has_from_string_v1<T> || detail::has_from_string_v2<T> || detail::has_from_string_v3<T>)
-                                       && (detail::has_to_string_v1<T> || detail::has_to_string_v2<T> || detail::has_to_string_v3<T>);
 
 template <typename T>
 constexpr bool is_string_convertible_v = std::is_constructible_v<std::string, T> || std::is_convertible_v<std::string, T>;

@@ -9,8 +9,6 @@ namespace jsonc::reflection {
 template <typename T>
     requires std::is_arithmetic_v<T>
 struct FixedNumber {
-    T storage_;
-
     [[nodiscard]] consteval FixedNumber() noexcept = default;
     [[nodiscard]] consteval FixedNumber(T num) noexcept : storage_(num) {}
 
@@ -27,6 +25,8 @@ struct FixedNumber {
 
     [[nodiscard]] constexpr T*       operator->() { return &storage_; }
     [[nodiscard]] constexpr T const* operator->() const { return &storage_; }
+
+    T storage_;
 };
 
 } // namespace jsonc::reflection
