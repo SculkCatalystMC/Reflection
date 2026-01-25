@@ -2,9 +2,8 @@
 #include "jsonc/detail/reflection/concepts.hpp"
 #include "jsonc/detail/reflection/jsonc_header.hpp"
 #include "jsonc/detail/reflection/priority_tag.hpp"
+#include "jsonc/detail/reflection/string_utils.hpp"
 #include <boost/pfr.hpp>
-#include <magic_enum/magic_enum.hpp>
-#include <magic_enum/magic_enum_flags.hpp>
 
 namespace jsonc::reflection {
 
@@ -28,6 +27,9 @@ inline JsoncType serialize_impl(const T& t, PriorityTag<5>) noexcept;
 template <concepts::is_arithmetic T>
 inline JsoncType serialize_impl(const T& t, PriorityTag<5>) noexcept;
 
+template <concepts::is_enum T>
+inline JsoncType serialize_impl(const T& t, PriorityTag<5>) noexcept;
+
 template <concepts::is_string_type T>
 inline JsoncType serialize_impl(const T& t, PriorityTag<4>) noexcept;
 
@@ -44,9 +46,6 @@ template <concepts::is_associative T>
 inline JsoncType serialize_impl(const T& t, PriorityTag<2>) noexcept;
 
 template <concepts::is_aggregate T>
-inline JsoncType serialize_impl(const T& t, PriorityTag<1>) noexcept;
-
-template <concepts::is_enum T>
 inline JsoncType serialize_impl(const T& t, PriorityTag<1>) noexcept;
 
 template <typename T>
@@ -101,6 +100,14 @@ inline JsoncType serialize_impl(const T& t, PriorityTag<5>) noexcept {
     return t;
 }
 
+template <concepts::is_enum T>
+inline JsoncType serialize_impl(const T& t, PriorityTag<5>) noexcept {
+    if (auto name = magic_enum::enum_name(t); !name.empty()) { return name; }
+    if (auto flag = magic_enum::enum_flags_name(t); !flag.empty()) { return flag; }
+    return std::to_underlying(t);
+}
+
+
 template <concepts::is_string_type T>
 inline JsoncType serialize_impl(const T& t, PriorityTag<4>) noexcept {
     if constexpr (traits::is_string_convertible_v<T>) {
@@ -131,10 +138,12 @@ inline JsoncType serialize_impl(const T& t, PriorityTag<2>) noexcept {
 
 template <concepts::is_associative T>
 inline JsoncType serialize_impl(const T& t, PriorityTag<2>) noexcept {
+    using KT = typename std::remove_cvref_t<T>::key_type;
+    // using VT = typename std::remove_cvref_t<T>::value_type;
+    static_assert(traits::is_string_type_v<KT>, "the key type of the associative container must be convertible to a string");
+    // static_assert(TODO , "The value type of the associative container must be serializable");
     JsoncType res = JsoncType::object();
-    for (const auto& [key, val] : t) {
-        // TODO
-    }
+    for (const auto& [key, val] : t) { res[string_utils::type_to_string(key)] = val; }
     return res;
 }
 
@@ -155,13 +164,6 @@ inline JsoncType serialize_impl(const T& t, PriorityTag<1>) noexcept {
     return result;
 }
 
-template <concepts::is_enum T>
-inline JsoncType serialize_impl(const T& t, PriorityTag<1>) noexcept {
-    if (auto name = magic_enum::enum_name(t); !name.empty()) { return name; }
-    if (auto flag = magic_enum::enum_flags_name(t); !flag.empty()) { return flag; }
-    return std::to_underlying(t);
-}
-
 template <typename T>
 inline JsoncType serialize_impl(const T& t, PriorityTag<0>) noexcept {
     if constexpr (traits::is_jsonc_type_v<T>) {
@@ -174,37 +176,3 @@ inline JsoncType serialize_impl(const T& t, PriorityTag<0>) noexcept {
 } // namespace detail
 
 } // namespace jsonc::reflection
-
-
-/*
-
-template <typename T>
-inline JsoncType serialize_impl(T&& map, PriorityTag<2>)
-    requires(concepts::IsAssociative<std::remove_cvref_t<T>>)
-{
-    using RT = std::remove_cvref_t<T>;
-    static_assert(
-        (concepts::IsString<typename RT::key_type> || std::is_enum_v<typename RT::key_type>),
-        "the key type of the associative container must be convertible to a string"
-    );
-    JsoncType res{jsonc::object()};
-    for (auto&& [k, v] : map) {
-        std::string key;
-        if constexpr (concepts::IsString<typename RT::key_type>) {
-            key = std::string{std::forward<decltype(k)>(k)};
-        } else {
-            key = magic_enum::enum_name(std::forward<decltype(k)>(k));
-        }
-        if (auto sv = serialize(std::forward<decltype(v)>(v)); sv) {
-            (*res)[key] = *std::move(sv);
-        } else {
-            res = makeStringError("Couldn't serialize menber {0}: {1}", key, sv.error());
-            break;
-        }
-    }
-    return res;
-}
-
-} // namespace detail
-
-*/

@@ -6,6 +6,8 @@ namespace jsonc::reflection {
 template <typename T, FixedString AliasName>
 class Renamed {
 public:
+    using value_type = T;
+
     [[nodiscard]] constexpr Renamed() = default;
 
     template <typename U>

@@ -7,6 +7,8 @@ namespace jsonc::reflection {
 template <typename T, FixedString... Comments>
 class Annotated {
 public:
+    using value_type = T;
+
     [[nodiscard]] constexpr Annotated() noexcept = default;
 
     template <typename U>

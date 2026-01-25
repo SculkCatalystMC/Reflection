@@ -46,6 +46,10 @@ struct Config {
     std::list<int>                                              test_16 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     std::vector<std::string>                                    test_17 = {"xxxxx", "yyyyy"};
     std::array<short, 4>                                        test_18 = {22, 33, 44, 55};
+    bool                                                        test_19 = false;
+    std::unordered_map<int, float>                              test_20 = {
+        {{1, 2.3f}, {4, 5.32f}, {23, 2.45f}}
+    };
 };
 
 std::optional<std::string> read_file(std::filesystem::path const& path) {

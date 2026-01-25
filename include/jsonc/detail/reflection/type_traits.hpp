@@ -24,11 +24,13 @@ constexpr bool always_false_v = false;
 template <typename T>
 constexpr bool is_renamed_v = requires {
     { std::declval<const T>().view() } -> std::convertible_to<std::string_view>;
+    typename std::remove_cvref_t<T>::value_type;
 };
 
 template <typename T>
 constexpr bool is_annotated_v = requires {
     { std::declval<const T>().get_comments() } -> std::convertible_to<std::vector<std::string>>;
+    typename std::remove_cvref_t<T>::value_type;
 };
 
 template <typename>
@@ -52,9 +54,6 @@ template <typename T>
 constexpr bool is_range_loopable_v = std::is_bounded_array_v<std::remove_cvref_t<T>> || requires(T t) {
     t.begin();
     t.end();
-} || requires(T t) {
-    begin(t);
-    end(t);
 };
 
 template <typename T>
@@ -90,9 +89,9 @@ constexpr bool is_associative_v = is_range_loopable_v<T> && requires {
 
 template <typename T>
 constexpr bool is_string_serializable_v = requires(const T& t, std::string_view sv) {
-    { ::jsonc::reflection::Serializer<T>::to_string(t) } -> std::same_as<std::string>;
+    { ::jsonc::reflection::Serializer<T>::to_string(t) } -> std::convertible_to<std::string>;
     requires noexcept(::jsonc::reflection::Serializer<T>::to_string(t));
-    { ::jsonc::reflection::Serializer<T>::from_string(sv) } -> std::same_as<std::optional<T>>;
+    { ::jsonc::reflection::Serializer<T>::from_string(sv) } -> std::convertible_to<std::optional<T>>;
     requires noexcept(::jsonc::reflection::Serializer<T>::from_string(sv));
 };
 
@@ -100,7 +99,7 @@ template <typename T>
 constexpr bool is_string_convertible_v = std::is_constructible_v<std::string, T> || std::is_convertible_v<std::string, T>;
 
 template <typename T>
-constexpr bool is_string_type_v = is_string_convertible_v<T> || is_string_serializable_v<T>;
+constexpr bool is_string_type_v = is_string_convertible_v<T> || is_string_serializable_v<T> || std::is_enum_v<T>;
 
 template <typename T>
 constexpr bool is_jsonc_type_v = std::convertible_to<std::remove_cvref_t<T>, JsoncType>;
