@@ -1,7 +1,7 @@
 #pragma once
-#include "jsonc-reflection/detail/FixedString.hpp"
+#include "jsonc/detail/reflection/fixed_string.hpp"
 
-namespace jsonc_reflection {
+namespace jsonc::reflection {
 
 template <typename T, FixedString AliasName>
 class Renamed {
@@ -75,9 +75,9 @@ public:
     static constexpr std::string_view view() { return AliasName.view(); }
 };
 
-} // namespace jsonc_reflection
+} // namespace jsonc::reflection
 
-// template <typename T, jsonc_reflection::FixedString AliasName>
-// struct std::formatter<jsonc_reflection::Renamed<T, AliasName>> : std::formatter<T> {
+// template <typename T, jsonc::reflection::FixedString AliasName>
+// struct std::formatter<jsonc::reflection::Renamed<T, AliasName>> : std::formatter<T> {
 //     auto format(auto&& value, auto&& ctx) const { return formatter::format(*value, ctx); }
 // };

@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-namespace jsonc_reflection {
+namespace jsonc::reflection {
 
 template <size_t N>
 struct FixedString {
@@ -38,4 +38,4 @@ struct FixedString {
 template <size_t N>
 FixedString(char const (&)[N]) -> FixedString<N - 1>;
 
-} // namespace jsonc_reflection
+} // namespace jsonc::reflection

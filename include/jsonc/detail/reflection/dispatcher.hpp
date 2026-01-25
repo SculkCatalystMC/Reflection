@@ -1,7 +1,7 @@
 #pragma once
 #include <concepts>
 
-namespace jsonc_reflection {
+namespace jsonc::reflection {
 
 template <typename T, std::default_initializable _Listener, bool _CallInit = false>
 class Dispatcher {
@@ -45,4 +45,4 @@ public:
     T* operator->() { return &storage_; }
 };
 
-} // namespace jsonc_reflection
+} // namespace jsonc::reflection

@@ -4,7 +4,7 @@
 #include <format>
 #include <type_traits>
 
-namespace jsonc_reflection {
+namespace jsonc::reflection {
 
 template <typename T>
     requires std::is_arithmetic_v<T>
@@ -29,4 +29,4 @@ struct FixedNumber {
     [[nodiscard]] constexpr T const* operator->() const { return &storage_; }
 };
 
-} // namespace jsonc_reflection
+} // namespace jsonc::reflection

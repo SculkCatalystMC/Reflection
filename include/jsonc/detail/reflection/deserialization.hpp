@@ -1,84 +1,80 @@
 #pragma once
-#include "jsonc-reflection/detail/Concepts.hpp"
-#include "jsonc-reflection/detail/Jsonc.hpp"
-#include "jsonc-reflection/detail/Meta.hpp"
+#include "jsonc/detail/reflection/concepts.hpp"
+#include "jsonc/detail/reflection/jsonc_header.hpp"
+#include "jsonc/detail/reflection/priority_tag.hpp"
 #include <magic_enum/magic_enum.hpp>
 
-namespace jsonc_reflection {
-
-
-
-} // namespace jsonc_reflection
+namespace jsonc::reflection {} // namespace jsonc::reflection
 
 /*
 namespace detail {
 
 template <concepts::IsAnnotated T>
-inline Expected<> deserialize_impl(T& opt, const jsonc::JsoncType& j, PriorityTag<6>);
+inline Expected<> deserialize_impl(T& opt, const JsoncType& j, PriorityTag<6>);
 
 template <concepts::IsDispatcher T>
-inline Expected<> deserialize_impl(T& d, const jsonc::JsoncType& j, PriorityTag<5>);
+inline Expected<> deserialize_impl(T& d, const JsoncType& j, PriorityTag<5>);
 
 template <concepts::IsOptional T>
-inline Expected<> deserialize_impl(T& opt, const jsonc::JsoncType& j, PriorityTag<5>);
+inline Expected<> deserialize_impl(T& opt, const JsoncType& j, PriorityTag<5>);
 
 template <concepts::IsString T>
-inline Expected<> deserialize_impl(T& str, const jsonc::JsoncType& j, PriorityTag<4>);
+inline Expected<> deserialize_impl(T& str, const JsoncType& j, PriorityTag<4>);
 
 template <concepts::IsRanged T>
-inline Expected<> deserialize_impl(T& str, const jsonc::JsoncType& j, PriorityTag<4>);
+inline Expected<> deserialize_impl(T& str, const JsoncType& j, PriorityTag<4>);
 
 template <concepts::IsTupleLike T>
-inline Expected<> deserialize_impl(T& tuple, const jsonc::JsoncType& j, PriorityTag<3>);
+inline Expected<> deserialize_impl(T& tuple, const JsoncType& j, PriorityTag<3>);
 
 template <concepts::IsVariant T>
-inline Expected<> deserialize_impl(T& tuple, const jsonc::JsoncType& j, PriorityTag<3>);
+inline Expected<> deserialize_impl(T& tuple, const JsoncType& j, PriorityTag<3>);
 
 template <concepts::IsArrayLike T>
-inline Expected<> deserialize_impl(T& arr, const jsonc::JsoncType& j, PriorityTag<2>);
+inline Expected<> deserialize_impl(T& arr, const JsoncType& j, PriorityTag<2>);
 
 template <concepts::IsAssociative T>
-inline Expected<> deserialize_impl(T& map, const jsonc::JsoncType& j, PriorityTag<2>);
+inline Expected<> deserialize_impl(T& map, const JsoncType& j, PriorityTag<2>);
 
 template <concepts::IsReflectable T>
-inline Expected<> deserialize_impl(T& obj, const jsonc::JsoncType& j, PriorityTag<1>);
+inline Expected<> deserialize_impl(T& obj, const JsoncType& j, PriorityTag<1>);
 
 template <traits::Require<std::is_enum> T>
-inline Expected<> deserialize_impl(T& e, const jsonc::JsoncType& j, PriorityTag<1>);
+inline Expected<> deserialize_impl(T& e, const JsoncType& j, PriorityTag<1>);
 
 template <typename T>
-    requires(std::convertible_to<jsonc::JsoncType, T>)
-inline Expected<> deserialize_impl(T& obj, const jsonc::JsoncType& j, PriorityTag<0>);
+    requires(std::convertible_to<JsoncType, T>)
+inline Expected<> deserialize_impl(T& obj, const JsoncType& j, PriorityTag<0>);
 
 } // namespace detail
 
 template <typename T>
-[[nodiscard]] inline Expected<> deserialize(T& t, const jsonc::JsoncType& j) noexcept {
+[[nodiscard]] inline Expected<> deserialize(T& t, const JsoncType& j) noexcept {
     return detail::deserialize_impl<T>(t, j, PriorityTag<6>{});
 }
 
 namespace detail {
 
 template <typename T>
-[[nodiscard]] inline Expected<T> deserialize_to(const jsonc::JsoncType& j) noexcept {
+[[nodiscard]] inline Expected<T> deserialize_to(const JsoncType& j) noexcept {
     Expected<T> res{};
     if (auto d = deserialize<T>(*res, j); !d) { res = forwardError(d.error()); }
     return res;
 }
 
 template <concepts::IsAnnotated T>
-inline Expected<> deserialize_impl(T& obj, const jsonc::JsoncType& j, PriorityTag<6>) {
+inline Expected<> deserialize_impl(T& obj, const JsoncType& j, PriorityTag<6>) {
     using ValueType = std::remove_cvref_t<decltype(*obj)>;
     return deserialize<ValueType>(*obj, j);
 }
 
 template <concepts::IsDispatcher T>
-inline Expected<> deserialize_impl(T& d, const jsonc::JsoncType& j, PriorityTag<5>) {
+inline Expected<> deserialize_impl(T& d, const JsoncType& j, PriorityTag<5>) {
     return deserialize<typename T::storage_type>(*d, j);
 }
 
 template <concepts::IsOptional T>
-inline Expected<> deserialize_impl(T& opt, const jsonc::JsoncType& j, PriorityTag<5>) {
+inline Expected<> deserialize_impl(T& opt, const JsoncType& j, PriorityTag<5>) {
     Expected<> res;
     if (j.is_null()) {
         opt = std::nullopt;
@@ -90,21 +86,21 @@ inline Expected<> deserialize_impl(T& opt, const jsonc::JsoncType& j, PriorityTa
 }
 
 template <concepts::IsString T>
-inline Expected<> deserialize_impl(T& str, const jsonc::JsoncType& j, PriorityTag<4>) {
+inline Expected<> deserialize_impl(T& str, const JsoncType& j, PriorityTag<4>) {
     if (!j.is_string()) { return makeStringError("field must be a string"); }
     str = j.as<std::string>();
     return {};
 }
 
 template <concepts::IsRanged T>
-inline Expected<> deserialize_impl(T& num, const jsonc::JsoncType& j, PriorityTag<4>) {
+inline Expected<> deserialize_impl(T& num, const JsoncType& j, PriorityTag<4>) {
     if (!j.is_number()) { return makeStringError("field must be a number"); }
     using ValueType = std::remove_cvref_t<decltype(*num)>;
     return deserialize<ValueType>(*num, j);
 }
 
 template <concepts::IsTupleLike T>
-inline Expected<> deserialize_impl(T& tuple, const jsonc::JsoncType& j, PriorityTag<3>) {
+inline Expected<> deserialize_impl(T& tuple, const JsoncType& j, PriorityTag<3>) {
     if (!j.is_array()) return makeStringError("field must be an array");
     if (j.size() != std::tuple_size_v<T>) { return makeStringError("array size must be {}", std::tuple_size_v<T>); }
     Expected<> res{};
@@ -113,7 +109,7 @@ inline Expected<> deserialize_impl(T& tuple, const jsonc::JsoncType& j, Priority
             size_t iter{0};
             (([&](auto& arg) {
                  if (res) {
-                     res = deserialize<std::remove_cvref_t<decltype(arg)>>(arg, static_cast<const jsonc::JsoncType&>(j[iter]));
+                     res = deserialize<std::remove_cvref_t<decltype(arg)>>(arg, static_cast<const JsoncType&>(j[iter]));
                      if (!res) { res = makeStringError("Failed to deserialize tuple {0}: {1}", iter, res.error()); }
                      iter++;
                  }
@@ -126,7 +122,7 @@ inline Expected<> deserialize_impl(T& tuple, const jsonc::JsoncType& j, Priority
 }
 
 template <concepts::IsVariant T>
-inline Expected<> deserialize_impl(T& variant, const jsonc::JsoncType& j, PriorityTag<3>) {
+inline Expected<> deserialize_impl(T& variant, const JsoncType& j, PriorityTag<3>) {
     using VariantType          = std::remove_cvref_t<T>;
     bool       success         = false;
     const auto try_deserialize = [&]<typename AltType>(std::type_identity<AltType>) {
@@ -143,14 +139,14 @@ inline Expected<> deserialize_impl(T& variant, const jsonc::JsoncType& j, Priori
 }
 
 template <concepts::IsArrayLike T>
-inline Expected<> deserialize_impl(T& arr, const jsonc::JsoncType& j, PriorityTag<2>) {
+inline Expected<> deserialize_impl(T& arr, const JsoncType& j, PriorityTag<2>) {
     if (!j.is_array()) { return makeStringError("field must be an array"); }
     using ArrayType = std::remove_cvref_t<T>;
     using ValueType = typename ArrayType::value_type;
     if constexpr (requires(T a) { a.clear(); }) { arr.clear(); }
     if constexpr (requires(T a, ValueType v) { a.push_back(v); }) {
         for (size_t i = 0; i < j.size(); i++) {
-            if (auto res = deserialize<ValueType>(arr.emplace_back(), static_cast<const jsonc::JsoncType&>(j[i])); !res) {
+            if (auto res = deserialize<ValueType>(arr.emplace_back(), static_cast<const JsoncType&>(j[i])); !res) {
                 res = makeStringError("Failed to deserialize array {0}: {1}", i, res.error());
                 return res;
             }
@@ -158,7 +154,7 @@ inline Expected<> deserialize_impl(T& arr, const jsonc::JsoncType& j, PriorityTa
     } else if constexpr (requires(T a, ValueType v) { a.insert(v); }) {
         for (size_t i = 0; i < j.size(); i++) {
             ValueType tmp{};
-            if (auto res = deserialize<ValueType>(tmp, static_cast<const jsonc::JsoncType&>(j[i])); !res) {
+            if (auto res = deserialize<ValueType>(tmp, static_cast<const JsoncType&>(j[i])); !res) {
                 res = makeStringError("Failed to deserialize array {0}: {1}", i, res.error());
                 return res;
             }
@@ -169,7 +165,7 @@ inline Expected<> deserialize_impl(T& arr, const jsonc::JsoncType& j, PriorityTa
 }
 
 template <concepts::IsAssociative T>
-inline Expected<> deserialize_impl(T& map, const jsonc::JsoncType& j, PriorityTag<2>) {
+inline Expected<> deserialize_impl(T& map, const JsoncType& j, PriorityTag<2>) {
     using ObjectType = std::remove_cvref_t<T>;
     static_assert(
         (concepts::IsString<typename ObjectType::key_type> || std::is_enum_v<typename ObjectType::key_type>),
@@ -199,7 +195,7 @@ inline Expected<> deserialize_impl(T& map, const jsonc::JsoncType& j, PriorityTa
 }
 
 template <concepts::IsReflectable T>
-inline Expected<> deserialize_impl(T& obj, const jsonc::JsoncType& j, PriorityTag<1>) {
+inline Expected<> deserialize_impl(T& obj, const JsoncType& j, PriorityTag<1>) {
     Expected<> res;
     if (!j.is_object()) {
         res = makeStringError("field must be an object");
@@ -208,7 +204,7 @@ inline Expected<> deserialize_impl(T& obj, const jsonc::JsoncType& j, PriorityTa
     forEachFieldWithName(obj, [&](std::string_view name, auto& member) {
         using MemberType = std::remove_cvref_t<decltype(member)>;
         if (j.contains(name)) {
-            if constexpr (requires(MemberType& o, const jsonc::JsoncType& s) { deserialize<MemberType>(o, s); }) {
+            if constexpr (requires(MemberType& o, const JsoncType& s) { deserialize<MemberType>(o, s); }) {
                 auto status = deserialize<MemberType>(member, j[name]);
                 if (!status) res = makeStringError("Failed to deserialize field {0}: {1}", name, status.error());
             } else {
@@ -220,7 +216,7 @@ inline Expected<> deserialize_impl(T& obj, const jsonc::JsoncType& j, PriorityTa
 }
 
 template <traits::Require<std::is_enum> T>
-inline Expected<> deserialize_impl(T& e, const jsonc::JsoncType& j, PriorityTag<1>) {
+inline Expected<> deserialize_impl(T& e, const JsoncType& j, PriorityTag<1>) {
     using enum_type = std::remove_cvref_t<T>;
     if (j.is_string()) {
         if constexpr (magic_enum::detail::subtype_v<enum_type> == magic_enum::detail::enum_subtype::flags) {
@@ -233,8 +229,8 @@ inline Expected<> deserialize_impl(T& e, const jsonc::JsoncType& j, PriorityTag<
 }
 
 template <typename T>
-    requires(std::convertible_to<jsonc::JsoncType, T>)
-inline Expected<> deserialize_impl(T& obj, const jsonc::JsoncType& j, PriorityTag<0>) {
+    requires(std::convertible_to<JsoncType, T>)
+inline Expected<> deserialize_impl(T& obj, const JsoncType& j, PriorityTag<0>) {
     obj = j;
     return {};
 }

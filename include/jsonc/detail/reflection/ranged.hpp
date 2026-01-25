@@ -1,8 +1,8 @@
 #pragma once
-#include "jsonc-reflection/detail/FixedNumber.hpp"
+#include "jsonc/detail/reflection/fixed_number.hpp"
 #include <limits>
 
-namespace jsonc_reflection {
+namespace jsonc::reflection {
 
 template <typename T, FixedNumber<T> Min = std::numeric_limits<T>::min(), FixedNumber<T> Max = std::numeric_limits<T>::max()>
     requires std::is_arithmetic_v<T>
@@ -39,9 +39,9 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Ranged& num) { return os << num.storage(); }
 };
 
-} // namespace jsonc_reflection
+} // namespace jsonc::reflection
 
-// template <typename T, jsonc_reflection::FixedNumber<T> Min, jsonc_reflection::FixedNumber<T> Max>
-// struct std::formatter<jsonc_reflection::Ranged<T, Min, Max>> : std::formatter<T> {
+// template <typename T, jsonc::reflection::FixedNumber<T> Min, jsonc::reflection::FixedNumber<T> Max>
+// struct std::formatter<jsonc::reflection::Ranged<T, Min, Max>> : std::formatter<T> {
 //     auto format(auto&& num, auto&& ctx) const { return formatter::format(num.storage(), ctx); }
 // };

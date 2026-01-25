@@ -1,8 +1,8 @@
-#include "jsonc-reflection/Reflection.hpp"
+#include "jsonc/reflection.hpp"
 #include <filesystem>
 #include <fstream>
 
-using namespace jsonc_reflection;
+using namespace jsonc::reflection;
 
 struct TestType {
     std::string data_;
@@ -72,9 +72,9 @@ bool writeFile(std::filesystem::path const& filePath, std::string_view content, 
 int main() {
     Config settings;
     // if (auto content = readFile("./test.jsonc"); content) {
-    //     if (auto json = jsonc::parse(*content, true); json) { jsonc_reflection::deserialize(settings, *json).value(); }
+    //     if (auto json = jsonc::parse(*content, true); json) { jsonc::reflection::deserialize(settings, *json).value(); }
     // }
-    auto res = jsonc_reflection::serialize(settings);
+    auto res = jsonc::reflection::serialize(settings);
     writeFile("./test.jsonc", res.dump());
     return 0;
 }

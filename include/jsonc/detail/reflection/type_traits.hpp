@@ -1,5 +1,5 @@
 #pragma once
-#include "jsonc-reflection/detail/Ranged.hpp"
+#include "jsonc/detail/reflection/ranged.hpp"
 #include <array>
 #include <concepts>
 #include <string>
@@ -7,7 +7,7 @@
 #include <utility>
 #include <variant>
 
-namespace jsonc_reflection {
+namespace jsonc::reflection {
 
 template <size_t N>
 struct FixedString;
@@ -125,8 +125,8 @@ template <typename T>
 constexpr bool is_string_type_v = is_string_convertible_v<T> || is_string_serializable_v<T>;
 
 template <typename T>
-constexpr bool is_jsonc_type_v = std::convertible_to<std::remove_cvref_t<T>, jsonc::JsoncType>;
+constexpr bool is_jsonc_type_v = std::convertible_to<std::remove_cvref_t<T>, JsoncType>;
 
 } // namespace traits
 
-} // namespace jsonc_reflection
+} // namespace jsonc::reflection

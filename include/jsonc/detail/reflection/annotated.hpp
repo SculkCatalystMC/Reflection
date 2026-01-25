@@ -1,8 +1,8 @@
 #pragma once
-#include "jsonc-reflection/detail/FixedString.hpp"
+#include "jsonc/detail/reflection/fixed_string.hpp"
 #include <vector>
 
-namespace jsonc_reflection {
+namespace jsonc::reflection {
 
 template <typename T, FixedString... Comments>
 class Annotated {
@@ -90,4 +90,4 @@ public:
     constexpr void clear_comments() noexcept { comments_.clear(); }
 };
 
-} // namespace jsonc_reflection
+} // namespace jsonc::reflection
