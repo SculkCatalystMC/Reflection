@@ -92,7 +92,7 @@ namespace detail {
 
 template <typename T, FixedString N>
 inline JsoncType serialize_impl(const Renamed<T, N>& t, const Options& options, PriorityTag<90>) noexcept {
-    return serialize_impl(*t, options, PriorityTag<7>{});
+    return serialize_impl(*t, options, PriorityTag<90>{});
 }
 
 template <typename T, FixedString... Args>
@@ -196,9 +196,7 @@ inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<
 template <concepts::is_associative T>
 inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<20>) noexcept {
     using KT = typename std::remove_cvref_t<T>::key_type;
-    // using VT = typename std::remove_cvref_t<T>::value_type;
     static_assert(traits::is_string_type_v<KT>, "the key type of the associative container must be convertible to a string");
-    // static_assert(TODO , "The value type of the associative container must be serializable");
     JsoncType res = JsoncType::object();
     for (const auto& [key, val] : t) { res[detail::string_utils::type_to_string(key)] = serialize_impl(val, options, PriorityTag<90>{}); }
     return res;
@@ -222,12 +220,8 @@ inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<
 }
 
 template <typename T>
-inline JsoncType serialize_impl(const T& t, const Options&, PriorityTag<0>) noexcept {
-    if constexpr (traits::is_jsonc_type_v<T>) {
-        return t;
-    } else {
-        static_assert(traits::always_false_v<T>, "type is not reflectable.");
-    }
+inline JsoncType serialize_impl(const T&, const Options&, PriorityTag<0>) noexcept {
+    static_assert(traits::always_false_v<T>, "type is not reflectable.");
 }
 
 } // namespace detail
