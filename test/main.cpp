@@ -1,33 +1,35 @@
 #include "jsonc/reflection.hpp"
-#include <filesystem>
-#include <fstream>
 
 using namespace jsonc::reflection;
 
-struct TestType {
-    TestType() = default;
-    TestType(std::string_view data) : data_(data) {}
+struct TestType1 {
+    TestType1() = default;
+    TestType1(std::string_view data) : data_(data) {}
+    std::string data_;
+};
+
+struct TestType2 {
+    TestType2() = default;
+    TestType2(std::string_view data) : data_(data) {}
+
+    operator std::string() const noexcept { return data_; }
+
     std::string data_;
 };
 
 namespace jsonc::reflection {
 template <>
-struct Serializer<TestType> {
-    static std::string             to_string(const TestType& t) noexcept { return t.data_; }
-    static std::optional<TestType> from_string(std::string_view s) noexcept { return TestType(s); }
+struct Serializer<TestType1> {
+    static int                      to_signed(const TestType1&) noexcept { return -1; }
+    static std::optional<TestType1> from_signed(int) noexcept { return TestType1{}; }
 };
 } // namespace jsonc::reflection
 
-// class TestErrorType {
-//     int x_;
-// };
-
 enum class TestEnum { AAA = 0, BBB = 1, CCC = 2, DDD = 3 };
 
-enum class TestEnumFlag { AAA = 0, BBB = 1 << 0, CCC = 1 << 1, DDD = 1 << 2, EEE = 5 };
+enum class TestEnumFlag { AAA = 0, BBB = 1 << 0, CCC = 1 << 1, DDD = 1 << 2, EEE = BBB | DDD };
 
 struct Config {
-    // TestErrorType                                               test_e  = {}; // compile error
     std::string                                                 test_1  = "test string";
     Annotated<std::string, "xiwhgasdjjhoikwq">                  test_2  = "test string with comments";
     Renamed<Annotated<std::string, "738whdbhahisdS">, "test-3"> test_3  = "test string with renamed key and comments";
@@ -37,7 +39,7 @@ struct Config {
     int16_t                                                     test_7  = -2671;
     std::optional<uint8_t>                                      test_8  = {};
     std::string_view                                            test_9  = "sv test";
-    TestType                                                    test_10 = {"test custom type"};
+    TestType1                                                   test_10 = {"test custom type 1"};
     Ranged<short, -3, 5678>                                     test_11 = 23345;
     TestEnum                                                    test_12 = TestEnum(3);
     TestEnumFlag                                                test_13 = TestEnumFlag(6);
@@ -47,31 +49,17 @@ struct Config {
     std::vector<std::string>                                    test_17 = {"xxxxx", "yyyyy"};
     std::array<short, 4>                                        test_18 = {22, 33, 44, 55};
     bool                                                        test_19 = false;
-    std::unordered_map<int, float>                              test_20 = {
+    std::unordered_map<int16_t, float>                          test_20 = {
         {{1, 2.3f}, {4, 5.32f}, {23, 2.45f}}
     };
+    std::map<TestEnum, std::variant<bool, int, std::string>> test_21 = {
+        {{TestEnum::AAA, false}, {TestEnum::BBB, 123456}, {TestEnum::CCC, "test 21"}}
+    };
+    TestType2 test_22 = {"test custom type 2"};
 };
-
-std::optional<std::string> read_file(std::filesystem::path const& path) {
-    if (!std::filesystem::exists(path)) { return std::nullopt; }
-    auto file = std::ifstream(path, std::ios_base::in);
-    return std::string(std::istreambuf_iterator<char>(file), {});
-}
-
-bool write_file(std::filesystem::path const& path, std::string_view content) {
-    if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
-    auto file = std::ofstream(path, std::ios_base::out);
-    file << content;
-    return true;
-}
 
 int main() {
     Annotated<Config, "test config", "xxxxx"> settings;
-    // if (auto content = read_file("./test.jsonc"); content) {
-    //     if (auto json = jsonc::parse(*content, true); json) { jsonc::reflection::deserialize(settings, *json).value(); }
-    // }
-
-    auto res = jsonc::reflection::serialize(settings);
-    write_file("./test.jsonc", res.dump());
+    jsonc::reflection::load_config(settings, "./test.jsonc", {.keep_null = true});
     return 0;
 }
