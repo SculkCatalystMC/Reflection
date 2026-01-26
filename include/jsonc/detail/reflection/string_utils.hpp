@@ -5,7 +5,7 @@
 
 namespace jsonc::reflection::detail::string_utils {
 
-template <concepts::is_string_type T>
+template <concepts::is_stringifiable_type T>
 inline std::string type_to_string(const T& t) {
     if constexpr (traits::is_string_convertible_v<T>) {
         return t;

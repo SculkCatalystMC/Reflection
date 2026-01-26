@@ -80,4 +80,7 @@ concept is_arithmetic = std::is_arithmetic_v<std::remove_cvref_t<T>>;
 template <typename T>
 concept is_number = std::is_arithmetic_v<std::remove_cvref_t<T>> && !std::same_as<std::remove_cvref_t<T>, bool>;
 
+template <typename T>
+concept is_stringifiable_type = traits::is_stringifiable_type_v<std::remove_cvref_t<T>>;
+
 } // namespace jsonc::reflection::concepts

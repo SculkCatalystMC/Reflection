@@ -1,10 +1,27 @@
 #pragma once
 #include "jsonc/detail/reflection/concepts.hpp"
 #include "jsonc/detail/reflection/jsonc_header.hpp"
+#include "jsonc/detail/reflection/options.hpp"
 #include "jsonc/detail/reflection/priority_tag.hpp"
 #include <magic_enum/magic_enum.hpp>
 
-namespace jsonc::reflection {} // namespace jsonc::reflection
+namespace jsonc::reflection {
+
+namespace detail {
+//
+}
+
+template <typename T>
+[[nodiscard]] inline bool deserialize(T& t, const JsoncType& j, const Options& options = {}) noexcept
+    requires(
+        traits::is_reflectable_v<std::remove_cvref_t<decltype(t)>>
+        || (traits::is_reflectable_v<std::remove_cvref_t<decltype(*t)>> && traits::is_annotated_v<std::remove_cvref_t<decltype(t)>>)
+    )
+{
+    return true;
+}
+
+} // namespace jsonc::reflection
 
 /*
 namespace detail {

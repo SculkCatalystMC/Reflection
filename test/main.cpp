@@ -20,8 +20,8 @@ struct TestType2 {
 namespace jsonc::reflection {
 template <>
 struct Serializer<TestType1> {
-    static int                      to_signed(const TestType1&) noexcept { return -1; }
-    static std::optional<TestType1> from_signed(int) noexcept { return TestType1{}; }
+    static float                    to_float(const TestType1&) noexcept { return -1.23f; }
+    static std::optional<TestType1> from_float(float) noexcept { return TestType1{}; }
 };
 } // namespace jsonc::reflection
 
@@ -56,10 +56,14 @@ struct Config {
         {{TestEnum::AAA, false}, {TestEnum::BBB, 123456}, {TestEnum::CCC, "test 21"}}
     };
     TestType2 test_22 = {"test custom type 2"};
+    struct {
+        int                         xxxxx = 123;
+        Annotated<double, "double"> yyyyy = 64738.543;
+    } test_23;
 };
 
 int main() {
     Annotated<Config, "test config", "xxxxx"> settings;
-    jsonc::reflection::load_config(settings, "./test.jsonc", {.keep_null = true});
+    jsonc::reflection::load_config(settings, "./test.jsonc");
     return 0;
 }

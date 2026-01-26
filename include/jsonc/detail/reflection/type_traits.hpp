@@ -113,10 +113,10 @@ constexpr bool is_unsigned_serializable_v = requires(const T& t, uint64_t n) {
 
 template <typename T>
 constexpr bool is_float_serializable_v = requires(const T& t, double n) {
-    { ::jsonc::reflection::Serializer<T>::to_double(t) } -> std::convertible_to<double>;
-    requires noexcept(::jsonc::reflection::Serializer<T>::to_double(t));
-    { ::jsonc::reflection::Serializer<T>::from_double(n) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(::jsonc::reflection::Serializer<T>::from_double(n));
+    { ::jsonc::reflection::Serializer<T>::to_float(t) } -> std::convertible_to<double>;
+    requires noexcept(::jsonc::reflection::Serializer<T>::to_float(t));
+    { ::jsonc::reflection::Serializer<T>::from_float(n) } -> std::convertible_to<std::optional<T>>;
+    requires noexcept(::jsonc::reflection::Serializer<T>::from_float(n));
 };
 
 template <typename T>
@@ -176,10 +176,8 @@ constexpr bool is_float_type_v =
 
 template <typename T>
 constexpr bool is_string_type_v =
-    is_string_convertible_v<T>
-    || (is_string_serializable_v<T> && !is_boolean_serializable_v<T> && !is_signed_serializable_v<T> && !is_unsigned_serializable_v<T>
-        && !is_float_serializable_v<T> && !is_object_serializable_v<T> && !is_array_serializable_v<T> && !is_big_int_serializable_v<T>)
-    || std::is_enum_v<T>;
+    is_string_serializable_v<T> && !is_boolean_serializable_v<T> && !is_signed_serializable_v<T> && !is_unsigned_serializable_v<T>
+    && !is_float_serializable_v<T> && !is_object_serializable_v<T> && !is_array_serializable_v<T> && !is_big_int_serializable_v<T>;
 
 template <typename T>
 constexpr bool is_object_type_v =
@@ -198,6 +196,9 @@ constexpr bool is_big_int_type_v =
 
 template <typename T>
 constexpr bool is_jsonc_type_v = std::convertible_to<std::remove_cvref_t<T>, JsoncType>;
+
+template <typename T>
+constexpr bool is_stringifiable_type_v = is_string_type_v<T> || is_string_convertible_v<T> || std::is_enum_v<T>;
 
 } // namespace traits
 
