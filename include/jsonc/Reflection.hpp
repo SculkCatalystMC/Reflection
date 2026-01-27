@@ -27,7 +27,7 @@ bool load_config(T& t, const std::filesystem::path& path, const Options& options
 
     if ((options.overwrite_policy == OverwritePolicy::Error && !result) || options.overwrite_policy == OverwritePolicy::Always) {
         JsoncType res = serialize(t, options);
-        if (options.keep_extra_comments && data) {
+        if (options.keep_extra_comments && data && !options.ignore_comments) {
             data->move_comments_to_before();
             res.merge_comments(*data);
         }

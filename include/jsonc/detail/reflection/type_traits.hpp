@@ -186,12 +186,12 @@ constexpr bool is_object_type_v =
 
 template <typename T>
 constexpr bool is_array_type_v =
-    is_object_serializable_v<T> && !is_boolean_serializable_v<T> && !is_signed_serializable_v<T> && !is_unsigned_serializable_v<T>
+    is_array_serializable_v<T> && !is_boolean_serializable_v<T> && !is_signed_serializable_v<T> && !is_unsigned_serializable_v<T>
     && !is_float_serializable_v<T> && !is_string_serializable_v<T> && !is_object_serializable_v<T> && !is_big_int_serializable_v<T>;
 
 template <typename T>
 constexpr bool is_big_int_type_v =
-    is_object_serializable_v<T> && !is_boolean_serializable_v<T> && !is_signed_serializable_v<T> && !is_unsigned_serializable_v<T>
+    is_big_int_serializable_v<T> && !is_boolean_serializable_v<T> && !is_signed_serializable_v<T> && !is_unsigned_serializable_v<T>
     && !is_float_serializable_v<T> && !is_string_serializable_v<T> && !is_object_serializable_v<T> && !is_array_serializable_v<T>;
 
 template <typename T>

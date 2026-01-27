@@ -2,7 +2,7 @@ add_rules("mode.debug", "mode.release")
 
 add_repositories("divanadiumpentaoxide-repo https://github.com/DivanadiumPentaoxide/xmake-repo.git")
 
-add_requires("jsonc 20250127-1")
+add_requires("jsonc 20260128-2")
 add_requires("boost_pfr 20260104")
 add_requires("magic_enum 0.9.7")
 

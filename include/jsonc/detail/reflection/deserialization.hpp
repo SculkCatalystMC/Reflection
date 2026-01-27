@@ -3,13 +3,81 @@
 #include "jsonc/detail/reflection/jsonc_header.hpp"
 #include "jsonc/detail/reflection/options.hpp"
 #include "jsonc/detail/reflection/priority_tag.hpp"
+#include <boost/pfr.hpp>
 #include <magic_enum/magic_enum.hpp>
+#include <magic_enum/magic_enum_flags.hpp>
 
 namespace jsonc::reflection {
 
 namespace detail {
-//
-}
+
+template <concepts::is_arithmetic T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<10>) noexcept;
+
+template <concepts::is_boolean_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+
+template <concepts::is_signed_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+
+template <concepts::is_unsigned_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+
+template <concepts::is_float_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+
+template <concepts::is_string_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+
+template <concepts::is_object_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+
+template <concepts::is_array_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+
+template <concepts::is_big_int_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+
+template <typename T, FixedString N>
+inline bool deserialize_impl(Renamed<T, N>& t, const JsoncType& j, const Options& options, PriorityTag<8>) noexcept;
+
+template <typename T, FixedString... Args>
+inline bool deserialize_impl(Annotated<T, Args...>& t, const JsoncType& j, const Options& options, PriorityTag<7>) noexcept;
+
+template <concepts::is_dispatcher T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<6>) noexcept;
+
+template <concepts::is_optional T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<6>) noexcept;
+
+template <concepts::is_ranged T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<5>) noexcept;
+
+template <concepts::is_enum T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<5>) noexcept;
+
+template <concepts::is_variant T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<4>) noexcept;
+
+template <concepts::is_string_convertible T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<3>) noexcept;
+
+template <concepts::is_tuple_like T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<3>) noexcept;
+
+template <concepts::is_array_like T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<2>) noexcept;
+
+template <concepts::is_associative T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<2>) noexcept;
+
+template <concepts::is_aggregate T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<1>) noexcept;
+
+template <typename T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<0>) noexcept;
+
+} // namespace detail
 
 template <typename T>
 [[nodiscard]] inline bool deserialize(T& t, const JsoncType& j, const Options& options = {}) noexcept
@@ -18,103 +86,207 @@ template <typename T>
         || (traits::is_reflectable_v<std::remove_cvref_t<decltype(*t)>> && traits::is_annotated_v<std::remove_cvref_t<decltype(t)>>)
     )
 {
-    return true;
+    if constexpr (traits::is_annotated_v<std::remove_cvref_t<decltype(t)>>) {
+        bool result = detail::deserialize_impl(*t, j, options, PriorityTag<10>{});
+        t.set_comments(j.get_before_comments());
+        return result;
+    } else {
+        return detail::deserialize_impl(t, j, options, PriorityTag<10>{});
+    }
 }
+
+namespace detail {
+
+template <concepts::is_arithmetic T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<10>) noexcept {
+    using RT = std::remove_cvref_t<T>;
+    switch (j.type()) {
+    case ValueType::Boolean:
+        t = static_cast<RT>(j.get<bool>());
+    case ValueType::Signed:
+        t = static_cast<RT>(j.get<int64_t>());
+    case ValueType::Unsigned:
+        t = static_cast<RT>(j.get<uint64_t>());
+    case ValueType::Float: {
+        t = static_cast<RT>(j.get<double>());
+        return true;
+    }
+    default:
+        return false;
+    }
+    return false;
+}
+
+template <concepts::is_boolean_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+    if (!j.is_boolean()) { return false; }
+    auto res = Serializer<T>::from_boolean(j.get<bool>());
+    if (res) { t = *res; }
+    return res.has_value();
+}
+
+template <concepts::is_signed_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+    if (!j.is_number_signed()) { return false; }
+    auto res = Serializer<T>::from_signed(j.get<int64_t>());
+    if (res) { t = *res; }
+    return res.has_value();
+}
+
+template <concepts::is_unsigned_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+    if (!j.is_number_unsigned()) { return false; }
+    auto res = Serializer<T>::from_unsigned(j.get<uint64_t>());
+    if (res) { t = *res; }
+    return res.has_value();
+}
+
+template <concepts::is_float_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+    if (!j.is_number_float()) { return false; }
+    auto res = Serializer<T>::from_float(j.get<double>());
+    if (res) { t = *res; }
+    return res.has_value();
+}
+
+template <concepts::is_string_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+    if (!j.is_string()) { return false; }
+    auto res = Serializer<T>::from_string(j.as<std::string>());
+    if (res) { t = *res; }
+    return res.has_value();
+}
+
+template <concepts::is_object_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+    if (!j.is_object()) { return false; }
+    auto res = Serializer<T>::from_object(j.as<Object>());
+    if (res) { t = *res; }
+    return res.has_value();
+}
+
+template <concepts::is_array_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+    if (!j.is_array()) { return false; }
+    auto res = Serializer<T>::from_array(j.as<Array>());
+    if (res) { t = *res; }
+    return res.has_value();
+}
+
+template <concepts::is_big_int_type T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+    if (!j.is_number_any_inteager()) { return false; }
+    auto res = Serializer<T>::from_big_int(j.get_any_int_view());
+    if (res.has_value()) { t = *res; }
+    return res.has_value();
+}
+
+template <typename T, FixedString N>
+inline bool deserialize_impl(Renamed<T, N>& t, const JsoncType& j, const Options& options, PriorityTag<8>) noexcept {
+    return deserialize_impl(*t, j, options, PriorityTag<10>{});
+}
+
+template <typename T, FixedString... Args>
+inline bool deserialize_impl(Annotated<T, Args...>& t, const JsoncType& j, const Options& options, PriorityTag<7>) noexcept {
+    return deserialize_impl(*t, j, options, PriorityTag<10>{});
+}
+
+template <concepts::is_dispatcher T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<6>) noexcept {
+    return deserialize_impl(*t, j, options, PriorityTag<10>{});
+}
+
+template <concepts::is_optional T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<6>) noexcept {
+    if (!j.is_null()) {
+        t.emplace();
+        return deserialize_impl(*t, j, options, PriorityTag<10>{});
+    } else {
+        t = std::nullopt;
+        return true;
+    }
+}
+
+template <concepts::is_ranged T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<5>) noexcept {
+    auto result = deserialize_impl(*t, j, options, PriorityTag<10>{});
+    t.fix_range();
+    return result;
+}
+
+template <concepts::is_enum T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<5>) noexcept {
+    using RT = std::remove_cvref_t<T>;
+    if (j.is_string()) {
+        auto str = j.get<std::string>();
+        if (auto val = magic_enum::enum_cast<RT>(str)) {
+            t = *val;
+            return true;
+        }
+        if (auto val = magic_enum::enum_flags_cast<RT>(str)) {
+            t = *val;
+            return true;
+        }
+    } else if (j.is_number_signed()) {
+        t = static_cast<RT>(j.get<int64_t>());
+        return true;
+    } else if (j.is_number_unsigned()) {
+        t = static_cast<RT>(j.get<uint64_t>());
+        return true;
+    }
+    return false;
+}
+
+template <concepts::is_variant T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<4>) noexcept {
+    // TODO
+    return false;
+}
+
+template <concepts::is_string_convertible T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<3>) noexcept {
+    if (j.is_string()) { t = j.get<std::string>(); }
+    return false;
+}
+
+template <concepts::is_tuple_like T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<3>) noexcept {
+    return false;
+}
+
+template <concepts::is_array_like T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<2>) noexcept {
+    return false;
+}
+
+template <concepts::is_associative T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<2>) noexcept {
+    return false;
+}
+
+template <concepts::is_aggregate T>
+inline bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<1>) noexcept {
+    bool result = true;
+    boost::pfr::for_each_field_with_name(t, [&](std::string_view name, auto& val) {
+        if constexpr (traits::is_renamed_v<decltype(val)>) { name = val.view(); }
+        if (j.contains(name)) {
+            result &= deserialize_impl(val, j[name], options, PriorityTag<10>{});
+            // TODO???
+        }
+    });
+    return result;
+}
+
+template <typename T>
+inline bool deserialize_impl(T&, const JsoncType&, const Options&, PriorityTag<0>) noexcept {
+    static_assert(traits::always_false_v<T>, "type is not reflectable.");
+}
+
+} // namespace detail
 
 } // namespace jsonc::reflection
 
 /*
-namespace detail {
-
-template <concepts::IsAnnotated T>
-inline Expected<> deserialize_impl(T& opt, const JsoncType& j, PriorityTag<6>);
-
-template <concepts::IsDispatcher T>
-inline Expected<> deserialize_impl(T& d, const JsoncType& j, PriorityTag<5>);
-
-template <concepts::IsOptional T>
-inline Expected<> deserialize_impl(T& opt, const JsoncType& j, PriorityTag<5>);
-
-template <concepts::IsString T>
-inline Expected<> deserialize_impl(T& str, const JsoncType& j, PriorityTag<4>);
-
-template <concepts::IsRanged T>
-inline Expected<> deserialize_impl(T& str, const JsoncType& j, PriorityTag<4>);
-
-template <concepts::IsTupleLike T>
-inline Expected<> deserialize_impl(T& tuple, const JsoncType& j, PriorityTag<3>);
-
-template <concepts::IsVariant T>
-inline Expected<> deserialize_impl(T& tuple, const JsoncType& j, PriorityTag<3>);
-
-template <concepts::IsArrayLike T>
-inline Expected<> deserialize_impl(T& arr, const JsoncType& j, PriorityTag<2>);
-
-template <concepts::IsAssociative T>
-inline Expected<> deserialize_impl(T& map, const JsoncType& j, PriorityTag<2>);
-
-template <concepts::IsReflectable T>
-inline Expected<> deserialize_impl(T& obj, const JsoncType& j, PriorityTag<1>);
-
-template <traits::Require<std::is_enum> T>
-inline Expected<> deserialize_impl(T& e, const JsoncType& j, PriorityTag<1>);
-
-template <typename T>
-    requires(std::convertible_to<JsoncType, T>)
-inline Expected<> deserialize_impl(T& obj, const JsoncType& j, PriorityTag<0>);
-
-} // namespace detail
-
-template <typename T>
-[[nodiscard]] inline Expected<> deserialize(T& t, const JsoncType& j) noexcept {
-    return detail::deserialize_impl<T>(t, j, PriorityTag<6>{});
-}
-
-namespace detail {
-
-template <typename T>
-[[nodiscard]] inline Expected<T> deserialize_to(const JsoncType& j) noexcept {
-    Expected<T> res{};
-    if (auto d = deserialize<T>(*res, j); !d) { res = forwardError(d.error()); }
-    return res;
-}
-
-template <concepts::IsAnnotated T>
-inline Expected<> deserialize_impl(T& obj, const JsoncType& j, PriorityTag<6>) {
-    using ValueType = std::remove_cvref_t<decltype(*obj)>;
-    return deserialize<ValueType>(*obj, j);
-}
-
-template <concepts::IsDispatcher T>
-inline Expected<> deserialize_impl(T& d, const JsoncType& j, PriorityTag<5>) {
-    return deserialize<typename T::storage_type>(*d, j);
-}
-
-template <concepts::IsOptional T>
-inline Expected<> deserialize_impl(T& opt, const JsoncType& j, PriorityTag<5>) {
-    Expected<> res;
-    if (j.is_null()) {
-        opt = std::nullopt;
-    } else {
-        if (!opt) { opt.emplace(); }
-        res = deserialize<typename T::value_type>(*opt, j);
-    }
-    return res;
-}
-
-template <concepts::IsString T>
-inline Expected<> deserialize_impl(T& str, const JsoncType& j, PriorityTag<4>) {
-    if (!j.is_string()) { return makeStringError("field must be a string"); }
-    str = j.as<std::string>();
-    return {};
-}
-
-template <concepts::IsRanged T>
-inline Expected<> deserialize_impl(T& num, const JsoncType& j, PriorityTag<4>) {
-    if (!j.is_number()) { return makeStringError("field must be a number"); }
-    using ValueType = std::remove_cvref_t<decltype(*num)>;
-    return deserialize<ValueType>(*num, j);
-}
 
 template <concepts::IsTupleLike T>
 inline Expected<> deserialize_impl(T& tuple, const JsoncType& j, PriorityTag<3>) {
@@ -209,27 +381,6 @@ inline Expected<> deserialize_impl(T& map, const JsoncType& j, PriorityTag<2>) {
         }
     }
     return {};
-}
-
-template <concepts::IsReflectable T>
-inline Expected<> deserialize_impl(T& obj, const JsoncType& j, PriorityTag<1>) {
-    Expected<> res;
-    if (!j.is_object()) {
-        res = makeStringError("field must be an object");
-        return res;
-    }
-    forEachFieldWithName(obj, [&](std::string_view name, auto& member) {
-        using MemberType = std::remove_cvref_t<decltype(member)>;
-        if (j.contains(name)) {
-            if constexpr (requires(MemberType& o, const JsoncType& s) { deserialize<MemberType>(o, s); }) {
-                auto status = deserialize<MemberType>(member, j[name]);
-                if (!status) res = makeStringError("Failed to deserialize field {0}: {1}", name, status.error());
-            } else {
-                static_assert(traits::always_false<MemberType>, "this type can't deserialize");
-            }
-        }
-    });
-    return res;
 }
 
 template <traits::Require<std::is_enum> T>

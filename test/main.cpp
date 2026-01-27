@@ -4,24 +4,26 @@ using namespace jsonc::reflection;
 
 struct TestType1 {
     TestType1() = default;
-    TestType1(std::string_view data) : data_(data) {}
-    std::string data_;
+    TestType1(float data) : data_(data) {}
+    float data_;
 };
 
 struct TestType2 {
     TestType2() = default;
     TestType2(std::string_view data) : data_(data) {}
-
-    operator std::string() const noexcept { return data_; }
-
     std::string data_;
 };
 
 namespace jsonc::reflection {
 template <>
 struct Serializer<TestType1> {
-    static float                    to_float(const TestType1&) noexcept { return -1.23f; }
-    static std::optional<TestType1> from_float(float) noexcept { return TestType1{}; }
+    static float                    to_float(const TestType1& t) noexcept { return t.data_; }
+    static std::optional<TestType1> from_float(float v) noexcept { return TestType1{v}; }
+};
+template <>
+struct Serializer<TestType2> {
+    static std::string              to_big_int(const TestType2& t) noexcept { return t.data_; }
+    static std::optional<TestType2> from_big_int(std::string_view v) noexcept { return TestType2{v}; }
 };
 } // namespace jsonc::reflection
 
@@ -37,9 +39,9 @@ struct Config {
     double                                                      test_5  = 3.526781;
     float                                                       test_6  = 26781.234;
     int16_t                                                     test_7  = -2671;
-    std::optional<uint8_t>                                      test_8  = {};
+    std::optional<uint8_t>                                      test_8  = {123};
     std::string_view                                            test_9  = "sv test";
-    TestType1                                                   test_10 = {"test custom type 1"};
+    TestType1                                                   test_10 = {123.456};
     Ranged<short, -3, 5678>                                     test_11 = 23345;
     TestEnum                                                    test_12 = TestEnum(3);
     TestEnumFlag                                                test_13 = TestEnumFlag(6);
@@ -55,7 +57,7 @@ struct Config {
     std::map<TestEnum, std::variant<bool, int, std::string>> test_21 = {
         {{TestEnum::AAA, false}, {TestEnum::BBB, 123456}, {TestEnum::CCC, "test 21"}}
     };
-    TestType2 test_22 = {"test custom type 2"};
+    TestType2 test_22 = {"123456787654323456789824324543454323456765432345676543765432345678"};
     struct {
         int                         xxxxx = 123;
         Annotated<double, "double"> yyyyy = 64738.543;
@@ -64,6 +66,6 @@ struct Config {
 
 int main() {
     Annotated<Config, "test config", "xxxxx"> settings;
-    jsonc::reflection::load_config(settings, "./test.jsonc");
+    jsonc::reflection::load_config(settings, "./test.jsonc", {});
     return 0;
 }

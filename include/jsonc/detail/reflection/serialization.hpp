@@ -11,6 +11,9 @@ namespace jsonc::reflection {
 
 namespace detail {
 
+template <concepts::is_arithmetic T>
+inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<10>) noexcept;
+
 template <concepts::is_boolean_type T>
 inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<9>) noexcept;
 
@@ -50,9 +53,6 @@ inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<
 template <concepts::is_ranged T>
 inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<5>) noexcept;
 
-template <concepts::is_arithmetic T>
-inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<5>) noexcept;
-
 template <concepts::is_enum T>
 inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<5>) noexcept;
 
@@ -86,12 +86,21 @@ template <typename T>
         || (traits::is_reflectable_v<std::remove_cvref_t<decltype(*t)>> && traits::is_annotated_v<std::remove_cvref_t<decltype(t)>>)
     )
 {
-    auto result = detail::serialize_impl(*t, options, PriorityTag<9>{});
-    result.set_before_comments(t.get_comments());
-    return result;
+    if constexpr (traits::is_annotated_v<std::remove_cvref_t<decltype(t)>>) {
+        auto result = detail::serialize_impl(*t, options, PriorityTag<10>{});
+        result.set_before_comments(t.get_comments());
+        return result;
+    } else {
+        return detail::serialize_impl(t, options, PriorityTag<10>{});
+    }
 }
 
 namespace detail {
+
+template <concepts::is_arithmetic T>
+inline JsoncType serialize_impl(const T& t, const Options&, PriorityTag<10>) noexcept {
+    return t;
+}
 
 template <concepts::is_boolean_type T>
 inline JsoncType serialize_impl(const T& t, const Options&, PriorityTag<9>) noexcept {
@@ -132,40 +141,35 @@ inline JsoncType serialize_impl(const T& t, const Options&, PriorityTag<9>) noex
 
 template <concepts::is_big_int_type T>
 inline JsoncType serialize_impl(const T& t, const Options&, PriorityTag<9>) noexcept {
-    return JsoncType::from_big_int(static_cast<std::string>(Serializer<T>::to_big_int(t)));
+    return JsoncType::from_big_int(static_cast<std::string>(Serializer<T>::to_big_int(t))).value_or(0);
 }
 
 template <typename T, FixedString N>
 inline JsoncType serialize_impl(const Renamed<T, N>& t, const Options& options, PriorityTag<8>) noexcept {
-    return serialize_impl(*t, options, PriorityTag<9>{});
+    return serialize_impl(*t, options, PriorityTag<10>{});
 }
 
 template <typename T, FixedString... Args>
 inline JsoncType serialize_impl(const Annotated<T, Args...>& t, const Options& options, PriorityTag<7>) noexcept {
-    auto result = serialize_impl(*t, options, PriorityTag<8>{});
+    auto result = serialize_impl(*t, options, PriorityTag<10>{});
     if (t.has_comments()) { result.set_before_comments(t.get_comments()); }
     return result;
 }
 
 template <concepts::is_dispatcher T>
 inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<6>) noexcept {
-    return serialize_impl(*t, options, PriorityTag<7>{});
+    return serialize_impl(*t, options, PriorityTag<10>{});
 }
 
 template <concepts::is_optional T>
 inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<6>) noexcept {
-    if (t) { return serialize_impl(*t, options, PriorityTag<7>{}); }
+    if (t) { return serialize_impl(*t, options, PriorityTag<10>{}); }
     return nullptr;
 }
 
 template <concepts::is_ranged T>
 inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<5>) noexcept {
-    return serialize_impl(*t, options, PriorityTag<5>{});
-}
-
-template <concepts::is_arithmetic T>
-inline JsoncType serialize_impl(const T& t, const Options&, PriorityTag<5>) noexcept {
-    return t;
+    return serialize_impl(*t, options, PriorityTag<10>{});
 }
 
 template <concepts::is_enum T>
@@ -177,7 +181,7 @@ inline JsoncType serialize_impl(const T& t, const Options&, PriorityTag<5>) noex
 
 template <concepts::is_variant T>
 inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<4>) noexcept {
-    return std::visit([&](const auto& val) { return serialize_impl(val, options, PriorityTag<9>{}); }, t);
+    return std::visit([&](const auto& val) { return serialize_impl(val, options, PriorityTag<10>{}); }, t);
 }
 
 template <concepts::is_string_convertible T>
@@ -188,14 +192,14 @@ inline JsoncType serialize_impl(const T& t, const Options&, PriorityTag<3>) noex
 template <concepts::is_tuple_like T>
 inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<3>) noexcept {
     JsoncType res = JsoncType::array();
-    std::apply([&](const auto&... args) { (([&](const auto& v) { res.push_back(serialize_impl(v, options, PriorityTag<9>{})); }(args)), ...); }, t);
+    std::apply([&](const auto&... args) { (([&](const auto& v) { res.push_back(serialize_impl(v, options, PriorityTag<10>{})); }(args)), ...); }, t);
     return res;
 }
 
 template <concepts::is_array_like T>
 inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<2>) noexcept {
     JsoncType res = JsoncType::array();
-    for (const auto& val : t) { res.push_back(serialize_impl(val, options, PriorityTag<9>{})); }
+    for (const auto& val : t) { res.push_back(serialize_impl(val, options, PriorityTag<10>{})); }
     return res;
 }
 
@@ -206,7 +210,7 @@ inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<
         "the key type of the associative container must be convertible to a string"
     );
     JsoncType res = JsoncType::object();
-    for (const auto& [key, val] : t) { res[detail::string_utils::type_to_string(key)] = serialize_impl(val, options, PriorityTag<9>{}); }
+    for (const auto& [key, val] : t) { res[detail::string_utils::type_to_string(key)] = serialize_impl(val, options, PriorityTag<10>{}); }
     return res;
 }
 
@@ -215,7 +219,7 @@ inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<
     auto result = JsoncType::object();
     boost::pfr::for_each_field_with_name(t, [&](std::string_view name, const auto& val) {
         if constexpr (traits::is_renamed_v<decltype(val)>) { name = val.view(); }
-        auto res = serialize_impl(val, options, PriorityTag<9>{});
+        auto res = serialize_impl(val, options, PriorityTag<10>{});
         if (!res.is_null() || options.keep_null) {
             result[name] = res;
             if (res.has_before_comments()) {

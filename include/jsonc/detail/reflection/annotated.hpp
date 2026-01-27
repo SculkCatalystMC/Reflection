@@ -78,6 +78,8 @@ public:
 
     constexpr void add_comment(std::string_view comment) noexcept { comments_.emplace_back(comment); }
 
+    constexpr void set_comments(const std::vector<std::string>& comments) noexcept { comments_ = comments; }
+
     constexpr void set_comment(size_t index, std::string_view newComment) noexcept {
         if (index < comments_.size()) { comments_[index] = newComment; }
     }
