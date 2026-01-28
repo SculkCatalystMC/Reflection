@@ -105,11 +105,12 @@ constexpr std::optional<T> string_to_type(std::string_view sv) noexcept {
 
 namespace builtin_key_formatter {
 
-constexpr auto snake_case_formatter  = [](std::string_view sv) noexcept { return string_utils::to_snake_case(sv); };
-constexpr auto pascal_case_formatter = [](std::string_view sv) noexcept { return string_utils::to_pascal_case(sv); };
-constexpr auto camel_case_formatter  = [](std::string_view sv) noexcept { return string_utils::to_camel_case(sv); };
-constexpr auto upper_case_formatter  = [](std::string_view sv) noexcept { return string_utils::to_upper_case(sv); };
-constexpr auto lower_case_formatter  = [](std::string_view sv) noexcept { return string_utils::to_lower_case(sv); };
+constexpr auto default_key_formatter = [](std::string_view sv) noexcept -> std::string { return std::string(sv); };
+constexpr auto snake_case_formatter  = [](std::string_view sv) noexcept -> std::string { return string_utils::to_snake_case(sv); };
+constexpr auto pascal_case_formatter = [](std::string_view sv) noexcept -> std::string { return string_utils::to_pascal_case(sv); };
+constexpr auto camel_case_formatter  = [](std::string_view sv) noexcept -> std::string { return string_utils::to_camel_case(sv); };
+constexpr auto upper_case_formatter  = [](std::string_view sv) noexcept -> std::string { return string_utils::to_upper_case(sv); };
+constexpr auto lower_case_formatter  = [](std::string_view sv) noexcept -> std::string { return string_utils::to_lower_case(sv); };
 
 } // namespace builtin_key_formatter
 

@@ -34,7 +34,7 @@ bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, 
 
 template <typename T>
 bool load_file(T& t, const std::filesystem::path& path, const Options& options = {}) noexcept {
-    return load_file(t, path, nullptr, options);
+    return load_file(t, path, builtin_key_formatter::default_key_formatter, options);
 }
 
 template <typename T, concepts::is_key_formatter F>
@@ -53,7 +53,7 @@ bool save_file(const T& t, const std::filesystem::path& path, const F& key_forma
 
 template <typename T>
 bool save_file(const T& t, const std::filesystem::path& path, const Options& options = {}) noexcept {
-    return save_file(t, path, nullptr, options);
+    return save_file(t, path, builtin_key_formatter::default_key_formatter, options);
 }
 
 } // namespace jsonc::reflection

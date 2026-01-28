@@ -1,4 +1,5 @@
 #pragma once
+#include "jsonc/detail/reflection/jsonc_header.hpp"
 #include <charconv>
 #include <format>
 #include <optional>
@@ -76,6 +77,18 @@ template <>
 struct Serializer<uint64_t> {
     static std::string             to_string(uint64_t t) noexcept { return std::format("{}", t); }
     static std::optional<uint64_t> from_string(std::string_view s) noexcept { return string_utils::str_to_num<uint64_t>(s); }
+};
+
+template <>
+struct Serializer<Object> {
+    static Object                to_object(const Object& o) noexcept { return o; }
+    static std::optional<Object> from_object(const Object& o) noexcept { return o; }
+};
+
+template <>
+struct Serializer<Array> {
+    static Array                to_array(const Array& a) noexcept { return a; }
+    static std::optional<Array> from_array(const Array& a) noexcept { return a; }
 };
 
 } // namespace jsonc::reflection

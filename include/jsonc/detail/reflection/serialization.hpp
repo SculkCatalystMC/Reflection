@@ -81,7 +81,7 @@ constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& 
 
 template <typename T>
 [[nodiscard]] constexpr JsoncType serialize(const T& t, const Options& options = {}) noexcept {
-    return serialize_impl(t, options, nullptr, PriorityTag<10>{});
+    return serialize_impl(t, options, builtin_key_formatter::default_key_formatter, PriorityTag<10>{});
 }
 
 template <typename T, concepts::is_key_formatter F>
@@ -217,8 +217,7 @@ template <concepts::is_aggregate T, concepts::is_key_formatter F>
 constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<1>) noexcept {
     auto result = JsoncType::object();
     boost::pfr::for_each_field_with_name(t, [&](std::string_view key, const auto& val) {
-        std::string name{key};
-        if (kfmt) { name = kfmt(key); }
+        std::string name = kfmt(key);
         if constexpr (traits::is_renamed_v<decltype(val)>) { name = val.view(); }
         auto res = serialize_impl(val, options, kfmt, PriorityTag<10>{});
         if (!res.is_null() || options.keep_null) {

@@ -87,7 +87,7 @@ template <typename T, concepts::is_key_formatter F>
 
 template <typename T>
 [[nodiscard]] constexpr bool deserialize(T& t, const JsoncType& j, const Options& options = {}) noexcept {
-    return deserialize_impl(t, j, options, nullptr, PriorityTag<10>{});
+    return deserialize_impl(t, j, options, builtin_key_formatter::default_key_formatter, PriorityTag<10>{});
 }
 
 namespace {
@@ -398,8 +398,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options
     if (j.is_object()) {
         bool result{true};
         boost::pfr::for_each_field_with_name(t, [&](std::string_view key, auto& val) {
-            std::string name{key};
-            if (kfmt) { name = kfmt(key); }
+            std::string name = kfmt(key);
             if constexpr (traits::is_renamed_v<decltype(val)>) { name = val.view(); }
             if (j.contains(name)) {
                 result &= deserialize_impl(val, j[name], options, kfmt, PriorityTag<10>{});

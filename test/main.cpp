@@ -64,11 +64,12 @@ struct Config {
         int                         xxxxx = 123;
         Annotated<double, "double"> yyyyy = 64738.543;
     } test_23;
-    std::set<int> test_24 = {1, 23, 456};
+    std::set<int>              test_24 = {1, 23, 456};
+    std::vector<jsonc::Object> test_25{};
 };
 
 int main() {
     Annotated<std::variant<Config, std::vector<int>>, "test config", "xxxxx"> settings;
-    jsonc::reflection::load_file(settings, "./test.jsonc", builtin_key_formatter::pascal_case_formatter, {.keep_extra_comments = false});
+    jsonc::reflection::load_file(settings, "./test.jsonc", {});
     return 0;
 }
