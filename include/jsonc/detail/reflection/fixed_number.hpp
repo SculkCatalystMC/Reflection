@@ -20,11 +20,11 @@ struct FixedNumber {
     [[nodiscard]] constexpr operator T const&() const noexcept { return storage_; }
     [[nodiscard]] constexpr operator T&() noexcept { return storage_; }
 
-    [[nodiscard]] constexpr T&       operator*() { return storage_; }
-    [[nodiscard]] constexpr T const& operator*() const { return storage_; }
+    [[nodiscard]] constexpr T&       operator*() noexcept { return storage_; }
+    [[nodiscard]] constexpr T const& operator*() const noexcept { return storage_; }
 
-    [[nodiscard]] constexpr T*       operator->() { return &storage_; }
-    [[nodiscard]] constexpr T const* operator->() const { return &storage_; }
+    [[nodiscard]] constexpr T*       operator->() noexcept { return &storage_; }
+    [[nodiscard]] constexpr T const* operator->() const noexcept { return &storage_; }
 
     T storage_;
 };

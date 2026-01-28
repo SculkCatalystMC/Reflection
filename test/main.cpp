@@ -69,6 +69,6 @@ struct Config {
 
 int main() {
     Annotated<std::variant<Config, std::vector<int>>, "test config", "xxxxx"> settings;
-    jsonc::reflection::load_file(settings, "./test.jsonc", {.keep_extra_comments = false});
+    jsonc::reflection::load_file(settings, "./test.jsonc", builtin_key_formatter::pascal_case_formatter, {.keep_extra_comments = false});
     return 0;
 }

@@ -12,36 +12,31 @@ class Ranged {
     T storage_;
 
 public:
-    [[nodiscard]] constexpr Ranged() = default;
+    [[nodiscard]] constexpr Ranged() noexcept = default;
 
-    [[nodiscard]] constexpr Ranged(T val) : storage_(val) { fix_range(); }
+    [[nodiscard]] constexpr Ranged(T val) noexcept : storage_(val) { fix_range(); }
 
-    constexpr Ranged& operator=(T value) {
+    constexpr Ranged& operator=(T value) noexcept {
         storage_ = value;
         fix_range();
         return *this;
     }
 
-    [[nodiscard]] constexpr T&       storage() { return storage_; }
-    [[nodiscard]] constexpr T const& storage() const { return storage_; }
+    [[nodiscard]] constexpr T&       storage() noexcept { return storage_; }
+    [[nodiscard]] constexpr T const& storage() const noexcept { return storage_; }
 
-    [[nodiscard]] constexpr T&       operator*() { return storage_; }
-    [[nodiscard]] constexpr T const& operator*() const { return storage_; }
+    [[nodiscard]] constexpr T&       operator*() noexcept { return storage_; }
+    [[nodiscard]] constexpr T const& operator*() const noexcept { return storage_; }
 
-    [[nodiscard]] constexpr T*       operator->() { return &storage_; }
-    [[nodiscard]] constexpr T const* operator->() const { return &storage_; }
+    [[nodiscard]] constexpr T*       operator->() noexcept { return &storage_; }
+    [[nodiscard]] constexpr T const* operator->() const noexcept { return &storage_; }
 
-    [[nodiscard]] constexpr operator T const&() const { return storage_; }
-    [[nodiscard]] constexpr operator T&() { return storage_; }
+    [[nodiscard]] constexpr operator T const&() const noexcept { return storage_; }
+    [[nodiscard]] constexpr operator T&() noexcept { return storage_; }
 
-    constexpr void fix_range() { storage_ = std::clamp(storage_, *Min, *Max); }
+    constexpr void fix_range() noexcept { storage_ = std::clamp(storage_, *Min, *Max); }
 
-    friend std::ostream& operator<<(std::ostream& os, const Ranged& num) { return os << num.storage(); }
+    friend std::ostream& operator<<(std::ostream& os, const Ranged& num) noexcept { return os << num.storage(); }
 };
 
 } // namespace jsonc::reflection
-
-// template <typename T, jsonc::reflection::FixedNumber<T> Min, jsonc::reflection::FixedNumber<T> Max>
-// struct std::formatter<jsonc::reflection::Ranged<T, Min, Max>> : std::formatter<T> {
-//     auto format(auto&& num, auto&& ctx) const { return formatter::format(num.storage(), ctx); }
-// };
