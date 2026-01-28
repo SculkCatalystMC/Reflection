@@ -4,12 +4,20 @@
 #include <magic_enum/magic_enum.hpp>
 #include <magic_enum/magic_enum_flags.hpp>
 
-namespace jsonc::reflection::string_utils {
+namespace jsonc::reflection {
+
+namespace string_utils {
+
+template <typename T>
+    requires(std::is_arithmetic_v<T> && !std::same_as<T, bool>)
+constexpr std::optional<T> str_to_num(std::string_view sv) noexcept;
+
+} // namespace string_utils
 
 namespace detail {
 
 template <concepts::is_stringifiable_type T>
-inline std::string type_to_string(const T& t) {
+constexpr std::string type_to_string(const T& t) {
     if constexpr (traits::is_string_convertible_v<T>) {
         return t;
     } else if constexpr (traits::is_string_serializable_v<T>) {
@@ -22,7 +30,7 @@ inline std::string type_to_string(const T& t) {
 }
 
 template <concepts::is_stringifiable_type T>
-inline std::optional<T> string_to_type(std::string_view sv) noexcept {
+constexpr std::optional<T> string_to_type(std::string_view sv) noexcept {
     using RT = std::remove_cvref_t<T>;
     if constexpr (traits::is_string_convertible_v<T>) {
         return std::string(sv);
@@ -31,11 +39,11 @@ inline std::optional<T> string_to_type(std::string_view sv) noexcept {
     } else {
         if (auto val = magic_enum::enum_cast<RT>(sv)) { return val; }
         if (auto val = magic_enum::enum_flags_cast<RT>(sv)) { return val; }
-        if (auto num = parse_number<std::underlying_type_t<RT>>(sv)) { return static_cast<RT>(*num); }
+        if (auto num = string_utils::str_to_num<std::underlying_type_t<RT>>(sv)) { return static_cast<RT>(*num); }
         return std::nullopt;
     }
 }
 
 } // namespace detail
 
-} // namespace jsonc::reflection::string_utils
+} // namespace jsonc::reflection

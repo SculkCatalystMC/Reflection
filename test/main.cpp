@@ -48,7 +48,7 @@ struct Config {
     TestEnumFlag                                                test_13 = TestEnumFlag(6);
     std::variant<bool, float, int, uint64_t>                    test_14 = 2.345f;
     std::tuple<int, int, std::string, float, TestEnum>          test_15 = {234, -3782, "wyuhdsj", 7.492f, TestEnum::BBB};
-    std::list<int>                                              test_16 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    std::list<Annotated<int, "xwsaijnjhiknjk">>                 test_16 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     std::vector<std::string>                                    test_17 = {"xxxxx", "yyyyy"};
     std::array<short, 4>                                        test_18 = {22, 33, 44, 55};
     bool                                                        test_19 = false;
@@ -68,6 +68,6 @@ struct Config {
 
 int main() {
     Annotated<Config, "test config", "xxxxx"> settings;
-    jsonc::reflection::load_config(settings, "./test.jsonc", {});
+    jsonc::reflection::load_config(settings, "./test.jsonc", {.keep_extra_comments = false});
     return 0;
 }
