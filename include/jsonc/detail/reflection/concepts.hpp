@@ -83,4 +83,7 @@ concept is_number = std::is_arithmetic_v<std::remove_cvref_t<T>> && !std::same_a
 template <typename T>
 concept is_stringifiable_type = traits::is_stringifiable_type_v<std::remove_cvref_t<T>>;
 
+template <typename F>
+concept is_key_formatter = traits::is_key_formatter_v<std::remove_cvref_t<F>>;
+
 } // namespace jsonc::reflection::concepts

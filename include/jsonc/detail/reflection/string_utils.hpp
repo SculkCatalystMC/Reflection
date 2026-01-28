@@ -103,16 +103,14 @@ constexpr std::optional<T> string_to_type(std::string_view sv) noexcept {
 
 } // namespace detail
 
-using KeyFormatter = const std::function<std::string(std::string_view)>&;
-
 namespace builtin_key_formatter {
 
-constexpr auto snake_case_formatter  = [](std::string_view sv) { return string_utils::to_snake_case(sv); };
-constexpr auto pascal_case_formatter = [](std::string_view sv) { return string_utils::to_pascal_case(sv); };
-constexpr auto camel_case_formatter  = [](std::string_view sv) { return string_utils::to_camel_case(sv); };
-constexpr auto upper_case_formatter  = [](std::string_view sv) { return string_utils::to_upper_case(sv); };
-constexpr auto lower_case_formatter  = [](std::string_view sv) { return string_utils::to_lower_case(sv); };
+constexpr auto snake_case_formatter  = [](std::string_view sv) noexcept { return string_utils::to_snake_case(sv); };
+constexpr auto pascal_case_formatter = [](std::string_view sv) noexcept { return string_utils::to_pascal_case(sv); };
+constexpr auto camel_case_formatter  = [](std::string_view sv) noexcept { return string_utils::to_camel_case(sv); };
+constexpr auto upper_case_formatter  = [](std::string_view sv) noexcept { return string_utils::to_upper_case(sv); };
+constexpr auto lower_case_formatter  = [](std::string_view sv) noexcept { return string_utils::to_lower_case(sv); };
 
-} // namespace key_formatter
+} // namespace builtin_key_formatter
 
 } // namespace jsonc::reflection

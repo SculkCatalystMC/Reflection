@@ -225,6 +225,12 @@ struct serializer_arg<R (*)(A0) noexcept> {
 template <typename F>
 using serializer_arg_t = typename serializer_arg<F>::arg_type;
 
+template <typename F>
+constexpr bool is_key_formatter_v = requires(F f, std::string_view sv) {
+    { f(sv) } -> std::convertible_to<std::string>;
+    requires noexcept(f(sv));
+};
+
 } // namespace traits
 
 } // namespace jsonc::reflection

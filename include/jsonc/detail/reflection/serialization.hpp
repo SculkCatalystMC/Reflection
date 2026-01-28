@@ -6,77 +6,76 @@
 #include "jsonc/detail/reflection/serializer.hpp"
 #include "jsonc/detail/reflection/string_utils.hpp"
 #include <boost/pfr.hpp>
-#include <functional>
 
 namespace jsonc::reflection {
 
 namespace {
 
-template <concepts::is_arithmetic T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<10>) noexcept;
+template <concepts::is_arithmetic T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<10>) noexcept;
 
-template <concepts::is_boolean_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
+template <concepts::is_boolean_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<9>) noexcept;
 
-template <concepts::is_signed_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
+template <concepts::is_signed_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<9>) noexcept;
 
-template <concepts::is_unsigned_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
+template <concepts::is_unsigned_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<9>) noexcept;
 
-template <concepts::is_float_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
+template <concepts::is_float_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<9>) noexcept;
 
-template <concepts::is_string_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
+template <concepts::is_string_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<9>) noexcept;
 
-template <concepts::is_object_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
+template <concepts::is_object_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<9>) noexcept;
 
-template <concepts::is_array_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
+template <concepts::is_array_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<9>) noexcept;
 
-template <concepts::is_big_int_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
+template <concepts::is_big_int_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<9>) noexcept;
 
-template <typename T, FixedString N>
-constexpr JsoncType serialize_impl(const Renamed<T, N>& t, const Options& options, KeyFormatter kfmt, PriorityTag<8>) noexcept;
+template <concepts::is_renamed T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<8>) noexcept;
 
-template <typename T, FixedString... Args>
-constexpr JsoncType serialize_impl(const Annotated<T, Args...>& t, const Options& options, KeyFormatter kfmt, PriorityTag<7>) noexcept;
+template <concepts::is_annotated T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<7>) noexcept;
 
-template <concepts::is_dispatcher T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<6>) noexcept;
+template <concepts::is_dispatcher T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<6>) noexcept;
 
-template <concepts::is_optional T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<6>) noexcept;
+template <concepts::is_optional T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<6>) noexcept;
 
-template <concepts::is_ranged T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<5>) noexcept;
+template <concepts::is_ranged T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<5>) noexcept;
 
-template <concepts::is_enum T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<5>) noexcept;
+template <concepts::is_enum T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<5>) noexcept;
 
-template <concepts::is_variant T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<4>) noexcept;
+template <concepts::is_variant T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<4>) noexcept;
 
-template <concepts::is_string_convertible T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<3>) noexcept;
+template <concepts::is_string_convertible T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<3>) noexcept;
 
-template <concepts::is_tuple_like T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<3>) noexcept;
+template <concepts::is_tuple_like T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<3>) noexcept;
 
-template <concepts::is_array_like T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<2>) noexcept;
+template <concepts::is_array_like T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<2>) noexcept;
 
-template <concepts::is_associative T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<2>) noexcept;
+template <concepts::is_associative T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<2>) noexcept;
 
-template <concepts::is_aggregate T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<1>) noexcept;
+template <concepts::is_aggregate T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<1>) noexcept;
 
-template <typename T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<0>) noexcept;
+template <typename T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<0>) noexcept;
 
 } // namespace
 
@@ -85,90 +84,90 @@ template <typename T>
     return serialize_impl(t, options, nullptr, PriorityTag<10>{});
 }
 
-template <typename T>
-[[nodiscard]] constexpr JsoncType serialize(const T& t, KeyFormatter key_formatter, const Options& options = {}) noexcept {
+template <typename T, concepts::is_key_formatter F>
+[[nodiscard]] constexpr JsoncType serialize(const T& t, const F& key_formatter, const Options& options = {}) noexcept {
     return serialize_impl(t, options, key_formatter, PriorityTag<10>{});
 }
 
 namespace {
 
-template <concepts::is_arithmetic T>
-constexpr JsoncType serialize_impl(const T& t, const Options&, KeyFormatter, PriorityTag<10>) noexcept {
+template <concepts::is_arithmetic T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options&, const F&, PriorityTag<10>) noexcept {
     return t;
 }
 
-template <concepts::is_boolean_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
+template <concepts::is_boolean_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options&, const F&, PriorityTag<9>) noexcept {
     return static_cast<bool>(Serializer<T>::to_boolean(t));
 }
 
-template <concepts::is_signed_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
+template <concepts::is_signed_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options&, const F&, PriorityTag<9>) noexcept {
     return static_cast<int64_t>(Serializer<T>::to_signed(t));
 }
 
-template <concepts::is_unsigned_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
+template <concepts::is_unsigned_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options&, const F&, PriorityTag<9>) noexcept {
     return static_cast<uint64_t>(Serializer<T>::to_unsigned(t));
 }
 
-template <concepts::is_float_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
+template <concepts::is_float_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options&, const F&, PriorityTag<9>) noexcept {
     auto res = Serializer<T>::to_float(t);
     if constexpr (std::same_as<float, std::remove_cvref_t<decltype(res)>>) { return static_cast<float>(res); }
     return static_cast<double>(res);
 }
 
-template <concepts::is_string_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
+template <concepts::is_string_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options&, const F&, PriorityTag<9>) noexcept {
     return static_cast<std::string>(Serializer<T>::to_string(t));
 }
 
-template <concepts::is_object_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
+template <concepts::is_object_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options&, const F&, PriorityTag<9>) noexcept {
     return static_cast<Object>(Serializer<T>::to_object(t));
 }
 
-template <concepts::is_array_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
+template <concepts::is_array_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options&, const F&, PriorityTag<9>) noexcept {
     return static_cast<Array>(Serializer<T>::to_array(t));
 }
 
-template <concepts::is_big_int_type T>
-constexpr JsoncType serialize_impl(const T& t, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
+template <concepts::is_big_int_type T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options&, const F&, PriorityTag<9>) noexcept {
     return JsoncType::from_big_int(static_cast<std::string>(Serializer<T>::to_big_int(t))).value_or(0);
 }
 
-template <typename T, FixedString N>
-constexpr JsoncType serialize_impl(const Renamed<T, N>& t, const Options& options, KeyFormatter kfmt, PriorityTag<8>) noexcept {
+template <concepts::is_renamed T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<8>) noexcept {
     return serialize_impl(*t, options, kfmt, PriorityTag<10>{});
 }
 
-template <typename T, FixedString... Args>
-constexpr JsoncType serialize_impl(const Annotated<T, Args...>& t, const Options& options, KeyFormatter kfmt, PriorityTag<7>) noexcept {
+template <concepts::is_annotated T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<7>) noexcept {
     auto result = serialize_impl(*t, options, kfmt, PriorityTag<10>{});
     if (t.has_comments()) { result.set_before_comments(t.get_comments()); }
     return result;
 }
 
-template <concepts::is_dispatcher T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<6>) noexcept {
+template <concepts::is_dispatcher T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<6>) noexcept {
     return serialize_impl(*t, options, kfmt, PriorityTag<10>{});
 }
 
-template <concepts::is_optional T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<6>) noexcept {
+template <concepts::is_optional T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<6>) noexcept {
     if (t) { return serialize_impl(*t, options, kfmt, PriorityTag<10>{}); }
     return nullptr;
 }
 
-template <concepts::is_ranged T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<5>) noexcept {
+template <concepts::is_ranged T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<5>) noexcept {
     return serialize_impl(*t, options, kfmt, PriorityTag<10>{});
 }
 
-template <concepts::is_enum T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter, PriorityTag<5>) noexcept {
+template <concepts::is_enum T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F&, PriorityTag<5>) noexcept {
     if (options.enum_cast_prefer_string) {
         if (auto name = magic_enum::enum_name(t); !name.empty()) { return name; }
         if (auto flag = magic_enum::enum_flags_name(t); !flag.empty()) { return flag; }
@@ -176,18 +175,18 @@ constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormat
     return std::to_underlying(t);
 }
 
-template <concepts::is_variant T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<4>) noexcept {
+template <concepts::is_variant T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<4>) noexcept {
     return std::visit([&](const auto& val) { return serialize_impl(val, options, kfmt, PriorityTag<10>{}); }, t);
 }
 
-template <concepts::is_string_convertible T>
-constexpr JsoncType serialize_impl(const T& t, const Options&, KeyFormatter, PriorityTag<3>) noexcept {
+template <concepts::is_string_convertible T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options&, const F&, PriorityTag<3>) noexcept {
     return static_cast<std::string>(t);
 }
 
-template <concepts::is_tuple_like T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<3>) noexcept {
+template <concepts::is_tuple_like T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<3>) noexcept {
     JsoncType res = JsoncType::array();
     std::apply(
         [&](const auto&... args) { (([&](const auto& v) { res.push_back(serialize_impl(v, options, kfmt, PriorityTag<10>{})); }(args)), ...); },
@@ -196,15 +195,15 @@ constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormat
     return res;
 }
 
-template <concepts::is_array_like T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<2>) noexcept {
+template <concepts::is_array_like T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<2>) noexcept {
     JsoncType res = JsoncType::array();
     for (const auto& val : t) { res.push_back(serialize_impl(val, options, kfmt, PriorityTag<10>{})); }
     return res;
 }
 
-template <concepts::is_associative T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<2>) noexcept {
+template <concepts::is_associative T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<2>) noexcept {
     static_assert(
         traits::is_stringifiable_type_v<typename std::remove_cvref_t<T>::key_type>,
         "the key type of the associative container must be convertible to a string"
@@ -214,8 +213,8 @@ constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormat
     return res;
 }
 
-template <concepts::is_aggregate T>
-constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormatter kfmt, PriorityTag<1>) noexcept {
+template <concepts::is_aggregate T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<1>) noexcept {
     auto result = JsoncType::object();
     boost::pfr::for_each_field_with_name(t, [&](std::string_view key, const auto& val) {
         std::string name{key};
@@ -233,8 +232,8 @@ constexpr JsoncType serialize_impl(const T& t, const Options& options, KeyFormat
     return result;
 }
 
-template <typename T>
-constexpr JsoncType serialize_impl(const T&, const Options&, KeyFormatter, PriorityTag<0>) noexcept {
+template <typename T, concepts::is_key_formatter F>
+constexpr JsoncType serialize_impl(const T&, const Options&, const F&, PriorityTag<0>) noexcept {
     static_assert(traits::always_false_v<T>, "type is not reflectable.");
 }
 
