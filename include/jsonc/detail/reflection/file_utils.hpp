@@ -3,7 +3,7 @@
 #include <fstream>
 #include <optional>
 
-namespace jsonc::reflection::detail::file_utils {
+namespace jsonc::reflection::file_utils {
 
 std::optional<std::string> read_file(std::filesystem::path const& path) {
     if (!std::filesystem::exists(path)) { return std::nullopt; }
@@ -18,4 +18,4 @@ bool write_file(std::filesystem::path const& path, std::string_view content) {
     return true;
 }
 
-} // namespace jsonc::reflection::detail::file_utils
+} // namespace jsonc::reflection::file_utils

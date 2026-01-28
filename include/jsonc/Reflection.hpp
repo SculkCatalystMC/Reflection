@@ -20,18 +20,18 @@ bool load_config(T& t, const std::filesystem::path& path, const Options& options
     bool                     result{false};
     std::optional<JsoncType> data{};
 
-    if (auto content = detail::file_utils::read_file(path)) {
+    if (auto content = file_utils::read_file(path)) {
         data = parse(*content, options.allow_trailing_comma, options.ignore_comments);
         if (data) { result = deserialize(t, *data, options); }
     }
 
-    if ((options.overwrite_policy == OverwritePolicy::Error && !result) || options.overwrite_policy == OverwritePolicy::Always) {
+    if (options.always_overwrite || (options.overwrite_when_error && !result)) {
         JsoncType res = serialize(t, options);
         if (options.keep_extra_comments && data && !options.ignore_comments) {
             data->move_comments_to_before();
             res.merge_comments(*data);
         }
-        detail::file_utils::write_file(path, res.dump(options.indent, options.ensure_ascii, options.ignore_comments));
+        file_utils::write_file(path, res.dump(options.indent, options.ensure_ascii, options.ignore_comments));
     }
 
     return result;

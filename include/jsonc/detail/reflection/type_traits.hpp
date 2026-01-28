@@ -64,8 +64,21 @@ constexpr bool is_tuple_like_v = requires(T t) {
     }(std::forward<T>(t), std::make_index_sequence<std::tuple_size<std::remove_cvref_t<T>>::value>{});
 };
 
+namespace {
+
 template <typename T>
-constexpr bool is_array_like_v = is_range_loopable_v<T> && !requires { typename std::remove_cvref_t<T>::mapped_type; };
+constexpr bool has_emplace_back_method_v = requires {
+    { std::declval<T>().emplace_back() } -> std::same_as<typename std::remove_cvref_t<T>::value_type&>;
+};
+
+template <typename T>
+constexpr bool has_insert_method_v = requires(typename std::remove_cvref_t<T>::value_type&& v) { std::declval<T>().insert(v); };
+
+} // namespace
+
+template <typename T>
+constexpr bool is_array_like_v = is_range_loopable_v<T> && (has_emplace_back_method_v<T> || has_insert_method_v<T>)
+                              && !requires { typename std::remove_cvref_t<T>::mapped_type; } && requires { std::declval<T>().clear(); };
 
 template <typename T>
 constexpr bool is_dispatcher_v = requires(T t) {
@@ -82,7 +95,7 @@ template <typename T>
 constexpr bool is_reflectable_v = std::is_aggregate_v<std::remove_cvref_t<T>>;
 
 template <typename T>
-constexpr bool is_associative_v = is_range_loopable_v<T> && requires {
+constexpr bool is_associative_v = is_range_loopable_v<T> && requires { std::declval<T>().clear(); } && requires {
     typename std::remove_cvref_t<T>::key_type;
     typename std::remove_cvref_t<T>::mapped_type;
 };

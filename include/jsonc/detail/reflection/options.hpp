@@ -3,21 +3,16 @@
 
 namespace jsonc::reflection {
 
-enum class OverwritePolicy : uint8_t {
-    Error   = 0,
-    Always  = 1,
-    Never   = 2,
-    Default = Error,
-};
-
 struct Options {
-    int             indent{4};
-    bool            ignore_comments{false};
-    bool            allow_trailing_comma{true};
-    bool            ensure_ascii{false};
-    bool            keep_null{false};
-    OverwritePolicy overwrite_policy{OverwritePolicy::Default};
-    bool            keep_extra_comments{true};
+    int  indent{4};
+    bool ignore_comments{false};
+    bool allow_trailing_comma{true};
+    bool ensure_ascii{false};
+    bool keep_null{false};
+    bool always_overwrite{true};
+    bool overwrite_when_error{true};
+    bool keep_extra_comments{true};
+    bool enum_cast_prefer_string{true};
 };
 
 } // namespace jsonc::reflection

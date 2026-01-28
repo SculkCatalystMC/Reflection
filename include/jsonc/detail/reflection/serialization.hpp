@@ -9,7 +9,7 @@
 
 namespace jsonc::reflection {
 
-namespace detail {
+namespace {
 
 template <concepts::is_arithmetic T>
 inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<10>) noexcept;
@@ -77,7 +77,7 @@ inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<
 template <typename T>
 inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<0>) noexcept;
 
-} // namespace detail
+} // namespace
 
 template <typename T>
 [[nodiscard]] inline JsoncType serialize(const T& t, const Options& options = {}) noexcept
@@ -87,15 +87,15 @@ template <typename T>
     )
 {
     if constexpr (traits::is_annotated_v<std::remove_cvref_t<decltype(t)>>) {
-        auto result = detail::serialize_impl(*t, options, PriorityTag<10>{});
+        auto result = serialize_impl(*t, options, PriorityTag<10>{});
         result.set_before_comments(t.get_comments());
         return result;
     } else {
-        return detail::serialize_impl(t, options, PriorityTag<10>{});
+        return serialize_impl(t, options, PriorityTag<10>{});
     }
 }
 
-namespace detail {
+namespace {
 
 template <concepts::is_arithmetic T>
 inline JsoncType serialize_impl(const T& t, const Options&, PriorityTag<10>) noexcept {
@@ -173,9 +173,11 @@ inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<
 }
 
 template <concepts::is_enum T>
-inline JsoncType serialize_impl(const T& t, const Options&, PriorityTag<5>) noexcept {
-    if (auto name = magic_enum::enum_name(t); !name.empty()) { return name; }
-    if (auto flag = magic_enum::enum_flags_name(t); !flag.empty()) { return flag; }
+inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<5>) noexcept {
+    if (options.enum_cast_prefer_string) {
+        if (auto name = magic_enum::enum_name(t); !name.empty()) { return name; }
+        if (auto flag = magic_enum::enum_flags_name(t); !flag.empty()) { return flag; }
+    }
     return std::to_underlying(t);
 }
 
@@ -210,7 +212,7 @@ inline JsoncType serialize_impl(const T& t, const Options& options, PriorityTag<
         "the key type of the associative container must be convertible to a string"
     );
     JsoncType res = JsoncType::object();
-    for (const auto& [key, val] : t) { res[detail::string_utils::type_to_string(key)] = serialize_impl(val, options, PriorityTag<10>{}); }
+    for (const auto& [key, val] : t) { res[string_utils::detail::type_to_string(key)] = serialize_impl(val, options, PriorityTag<10>{}); }
     return res;
 }
 
@@ -236,6 +238,6 @@ inline JsoncType serialize_impl(const T&, const Options&, PriorityTag<0>) noexce
     static_assert(traits::always_false_v<T>, "type is not reflectable.");
 }
 
-} // namespace detail
+} // namespace
 
 } // namespace jsonc::reflection

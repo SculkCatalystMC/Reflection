@@ -1,4 +1,5 @@
 #include "jsonc/reflection.hpp"
+#include <set>
 
 using namespace jsonc::reflection;
 
@@ -40,12 +41,12 @@ struct Config {
     float                                                       test_6  = 26781.234;
     int16_t                                                     test_7  = -2671;
     std::optional<uint8_t>                                      test_8  = {123};
-    std::string_view                                            test_9  = "sv test";
+    std::string                                                 test_9  = "str test";
     TestType1                                                   test_10 = {123.456};
     Ranged<short, -3, 5678>                                     test_11 = 23345;
     TestEnum                                                    test_12 = TestEnum(3);
     TestEnumFlag                                                test_13 = TestEnumFlag(6);
-    std::variant<bool, float>                                   test_14 = 2.345f;
+    std::variant<bool, float, int, uint64_t>                    test_14 = 2.345f;
     std::tuple<int, int, std::string, float, TestEnum>          test_15 = {234, -3782, "wyuhdsj", 7.492f, TestEnum::BBB};
     std::list<int>                                              test_16 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     std::vector<std::string>                                    test_17 = {"xxxxx", "yyyyy"};
@@ -62,6 +63,7 @@ struct Config {
         int                         xxxxx = 123;
         Annotated<double, "double"> yyyyy = 64738.543;
     } test_23;
+    std::set<int> test_24 = {1, 23, 456};
 };
 
 int main() {
