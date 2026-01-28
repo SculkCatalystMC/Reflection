@@ -46,4 +46,6 @@ constexpr std::optional<T> string_to_type(std::string_view sv) noexcept {
 
 } // namespace detail
 
+using KeyFormatter = const std::function<std::string(std::string_view)>&;
+
 } // namespace jsonc::reflection

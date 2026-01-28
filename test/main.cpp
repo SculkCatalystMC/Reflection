@@ -68,6 +68,6 @@ struct Config {
 
 int main() {
     Annotated<Config, "test config", "xxxxx"> settings;
-    jsonc::reflection::load_config(settings, "./test.jsonc", {.keep_extra_comments = false});
+    jsonc::reflection::load_file(settings, "./test.jsonc", {.keep_extra_comments = false});
     return 0;
 }

@@ -8,94 +8,86 @@
 #include <magic_enum/magic_enum.hpp>
 #include <magic_enum/magic_enum_flags.hpp>
 
-#include <print>
-
 namespace jsonc::reflection {
 
 namespace {
 
 template <concepts::is_arithmetic T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<10>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<10>) noexcept;
 
 template <concepts::is_boolean_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
 
 template <concepts::is_signed_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
 
 template <concepts::is_unsigned_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
 
 template <concepts::is_float_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
 
 template <concepts::is_string_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
 
 template <concepts::is_object_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
 
 template <concepts::is_array_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
 
 template <concepts::is_big_int_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<9>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<9>) noexcept;
 
 template <typename T, FixedString N>
-constexpr bool deserialize_impl(Renamed<T, N>& t, const JsoncType& j, const Options& options, PriorityTag<8>) noexcept;
+constexpr bool deserialize_impl(Renamed<T, N>& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<8>) noexcept;
 
 template <typename T, FixedString... Args>
-constexpr bool deserialize_impl(Annotated<T, Args...>& t, const JsoncType& j, const Options& options, PriorityTag<7>) noexcept;
+constexpr bool deserialize_impl(Annotated<T, Args...>& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<7>) noexcept;
 
 template <concepts::is_dispatcher T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<6>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<6>) noexcept;
 
 template <concepts::is_optional T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<6>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<6>) noexcept;
 
 template <concepts::is_ranged T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<5>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<5>) noexcept;
 
 template <concepts::is_enum T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<5>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<5>) noexcept;
 
 template <concepts::is_variant T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<4>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<4>) noexcept;
 
 template <concepts::is_string_convertible T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<3>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<3>) noexcept;
 
 template <concepts::is_tuple_like T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<3>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<3>) noexcept;
 
 template <concepts::is_array_like T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<2>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<2>) noexcept;
 
 template <concepts::is_associative T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<2>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<2>) noexcept;
 
 template <concepts::is_aggregate T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<1>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<1>) noexcept;
 
 template <typename T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<0>) noexcept;
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<0>) noexcept;
 
 } // namespace
 
 template <typename T>
-[[nodiscard]] constexpr bool deserialize(T& t, const JsoncType& j, const Options& options = {}) noexcept
-    requires(
-        traits::is_reflectable_v<std::remove_cvref_t<decltype(t)>>
-        || (traits::is_reflectable_v<std::remove_cvref_t<decltype(*t)>> && traits::is_annotated_v<std::remove_cvref_t<decltype(t)>>)
-    )
-{
-    if constexpr (traits::is_annotated_v<std::remove_cvref_t<decltype(t)>>) {
-        bool result = deserialize_impl(*t, j, options, PriorityTag<10>{});
-        t.set_comments(j.get_before_comments());
-        return result;
-    } else {
-        return deserialize_impl(t, j, options, PriorityTag<10>{});
-    }
+[[nodiscard]] constexpr bool deserialize(T& t, const JsoncType& j, KeyFormatter key_formatter, const Options& options = {}) noexcept {
+    return deserialize_impl(t, j, options, key_formatter, PriorityTag<10>{});
+}
+
+template <typename T>
+[[nodiscard]] constexpr bool deserialize(T& t, const JsoncType& j, const Options& options = {}) noexcept {
+    return deserialize_impl(t, j, options, nullptr, PriorityTag<10>{});
 }
 
 namespace {
@@ -142,7 +134,6 @@ constexpr std::vector<std::string> extract_key_comments(const JsoncType& j, std:
     if (j.has_key_after_comments(key)) { result.append_range(j.get_key_after_comments(key)); }
     result.append_range(j[key].get_before_comments());
     result.append_range(j[key].get_after_comments());
-    if (!result.empty()) { std::println("{}", result); }
     return result;
 }
 
@@ -175,7 +166,7 @@ constexpr void apply_key_comments(T&, const JsoncType&, std::string_view, Priori
 } // namespace
 
 template <concepts::is_arithmetic T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<10>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<10>) noexcept {
     using RT = std::remove_cvref_t<T>;
     if constexpr (std::same_as<RT, bool>) {
         if (j.is_boolean()) {
@@ -192,7 +183,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, Priori
 }
 
 template <concepts::is_boolean_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
     if (!j.is_boolean()) { return false; }
     auto res = Serializer<T>::from_boolean(j.get<bool>());
     if (res) { t = *res; }
@@ -200,7 +191,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, Priori
 }
 
 template <concepts::is_signed_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
     if (!j.is_number_signed()) { return false; }
     auto res = Serializer<T>::from_signed(j.get<int64_t>());
     if (res) { t = *res; }
@@ -208,7 +199,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, Priori
 }
 
 template <concepts::is_unsigned_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
     if (!j.is_number_unsigned()) { return false; }
     auto res = Serializer<T>::from_unsigned(j.get<uint64_t>());
     if (res) { t = *res; }
@@ -216,7 +207,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, Priori
 }
 
 template <concepts::is_float_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
     if (!j.is_number_float()) { return false; }
     auto res = Serializer<T>::from_float(j.get<double>());
     if (res) { t = *res; }
@@ -224,7 +215,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, Priori
 }
 
 template <concepts::is_string_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
     if (!j.is_string()) { return false; }
     auto res = Serializer<T>::from_string(j.as<std::string>());
     if (res) { t = *res; }
@@ -232,7 +223,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, Priori
 }
 
 template <concepts::is_object_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
     if (!j.is_object()) { return false; }
     auto res = Serializer<T>::from_object(j.as<Object>());
     if (res) { t = *res; }
@@ -240,7 +231,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, Priori
 }
 
 template <concepts::is_array_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
     if (!j.is_array()) { return false; }
     auto res = Serializer<T>::from_array(j.as<Array>());
     if (res) { t = *res; }
@@ -248,7 +239,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, Priori
 }
 
 template <concepts::is_big_int_type T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<9>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
     if (!j.is_number_any_inteager()) { return false; }
     auto res = Serializer<T>::from_big_int(j.get_any_int_view());
     if (res.has_value()) { t = *res; }
@@ -256,26 +247,26 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, Priori
 }
 
 template <typename T, FixedString N>
-constexpr bool deserialize_impl(Renamed<T, N>& t, const JsoncType& j, const Options& options, PriorityTag<8>) noexcept {
-    return deserialize_impl(*t, j, options, PriorityTag<10>{});
+constexpr bool deserialize_impl(Renamed<T, N>& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<8>) noexcept {
+    return deserialize_impl(*t, j, options, kfmt, PriorityTag<10>{});
 }
 
 template <typename T, FixedString... Args>
-constexpr bool deserialize_impl(Annotated<T, Args...>& t, const JsoncType& j, const Options& options, PriorityTag<7>) noexcept {
+constexpr bool deserialize_impl(Annotated<T, Args...>& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<7>) noexcept {
     t.set_comments(extract_value_comments(j));
-    return deserialize_impl(*t, j, options, PriorityTag<10>{});
+    return deserialize_impl(*t, j, options, kfmt, PriorityTag<10>{});
 }
 
 template <concepts::is_dispatcher T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<6>) noexcept {
-    return deserialize_impl(*t, j, options, PriorityTag<10>{});
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<6>) noexcept {
+    return deserialize_impl(*t, j, options, kfmt, PriorityTag<10>{});
 }
 
 template <concepts::is_optional T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<6>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<6>) noexcept {
     if (!j.is_null()) {
         t.emplace();
-        return deserialize_impl(*t, j, options, PriorityTag<10>{});
+        return deserialize_impl(*t, j, options, kfmt, PriorityTag<10>{});
     } else {
         t = std::nullopt;
         return true;
@@ -283,14 +274,14 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options
 }
 
 template <concepts::is_ranged T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<5>) noexcept {
-    auto result = deserialize_impl(*t, j, options, PriorityTag<10>{});
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<5>) noexcept {
+    auto result = deserialize_impl(*t, j, options, kfmt, PriorityTag<10>{});
     t.fix_range();
     return result;
 }
 
 template <concepts::is_enum T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<5>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<5>) noexcept {
     using RT = std::remove_cvref_t<T>;
     if (j.is_string()) {
         auto str = j.get<std::string>();
@@ -313,7 +304,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, Priori
 }
 
 template <concepts::is_variant T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<4>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<4>) noexcept {
     bool result{false};
     for_each_type_in_variant<T>([&]<typename Ts> {
         if (!result) {
@@ -327,7 +318,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options
     for_each_type_in_variant<T>([&]<typename Ts> {
         if (!result) {
             Ts temp{};
-            result = deserialize_impl(temp, j, options, PriorityTag<10>{});
+            result = deserialize_impl(temp, j, options, kfmt, PriorityTag<10>{});
             if (result) { t = std::move(temp); }
         }
     });
@@ -335,7 +326,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options
 }
 
 template <concepts::is_string_convertible T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, PriorityTag<3>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<3>) noexcept {
     if (j.is_string()) {
         t = j.get<std::string>();
         return true;
@@ -344,7 +335,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, Priori
 }
 
 template <concepts::is_tuple_like T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<3>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<3>) noexcept {
     if (!j.is_array()) { return false; }
     if (j.size() != std::tuple_size_v<T>) { return false; }
     bool result{true};
@@ -352,7 +343,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options
         [&](auto&... args) {
             size_t index{0};
             (([&](auto& arg) {
-                 result &= deserialize_impl(arg, j[index], options, PriorityTag<10>{});
+                 result &= deserialize_impl(arg, j[index], options, kfmt, PriorityTag<10>{});
                  index++;
              }(args)),
              ...);
@@ -363,16 +354,16 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options
 }
 
 template <concepts::is_array_like T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<2>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<2>) noexcept {
     if (!j.is_array()) { return false; }
     t.clear();
     bool result{true};
     for (size_t i = 0; i < j.size(); i++) {
         if constexpr (traits::has_emplace_back_method_v<T>) {
-            result &= deserialize_impl(t.emplace_back(), j[i], options, PriorityTag<10>{});
+            result &= deserialize_impl(t.emplace_back(), j[i], options, kfmt, PriorityTag<10>{});
         } else {
             typename std::remove_cvref_t<T>::value_type temp{};
-            result &= deserialize_impl(temp, j[i], options, PriorityTag<10>{});
+            result &= deserialize_impl(temp, j[i], options, kfmt, PriorityTag<10>{});
             t.insert(std::move(temp));
         }
     }
@@ -380,7 +371,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options
 }
 
 template <concepts::is_associative T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<2>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<2>) noexcept {
     using KT = typename std::remove_cvref_t<T>::key_type;
     static_assert(traits::is_stringifiable_type_v<KT>, "the key type of the associative container must be convertible to a string");
 
@@ -389,7 +380,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options
     t.clear();
     for (const auto& [k, v] : j.items()) {
         if (auto kt = detail::string_to_type<KT>(k)) {
-            result &= deserialize_impl(t[*kt], v, options, PriorityTag<10>{});
+            result &= deserialize_impl(t[*kt], v, options, kfmt, PriorityTag<10>{});
             continue;
         }
         result &= false;
@@ -398,13 +389,15 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options
 }
 
 template <concepts::is_aggregate T>
-constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, PriorityTag<1>) noexcept {
+constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, KeyFormatter kfmt, PriorityTag<1>) noexcept {
     if (j.is_object()) {
         bool result{true};
-        boost::pfr::for_each_field_with_name(t, [&](std::string_view name, auto& val) {
+        boost::pfr::for_each_field_with_name(t, [&](std::string_view key, auto& val) {
+            std::string name{key};
+            if (kfmt) { name = kfmt(key); }
             if constexpr (traits::is_renamed_v<decltype(val)>) { name = val.view(); }
             if (j.contains(name)) {
-                result &= deserialize_impl(val, j[name], options, PriorityTag<10>{});
+                result &= deserialize_impl(val, j[name], options, kfmt, PriorityTag<10>{});
                 apply_key_comments(val, j, name, PriorityTag<2>{});
             }
         });
@@ -414,7 +407,7 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options
 }
 
 template <typename T>
-constexpr bool deserialize_impl(T&, const JsoncType&, const Options&, PriorityTag<0>) noexcept {
+constexpr bool deserialize_impl(T&, const JsoncType&, const Options&, KeyFormatter, PriorityTag<0>) noexcept {
     static_assert(traits::always_false_v<T>, "type is not reflectable.");
 }
 

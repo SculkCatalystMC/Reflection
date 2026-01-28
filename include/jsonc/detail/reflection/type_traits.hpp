@@ -92,9 +92,6 @@ template <typename T>
 constexpr bool is_variant_v = requires { typename std::variant_size<std::remove_cvref_t<T>>::type; };
 
 template <typename T>
-constexpr bool is_reflectable_v = std::is_aggregate_v<std::remove_cvref_t<T>>;
-
-template <typename T>
 constexpr bool is_associative_v = is_range_loopable_v<T> && requires { std::declval<T>().clear(); } && requires {
     typename std::remove_cvref_t<T>::key_type;
     typename std::remove_cvref_t<T>::mapped_type;
@@ -212,6 +209,10 @@ constexpr bool is_jsonc_type_v = std::convertible_to<std::remove_cvref_t<T>, Jso
 
 template <typename T>
 constexpr bool is_stringifiable_type_v = is_string_type_v<T> || is_string_convertible_v<T> || std::is_enum_v<T>;
+
+template <typename T>
+constexpr bool is_reflectable_v = std::is_aggregate_v<T> || is_object_serializable_v<T> || is_array_serializable_v<T> || is_associative_v<T>
+                               || is_array_like_v<T> || is_tuple_like_v<T>;
 
 } // namespace traits
 
