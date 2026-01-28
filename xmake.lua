@@ -2,13 +2,17 @@ add_rules("mode.debug", "mode.release")
 
 add_repositories("divanadiumpentaoxide-repo https://github.com/DivanadiumPentaoxide/xmake-repo.git")
 
-add_requires("jsonc 20260128-2")
+add_requires("jsonc 20260128-3")
 add_requires("boost_pfr 20260104")
 add_requires("magic_enum 0.9.7")
 
-if is_plat("windows") and not has_config("vs_runtime") then
-    set_runtimes("MD")
-    set_toolchains("clang-cl")
+if is_plat("windows") then 
+    if not has_config("vs_runtime") then
+        set_runtimes("MD")
+    end
+    set_toolchains("msvc")
+else
+    set_toolchains("clang")
 end
 
 target("test")
@@ -31,7 +35,7 @@ target("test")
         )
         add_cxflags("/utf-8", "/W4")
     else 
-        add_cxflags("-Wall", "-stdlib=libc++")
+        add_cxflags("-Wall", "-Wextra", "-stdlib=libc++")
         add_syslinks("c++")
     end
 

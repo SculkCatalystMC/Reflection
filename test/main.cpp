@@ -1,4 +1,5 @@
 #include "jsonc/reflection.hpp"
+#include <list>
 #include <set>
 
 using namespace jsonc::reflection;
@@ -38,11 +39,11 @@ struct Config {
     Renamed<Annotated<std::string, "738whdbhahisdS">, "test-3"> test_3  = "test string with renamed key and comments";
     int                                                         test_4  = 232123;
     double                                                      test_5  = 3.526781;
-    float                                                       test_6  = 26781.234;
+    float                                                       test_6  = 26781.234f;
     int16_t                                                     test_7  = -2671;
     std::optional<uint8_t>                                      test_8  = {123};
     std::string                                                 test_9  = "str test";
-    TestType1                                                   test_10 = {123.456};
+    TestType1                                                   test_10 = {123.456f};
     Ranged<short, -3, 5678>                                     test_11 = 23345;
     TestEnum                                                    test_12 = TestEnum(3);
     TestEnumFlag                                                test_13 = TestEnumFlag(6);
@@ -59,7 +60,7 @@ struct Config {
         {{TestEnum::AAA, false}, {TestEnum::BBB, 123456}, {TestEnum::CCC, "test 21"}}
     };
     TestType2 test_22 = {"123456787654323456789824324543454323456765432345676543765432345678"};
-    struct {
+    struct Test24 {
         int                         xxxxx = 123;
         Annotated<double, "double"> yyyyy = 64738.543;
     } test_23;
@@ -67,7 +68,7 @@ struct Config {
 };
 
 int main() {
-    Annotated<Config, "test config", "xxxxx"> settings;
+    Annotated<std::variant<Config, std::vector<int>>, "test config", "xxxxx"> settings;
     jsonc::reflection::load_file(settings, "./test.jsonc", {.keep_extra_comments = false});
     return 0;
 }

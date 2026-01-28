@@ -214,6 +214,17 @@ template <typename T>
 constexpr bool is_reflectable_v = std::is_aggregate_v<T> || is_object_serializable_v<T> || is_array_serializable_v<T> || is_associative_v<T>
                                || is_array_like_v<T> || is_tuple_like_v<T>;
 
+template <typename>
+struct serializer_arg {};
+
+template <typename R, typename A0>
+struct serializer_arg<R (*)(A0) noexcept> {
+    using arg_type = A0;
+};
+
+template <typename F>
+using serializer_arg_t = typename serializer_arg<F>::arg_type;
+
 } // namespace traits
 
 } // namespace jsonc::reflection

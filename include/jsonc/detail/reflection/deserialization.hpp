@@ -104,17 +104,17 @@ constexpr bool deserialize_arithmetic_force_match(T& t, const JsoncType& j, cons
         }
     } else if constexpr (std::is_floating_point_v<RT>) {
         if (j.is_number_float()) {
-            t = j.get<double>();
+            t = static_cast<RT>(j.get<double>());
             return true;
         }
     } else if constexpr (std::is_signed_v<RT>) {
         if (j.is_number_signed()) {
-            t = j.get<int64_t>();
+            t = static_cast<RT>(j.get<int64_t>());
             return true;
         }
     } else {
         if (j.is_number_unsigned()) {
-            t = j.get<uint64_t>();
+            t = static_cast<RT>(j.get<uint64_t>());
             return true;
         }
     }
@@ -128,7 +128,7 @@ constexpr void for_each_type_in_variant(F&& f) {
     }(std::type_identity<std::remove_cvref_t<T>>{});
 }
 
-constexpr std::vector<std::string> extract_key_comments(const JsoncType& j, std::string_view key) noexcept {
+inline std::vector<std::string> extract_key_comments(const JsoncType& j, std::string_view key) noexcept {
     std::vector<std::string> result{};
     if (j.has_key_before_comments(key)) { result.append_range(j.get_key_before_comments(key)); }
     if (j.has_key_after_comments(key)) { result.append_range(j.get_key_after_comments(key)); }
@@ -137,7 +137,7 @@ constexpr std::vector<std::string> extract_key_comments(const JsoncType& j, std:
     return result;
 }
 
-constexpr std::vector<std::string> extract_value_comments(const JsoncType& j) noexcept {
+inline std::vector<std::string> extract_value_comments(const JsoncType& j) noexcept {
     std::vector<std::string> result{};
     result.append_range(j.get_before_comments());
     result.append_range(j.get_after_comments());
@@ -185,7 +185,8 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFor
 template <concepts::is_boolean_type T>
 constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
     if (!j.is_boolean()) { return false; }
-    auto res = Serializer<T>::from_boolean(j.get<bool>());
+    using AT = traits::serializer_arg_t<decltype(&Serializer<T>::from_boolean)>;
+    auto res = Serializer<T>::from_boolean(static_cast<AT>(j.get<bool>()));
     if (res) { t = *res; }
     return res.has_value();
 }
@@ -193,7 +194,8 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFor
 template <concepts::is_signed_type T>
 constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
     if (!j.is_number_signed()) { return false; }
-    auto res = Serializer<T>::from_signed(j.get<int64_t>());
+    using AT = traits::serializer_arg_t<decltype(&Serializer<T>::from_signed)>;
+    auto res = Serializer<T>::from_signed(static_cast<AT>(j.get<int64_t>()));
     if (res) { t = *res; }
     return res.has_value();
 }
@@ -201,7 +203,8 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFor
 template <concepts::is_unsigned_type T>
 constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
     if (!j.is_number_unsigned()) { return false; }
-    auto res = Serializer<T>::from_unsigned(j.get<uint64_t>());
+    using AT = traits::serializer_arg_t<decltype(&Serializer<T>::from_unsigned)>;
+    auto res = Serializer<T>::from_unsigned(static_cast<AT>(j.get<uint64_t>()));
     if (res) { t = *res; }
     return res.has_value();
 }
@@ -209,7 +212,8 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFor
 template <concepts::is_float_type T>
 constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
     if (!j.is_number_float()) { return false; }
-    auto res = Serializer<T>::from_float(j.get<double>());
+    using AT = traits::serializer_arg_t<decltype(&Serializer<T>::from_float)>;
+    auto res = Serializer<T>::from_float(static_cast<AT>(j.get<double>()));
     if (res) { t = *res; }
     return res.has_value();
 }
@@ -217,7 +221,8 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFor
 template <concepts::is_string_type T>
 constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options&, KeyFormatter, PriorityTag<9>) noexcept {
     if (!j.is_string()) { return false; }
-    auto res = Serializer<T>::from_string(j.as<std::string>());
+    using AT = traits::serializer_arg_t<decltype(&Serializer<T>::from_string)>;
+    auto res = Serializer<T>::from_string(static_cast<AT>(j.as<std::string>()));
     if (res) { t = *res; }
     return res.has_value();
 }
