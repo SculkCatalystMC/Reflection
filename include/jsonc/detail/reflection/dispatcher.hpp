@@ -3,11 +3,11 @@
 
 namespace jsonc::reflection {
 
-template <typename T, concepts::is_dispatcher_listener<T> _Listener, bool _CallInit = false>
+template <typename T, concepts::is_dispatcher_listener<T> L, bool _CallInit = false>
 class Dispatcher {
 public:
     using storage_type  = T;
-    using listener_type = _Listener;
+    using listener_type = L;
 
     void call() noexcept { listener_.call(storage_); }
 
@@ -42,8 +42,8 @@ public:
     T* operator->() noexcept { return &storage_; }
 
 private:
-    T         storage_;
-    _Listener listener_;
+    T storage_;
+    L listener_;
 };
 
 } // namespace jsonc::reflection
