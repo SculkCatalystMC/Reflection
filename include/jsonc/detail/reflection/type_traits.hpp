@@ -231,11 +231,6 @@ constexpr bool is_key_formatter_v = requires(F f, std::string_view sv) {
     requires noexcept(f(sv));
 };
 
-template <typename T, typename Arg>
-constexpr bool is_dispatcher_listener_v = std::default_initializable<T> && std::is_nothrow_default_constructible_v<T> && requires(T l, Arg a) {
-    { l.call(a) } noexcept;
-};
-
 } // namespace traits
 
 } // namespace jsonc::reflection

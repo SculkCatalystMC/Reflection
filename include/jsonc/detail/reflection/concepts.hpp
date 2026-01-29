@@ -86,7 +86,9 @@ concept is_stringifiable_type = traits::is_stringifiable_type_v<std::remove_cvre
 template <typename F>
 concept is_key_formatter = traits::is_key_formatter_v<std::remove_cvref_t<F>>;
 
-template <typename T>
-concept is_dispatcher_listener = traits::is_dispatcher_listener_v<std::remove_cvref_t<T>>;
+template <typename T, typename Arg>
+concept is_dispatcher_listener = std::default_initializable<T> && std::is_nothrow_default_constructible_v<T> && requires(T l, Arg a) {
+    { l.call(a) } noexcept;
+};
 
 } // namespace jsonc::reflection::concepts

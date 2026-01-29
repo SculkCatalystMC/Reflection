@@ -3,7 +3,7 @@
 
 namespace jsonc::reflection {
 
-template <typename T, concepts::is_dispatcher_listener _Listener, bool _CallInit = false>
+template <typename T, concepts::is_dispatcher_listener<T> _Listener, bool _CallInit = false>
 class Dispatcher {
 public:
     using storage_type  = T;
