@@ -1,9 +1,9 @@
 #pragma once
-#include <concepts>
+#include "jsonc/detail/reflection/concepts.hpp"
 
 namespace jsonc::reflection {
 
-template <typename T, std::default_initializable _Listener, bool _CallInit = false>
+template <typename T, concepts::is_dispatcher_listener _Listener, bool _CallInit = false>
 class Dispatcher {
 public:
     using storage_type  = T;
