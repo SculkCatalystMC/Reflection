@@ -1,5 +1,6 @@
 #include "jsonc/reflection.hpp"
 #include <list>
+#include <print>
 #include <set>
 
 namespace jr = jsonc::reflection;
@@ -33,6 +34,16 @@ enum class TestEnum { AAA = 0, BBB = 1, CCC = 2, DDD = 3 };
 
 enum class TestEnumFlag { AAA = 0, BBB = 1 << 0, CCC = 1 << 1, DDD = 1 << 2, EEE = BBB | DDD };
 
+struct Test26 {
+    void call(bool enable) noexcept {
+        if (enable) {
+            std::println("enable");
+        } else {
+            { std::println("disable"); }
+        }
+    }
+};
+
 struct Config {
     std::string                                                         test_1  = "test string";
     jr::Annotated<std::string, "xiwhgasdjjhoikwq">                      test_2  = "test string with comments";
@@ -64,8 +75,9 @@ struct Config {
         int                             xxxxx = 123;
         jr::Annotated<double, "double"> yyyyy = 64738.543;
     } test_23;
-    std::set<int>              test_24 = {1, 23, 456};
-    std::vector<jsonc::Object> test_25{};
+    std::set<int>                test_24 = {1, 23, 456};
+    std::vector<jsonc::Object>   test_25{};
+    jr::Dispatcher<bool, Test26> test_26{false};
 };
 
 int main() {

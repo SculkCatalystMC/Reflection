@@ -84,7 +84,6 @@ template <typename T>
 constexpr bool is_dispatcher_v = requires(T t) {
     typename std::remove_cvref_t<T>::storage_type;
     typename std::remove_cvref_t<T>::listener_type;
-    t.storage_;
     t.call();
 };
 

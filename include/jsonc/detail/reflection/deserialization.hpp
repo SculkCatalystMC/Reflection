@@ -264,7 +264,9 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options
 
 template <concepts::is_dispatcher T, concepts::is_key_formatter F>
 constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, const F& kfmt, PriorityTag<6>) noexcept {
-    return deserialize_impl(*t, j, options, kfmt, PriorityTag<10>{});
+    auto res = deserialize_impl(*t, j, options, kfmt, PriorityTag<10>{});
+    t.call();
+    return res;
 }
 
 template <concepts::is_optional T, concepts::is_key_formatter F>
