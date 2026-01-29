@@ -1,18 +1,30 @@
 #pragma once
 #include <cstdint>
+#include <filesystem>
+#include <string>
 
 namespace jsonc::reflection {
 
+enum class RewritePolicy {
+    Always   = 0,
+    OnFormat = 1,
+    OnError  = 2,
+    Never    = 3,
+};
+
 struct Options {
-    int  indent{4};
-    bool ignore_comments{false};
-    bool allow_trailing_comma{true};
-    bool ensure_ascii{false};
-    bool keep_null{false};
-    bool always_overwrite{true};
-    bool overwrite_when_error{true};
-    bool keep_extra_comments{true};
-    bool enum_cast_prefer_string{true};
+    int                   indent{4};
+    bool                  ignore_comments{false};
+    bool                  allow_trailing_comma{true};
+    bool                  ensure_ascii{false};
+    bool                  keep_null{false};
+    bool                  keep_extra_comments{true};
+    bool                  enum_cast_prefer_string{true};
+    bool                  multi_line_comments_format{true};
+    RewritePolicy         rewrite_policy{};
+    bool                  back_up_file_on_error{true};
+    std::filesystem::path back_up_file_folder{};
+    std::string           back_up_time_suffix{"-%Y%m%d-%H_%M_%S"};
 };
 
 } // namespace jsonc::reflection
