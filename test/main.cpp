@@ -35,13 +35,7 @@ enum class TestEnum { AAA = 0, BBB = 1, CCC = 2, DDD = 3 };
 enum class TestEnumFlag { AAA = 0, BBB = 1 << 0, CCC = 1 << 1, DDD = 1 << 2, EEE = BBB | DDD };
 
 struct Test26 {
-    void call(bool enable) noexcept {
-        if (enable) {
-            std::println("enable");
-        } else {
-            { std::println("disable"); }
-        }
-    }
+    void call(std::string_view val) noexcept { std::println("value: {}", val); }
 };
 
 struct Config {
@@ -75,9 +69,9 @@ struct Config {
         int                             xxxxx = 123;
         jr::Annotated<double, "double"> yyyyy = 64738.543;
     } test_23;
-    std::set<int>                test_24 = {1, 23, 456};
-    std::vector<jsonc::Object>   test_25{};
-    jr::Dispatcher<bool, Test26> test_26{false};
+    std::set<int>                       test_24 = {1, 23, 456};
+    std::vector<jsonc::Object>          test_25{};
+    jr::Dispatcher<std::string, Test26> test_26{};
 };
 
 int main() {
