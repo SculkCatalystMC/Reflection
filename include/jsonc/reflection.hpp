@@ -13,21 +13,21 @@ namespace jsonc::reflection {
 
 template <typename T, concepts::is_key_formatter F>
 bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, const Options& options = {}) noexcept {
-    bool                     result{false};
-    std::optional<JsoncType> data{};
+    JsoncType data{};
 
     std::optional<std::string> content = file_utils::read_file(path);
     if (content) {
-        data = parse(*content, options.allow_trailing_comma, options.ignore_comments);
-        if (data) { result = deserialize(t, *data, key_formatter, options); }
+        if (auto value = parse(*content, options.allow_trailing_comma, options.ignore_comments)) { data = *value; }
     }
+
+    bool result = deserialize(t, data, key_formatter, options);
 
     if (options.rewrite_policy == RewritePolicy::Always || (options.rewrite_policy == RewritePolicy::OnError && !result)
         || options.rewrite_policy == RewritePolicy::OnFormat) {
         JsoncType res = serialize(t, key_formatter, options);
-        if (options.keep_extra_comments && data && !options.ignore_comments) {
-            data->move_comments_to_before();
-            res.merge_comments(*data);
+        if (options.keep_extra_comments && !data.is_null() && !options.ignore_comments) {
+            data.move_comments_to_before();
+            res.merge_comments(data);
         }
 
         if (options.back_up_file_on_error && content && !result) {

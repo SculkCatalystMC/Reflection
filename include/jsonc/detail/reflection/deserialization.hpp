@@ -405,9 +405,13 @@ constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options
             if (j.contains(name)) {
                 result &= deserialize_impl(val, j[name], options, kfmt, PriorityTag<10>{});
                 apply_key_comments(val, j, name, PriorityTag<2>{});
+            } else {
+                deserialize_impl(val, nullptr, options, kfmt, PriorityTag<10>{});
             }
         });
         return result;
+    } else {
+        boost::pfr::for_each_field(t, [&](auto& val) { deserialize_impl(val, nullptr, options, kfmt, PriorityTag<10>{}); });
     }
     return false;
 }
