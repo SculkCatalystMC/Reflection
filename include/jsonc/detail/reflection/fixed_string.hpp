@@ -20,19 +20,20 @@ struct FixedString {
     [[nodiscard]] constexpr const char*      c_str() const noexcept { return buffer_; }
     [[nodiscard]] constexpr std::string_view view() const noexcept { return buffer_; }
     [[nodiscard]] constexpr std::string      str() const noexcept { return buffer_; }
+    [[nodiscard]] constexpr size_t           size() const noexcept { return N; }
 
-    [[nodiscard]] constexpr char const& operator[](size_t index) const noexcept { return buffer_[index]; }
+    [[nodiscard]] constexpr const char& operator[](size_t index) const noexcept { return buffer_[index]; }
     [[nodiscard]] constexpr char&       operator[](size_t index) noexcept { return buffer_[index]; }
 
     template <size_t Y>
-    consteval auto operator+(FixedString<Y> const& other) noexcept {
+    consteval auto operator+(const FixedString<Y>& other) noexcept {
         FixedString<N + Y> result{};
         std::copy_n(buffer_, N, result.buffer_);
         std::copy_n(other.buffer_, Y, N + result.buffer_);
         return result;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, FixedString const& str) noexcept { return os << str.view(); }
+    friend std::ostream& operator<<(std::ostream& os, const FixedString& str) noexcept { return os << str.view(); }
 
     char buffer_[N + 1]{};
 };
@@ -44,8 +45,8 @@ FixedString(char const (&)[N]) -> FixedString<N - 1>;
 
 template <size_t N>
 struct std::formatter<jsonc::reflection::FixedString<N>> : std::formatter<std::string_view> {
-    template<typename FormatContext>
-    auto format(jsonc::reflection::FixedString<N> const& str, FormatContext& ctx) const {
+    template <typename FormatContext>
+    auto format(const jsonc::reflection::FixedString<N>& str, FormatContext& ctx) const {
         return formatter<std::string_view>::format(str.view(), ctx);
     }
 };
@@ -54,8 +55,8 @@ struct std::formatter<jsonc::reflection::FixedString<N>> : std::formatter<std::s
 #include <fmt/format.h>
 template <size_t N>
 struct fmt::formatter<jsonc::reflection::FixedString<N>> : fmt::formatter<std::string_view> {
-    template<typename FormatContext>
-    auto format(jsonc::reflection::FixedString<N> const& str, FormatContext& ctx) const {
+    template <typename FormatContext>
+    auto format(const jsonc::reflection::FixedString<N>& str, FormatContext& ctx) const {
         return formatter<std::string_view>::format(str.view(), ctx);
     }
 };

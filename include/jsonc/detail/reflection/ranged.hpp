@@ -1,6 +1,5 @@
 #pragma once
 #include "jsonc/detail/reflection/fixed_number.hpp"
-#include <format>
 #include <limits>
 
 namespace jsonc::reflection {
@@ -24,15 +23,15 @@ public:
     }
 
     [[nodiscard]] constexpr T&       storage() noexcept { return storage_; }
-    [[nodiscard]] constexpr T const& storage() const noexcept { return storage_; }
+    [[nodiscard]] constexpr const T& storage() const noexcept { return storage_; }
 
     [[nodiscard]] constexpr T&       operator*() noexcept { return storage_; }
-    [[nodiscard]] constexpr T const& operator*() const noexcept { return storage_; }
+    [[nodiscard]] constexpr const T& operator*() const noexcept { return storage_; }
 
     [[nodiscard]] constexpr T*       operator->() noexcept { return &storage_; }
     [[nodiscard]] constexpr T const* operator->() const noexcept { return &storage_; }
 
-    [[nodiscard]] constexpr operator T const&() const noexcept { return storage_; }
+    [[nodiscard]] constexpr operator const T&() const noexcept { return storage_; }
     [[nodiscard]] constexpr operator T&() noexcept { return storage_; }
 
     constexpr void fix_range() noexcept { storage_ = std::clamp(storage_, *Min, *Max); }
@@ -45,7 +44,7 @@ public:
 template <typename T, jsonc::reflection::FixedNumber<T> Min, jsonc::reflection::FixedNumber<T> Max>
 struct std::formatter<jsonc::reflection::Ranged<T, Min, Max>> : std::formatter<T> {
     template <typename FormatContext>
-    auto format(jsonc::reflection::Ranged<T, Min, Max> const& num, FormatContext& ctx) const {
+    auto format(const jsonc::reflection::Ranged<T, Min, Max>& num, FormatContext& ctx) const {
         return formatter<T>::format(num.storage(), ctx);
     }
 };
@@ -55,7 +54,7 @@ struct std::formatter<jsonc::reflection::Ranged<T, Min, Max>> : std::formatter<T
 template <typename T, jsonc::reflection::FixedNumber<T> Min, jsonc::reflection::FixedNumber<T> Max>
 struct fmt::formatter<jsonc::reflection::Ranged<T, Min, Max>> : fmt::formatter<T> {
     template <typename FormatContext>
-    auto format(jsonc::reflection::Ranged<T, Min, Max> const& num, FormatContext& ctx) const {
+    auto format(const jsonc::reflection::Ranged<T, Min, Max>& num, FormatContext& ctx) const {
         return formatter<T>::format(num.storage(), ctx);
     }
 };

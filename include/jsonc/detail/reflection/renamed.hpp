@@ -28,9 +28,9 @@ public:
 
     constexpr Renamed(T&& value) noexcept : storage_(std::move(value)) {}
 
-    constexpr Renamed(T const& value) noexcept : storage_(value) {}
+    constexpr Renamed(const T& value) noexcept : storage_(value) {}
 
-    constexpr Renamed& operator=(T const& value) noexcept {
+    constexpr Renamed& operator=(const T& value) noexcept {
         storage_ = value;
         return *this;
     }
@@ -41,15 +41,15 @@ public:
     }
 
     [[nodiscard]] constexpr T&       storage() noexcept { return storage_; }
-    [[nodiscard]] constexpr T const& storage() const noexcept { return storage_; }
+    [[nodiscard]] constexpr const T& storage() const noexcept { return storage_; }
 
     [[nodiscard]] constexpr T&       operator*() noexcept { return storage_; }
-    [[nodiscard]] constexpr T const& operator*() const noexcept { return storage_; }
+    [[nodiscard]] constexpr const T& operator*() const noexcept { return storage_; }
 
     [[nodiscard]] constexpr T*       operator->() noexcept { return &storage_; }
     [[nodiscard]] constexpr T const* operator->() const noexcept { return &storage_; }
 
-    [[nodiscard]] constexpr operator T const&() const noexcept { return storage_; }
+    [[nodiscard]] constexpr operator const T&() const noexcept { return storage_; }
     [[nodiscard]] constexpr operator T&() noexcept { return storage_; }
 
     template <typename U>
@@ -70,7 +70,7 @@ public:
         return storage_;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, Renamed const& rename) noexcept { return os << rename.storage(); }
+    friend std::ostream& operator<<(std::ostream& os, const Renamed& rename) noexcept { return os << rename.storage(); }
 
 public:
     static constexpr std::string      name() noexcept { return AliasName.str(); }
@@ -84,8 +84,8 @@ private:
 
 template <typename T, size_t N, jsonc::reflection::FixedString<N> AliasName>
 struct std::formatter<jsonc::reflection::Renamed<T, AliasName>> : std::formatter<T> {
-    template<typename FormatContext>
-    auto format(jsonc::reflection::Renamed<T, AliasName> const& str, FormatContext& ctx) const {
+    template <typename FormatContext>
+    auto format(const jsonc::reflection::Renamed<T, AliasName>& str, FormatContext& ctx) const {
         return formatter<T>::format(str.storage(), ctx);
     }
 };
@@ -94,8 +94,8 @@ struct std::formatter<jsonc::reflection::Renamed<T, AliasName>> : std::formatter
 #include <fmt/format.h>
 template <typename T, jsonc::reflection::FixedString AliasName>
 struct fmt::formatter<jsonc::reflection::Renamed<T, AliasName>> : fmt::formatter<T> {
-    template<typename FormatContext>
-    auto format(jsonc::reflection::Renamed<T, AliasName> const& str, FormatContext& ctx) const {
+    template <typename FormatContext>
+    auto format(const jsonc::reflection::Renamed<T, AliasName>& str, FormatContext& ctx) const {
         return formatter<T>::format(str.storage(), ctx);
     }
 };

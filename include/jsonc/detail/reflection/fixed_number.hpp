@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <format>
 #include <type_traits>
-#include <format>
 
 namespace jsonc::reflection {
 
@@ -18,16 +17,16 @@ struct FixedNumber {
     [[nodiscard]] consteval FixedNumber(U num) noexcept : storage_(static_cast<T>(num)) {}
 
     [[nodiscard]] constexpr operator T() const noexcept { return storage_; }
-    [[nodiscard]] constexpr operator T const&() const noexcept { return storage_; }
+    [[nodiscard]] constexpr operator const T&() const noexcept { return storage_; }
     [[nodiscard]] constexpr operator T&() noexcept { return storage_; }
 
     [[nodiscard]] constexpr T&       operator*() noexcept { return storage_; }
-    [[nodiscard]] constexpr T const& operator*() const noexcept { return storage_; }
+    [[nodiscard]] constexpr const T& operator*() const noexcept { return storage_; }
 
     [[nodiscard]] constexpr T*       operator->() noexcept { return &storage_; }
     [[nodiscard]] constexpr T const* operator->() const noexcept { return &storage_; }
 
-    friend std::ostream& operator<<(std::ostream& os, FixedNumber const& num) noexcept { return os << num.storage_; }
+    friend std::ostream& operator<<(std::ostream& os, const FixedNumber& num) noexcept { return os << num.storage_; }
 
     T storage_;
 };
@@ -37,7 +36,7 @@ struct FixedNumber {
 template <typename T>
 struct std::formatter<jsonc::reflection::FixedNumber<T>> : std::formatter<T> {
     template <typename FormatContext>
-    auto format(jsonc::reflection::FixedNumber<T> const& num, FormatContext& ctx) const {
+    auto format(const jsonc::reflection::FixedNumber<T>& num, FormatContext& ctx) const {
         return formatter<T>::format(num.storage_, ctx);
     }
 };
@@ -47,7 +46,7 @@ struct std::formatter<jsonc::reflection::FixedNumber<T>> : std::formatter<T> {
 template <typename T>
 struct fmt::formatter<jsonc::reflection::FixedNumber<T>> : fmt::formatter<T> {
     template <typename FormatContext>
-    auto format(jsonc::reflection::FixedNumber<T> const& num, FormatContext& ctx) const {
+    auto format(const jsonc::reflection::FixedNumber<T>& num, FormatContext& ctx) const {
         return formatter<T>::format(num.storage_, ctx);
     }
 };
