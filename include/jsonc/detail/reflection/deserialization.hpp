@@ -2,9 +2,9 @@
 #include "jsonc/detail/reflection/concepts.hpp"
 #include "jsonc/detail/reflection/jsonc_header.hpp"
 #include "jsonc/detail/reflection/options.hpp"
+#include "jsonc/detail/reflection/pfr.hpp"
 #include "jsonc/detail/reflection/priority_tag.hpp"
 #include "jsonc/detail/reflection/string_utils.hpp"
-#include <boost/pfr.hpp>
 #include <magic_enum/magic_enum.hpp>
 #include <magic_enum/magic_enum_flags.hpp>
 
@@ -399,7 +399,7 @@ template <concepts::is_aggregate T, concepts::is_key_formatter F>
 constexpr bool deserialize_impl(T& t, const JsoncType& j, const Options& options, const F& kfmt, PriorityTag<1>) noexcept {
     if (j.is_object()) {
         bool result{true};
-        boost::pfr::for_each_field_with_name(t, [&](std::string_view key, auto& val) {
+        pfr::for_each_field_with_name(t, [&](std::string_view key, auto& val) {
             std::string name = kfmt(key);
             if constexpr (traits::is_renamed_v<decltype(val)>) { name = val.view(); }
             if (j.contains(name)) {

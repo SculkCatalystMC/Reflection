@@ -2,10 +2,10 @@
 #include "jsonc/detail/reflection/concepts.hpp"
 #include "jsonc/detail/reflection/jsonc_header.hpp"
 #include "jsonc/detail/reflection/options.hpp"
+#include "jsonc/detail/reflection/pfr.hpp"
 #include "jsonc/detail/reflection/priority_tag.hpp"
 #include "jsonc/detail/reflection/serializer.hpp"
 #include "jsonc/detail/reflection/string_utils.hpp"
-#include <boost/pfr.hpp>
 
 namespace jsonc::reflection {
 
@@ -216,7 +216,7 @@ constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& 
 template <concepts::is_aggregate T, concepts::is_key_formatter F>
 constexpr JsoncType serialize_impl(const T& t, const Options& options, const F& kfmt, PriorityTag<1>) noexcept {
     auto result = JsoncType::object();
-    boost::pfr::for_each_field_with_name(t, [&](std::string_view key, const auto& val) {
+    pfr::for_each_field_with_name(t, [&](std::string_view key, const auto& val) {
         std::string name = kfmt(key);
         if constexpr (traits::is_renamed_v<decltype(val)>) { name = val.view(); }
         auto res = serialize_impl(val, options, kfmt, PriorityTag<10>{});
