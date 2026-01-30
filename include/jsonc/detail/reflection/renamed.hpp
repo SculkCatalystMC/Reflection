@@ -70,6 +70,8 @@ public:
         return storage_;
     }
 
+    friend std::ostream& operator<<(std::ostream& os, Renamed const& rename) noexcept { return os << rename.storage(); }
+
 public:
     static constexpr std::string      name() noexcept { return AliasName.str(); }
     static constexpr std::string_view view() noexcept { return AliasName.view(); }
@@ -79,3 +81,22 @@ private:
 };
 
 } // namespace jsonc::reflection
+
+template <typename T, size_t N, jsonc::reflection::FixedString<N> AliasName>
+struct std::formatter<jsonc::reflection::Renamed<T, AliasName>> : std::formatter<T> {
+    template<typename FormatContext>
+    auto format(jsonc::reflection::Renamed<T, AliasName> const& str, FormatContext& ctx) const {
+        return formatter<T>::format(str.storage(), ctx);
+    }
+};
+
+#if __has_include(<fmt/format.h>)
+#include <fmt/format.h>
+template <typename T, jsonc::reflection::FixedString AliasName>
+struct fmt::formatter<jsonc::reflection::Renamed<T, AliasName>> : fmt::formatter<T> {
+    template<typename FormatContext>
+    auto format(jsonc::reflection::Renamed<T, AliasName> const& str, FormatContext& ctx) const {
+        return formatter<T>::format(str.storage(), ctx);
+    }
+};
+#endif

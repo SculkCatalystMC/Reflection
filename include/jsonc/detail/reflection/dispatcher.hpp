@@ -1,5 +1,6 @@
 #pragma once
 #include "jsonc/detail/reflection/concepts.hpp"
+#include <format>
 
 namespace jsonc::reflection {
 
@@ -48,9 +49,38 @@ public:
 
     T* operator->() noexcept { return &storage_; }
 
+    T& storage() noexcept { return storage_; }
+
+    T const& storage() const noexcept { return storage_; }
+
+    L& listener() noexcept { return listener_; }
+
+    L const& listener() const noexcept { return listener_; }
+
+    friend std::ostream& operator<<(std::ostream& os, Dispatcher const& dispatcher) noexcept { return os << dispatcher.storage(); }
+
 private:
     T storage_;
     L listener_;
 };
 
 } // namespace jsonc::reflection
+
+template <typename T, jsonc::reflection::concepts::is_dispatcher_listener<T> L, bool _CallInit>
+struct std::formatter<jsonc::reflection::Dispatcher<T, L, _CallInit>> : std::formatter<T> {
+    template <typename FormatContext>
+    auto format(jsonc::reflection::Dispatcher<T, L, _CallInit> const& dispatcher, FormatContext& ctx) const {
+        return formatter<T>::format(dispatcher.storage(), ctx);
+    }
+};
+
+#if __has_include(<fmt/format.h>)
+#include <fmt/format.h>
+template <typename T, jsonc::reflection::concepts::is_dispatcher_listener<T> L, bool _CallInit>
+struct fmt::formatter<jsonc::reflection::Dispatcher<T, L, _CallInit>> : fmt::formatter<T> {
+    template <typename FormatContext>
+    auto format(jsonc::reflection::Dispatcher<T, L, _CallInit> const& dispatcher, FormatContext& ctx) const {
+        return formatter<T>::format(dispatcher.storage(), ctx);
+    }
+};
+#endif

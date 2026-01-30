@@ -1,6 +1,7 @@
 #pragma once
 #include "jsonc/detail/reflection/fixed_string.hpp"
 #include <vector>
+#include <format>
 
 namespace jsonc::reflection {
 
@@ -90,9 +91,30 @@ public:
 
     constexpr void clear_comments() noexcept { comments_.clear(); }
 
+    friend std::ostream& operator<<(std::ostream& os, Annotated const& annotated) noexcept { return os << annotated.storage(); }
+
 private:
     T                        storage_;
     std::vector<std::string> comments_{Comments.str()...};
 };
 
 } // namespace jsonc::reflection
+
+template <typename T, jsonc::reflection::FixedString... Comments>
+struct std::formatter<jsonc::reflection::Annotated<T, Comments...>> : std::formatter<T> {
+    template <typename FormatContext>
+    auto format(jsonc::reflection::Annotated<T, Comments...> const& annotated, FormatContext& ctx) const {
+        return formatter<T>::format(annotated.storage(), ctx);
+    }
+};
+
+#if __has_include(<fmt/format.h>)
+#include <fmt/format.h>
+template <typename T, jsonc::reflection::FixedString... Comments>
+struct fmt::formatter<jsonc::reflection::Annotated<T, Comments...>> : fmt::formatter<T> {
+    template <typename FormatContext>
+    auto format(jsonc::reflection::Annotated<T, Comments...> const& annotated, FormatContext& ctx) const {
+        return formatter<T>::format(annotated.storage(), ctx);
+    }
+};
+#endif

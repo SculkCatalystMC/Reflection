@@ -32,6 +32,8 @@ struct FixedString {
         return result;
     }
 
+    friend std::ostream& operator<<(std::ostream& os, FixedString const& str) noexcept { return os << str.view(); }
+
     char buffer_[N + 1]{};
 };
 
@@ -39,3 +41,22 @@ template <size_t N>
 FixedString(char const (&)[N]) -> FixedString<N - 1>;
 
 } // namespace jsonc::reflection
+
+template <size_t N>
+struct std::formatter<jsonc::reflection::FixedString<N>> : std::formatter<std::string_view> {
+    template<typename FormatContext>
+    auto format(jsonc::reflection::FixedString<N> const& str, FormatContext& ctx) const {
+        return formatter<std::string_view>::format(str.view(), ctx);
+    }
+};
+
+#if __has_include(<fmt/format.h>)
+#include <fmt/format.h>
+template <size_t N>
+struct fmt::formatter<jsonc::reflection::FixedString<N>> : fmt::formatter<std::string_view> {
+    template<typename FormatContext>
+    auto format(jsonc::reflection::FixedString<N> const& str, FormatContext& ctx) const {
+        return formatter<std::string_view>::format(str.view(), ctx);
+    }
+};
+#endif

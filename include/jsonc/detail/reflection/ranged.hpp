@@ -1,5 +1,6 @@
 #pragma once
 #include "jsonc/detail/reflection/fixed_number.hpp"
+#include <format>
 #include <limits>
 
 namespace jsonc::reflection {
@@ -40,3 +41,22 @@ public:
 };
 
 } // namespace jsonc::reflection
+
+template <typename T, jsonc::reflection::FixedNumber<T> Min, jsonc::reflection::FixedNumber<T> Max>
+struct std::formatter<jsonc::reflection::Ranged<T, Min, Max>> : std::formatter<T> {
+    template <typename FormatContext>
+    auto format(jsonc::reflection::Ranged<T, Min, Max> const& num, FormatContext& ctx) const {
+        return formatter<T>::format(num.storage(), ctx);
+    }
+};
+
+#if __has_include(<fmt/format.h>)
+#include <fmt/format.h>
+template <typename T, jsonc::reflection::FixedNumber<T> Min, jsonc::reflection::FixedNumber<T> Max>
+struct fmt::formatter<jsonc::reflection::Ranged<T, Min, Max>> : fmt::formatter<T> {
+    template <typename FormatContext>
+    auto format(jsonc::reflection::Ranged<T, Min, Max> const& num, FormatContext& ctx) const {
+        return formatter<T>::format(num.storage(), ctx);
+    }
+};
+#endif
