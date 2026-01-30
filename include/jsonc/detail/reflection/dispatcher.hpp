@@ -18,7 +18,7 @@ public:
         }
     }
 
-    template <class... Args>
+    template <typename... Args>
         requires std::constructible_from<T, Args...>
     Dispatcher(Args&&... args) noexcept : storage_(std::forward<Args>(args)...),
                                           listener_() {

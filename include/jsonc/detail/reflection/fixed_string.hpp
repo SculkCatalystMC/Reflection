@@ -21,6 +21,7 @@ struct FixedString {
     [[nodiscard]] constexpr std::string_view view() const noexcept { return buffer_; }
     [[nodiscard]] constexpr std::string      str() const noexcept { return buffer_; }
     [[nodiscard]] constexpr size_t           size() const noexcept { return N; }
+    [[nodiscard]] constexpr bool             empty() const noexcept { return N == 0; }
 
     [[nodiscard]] constexpr const char& operator[](size_t index) const noexcept { return buffer_[index]; }
     [[nodiscard]] constexpr char&       operator[](size_t index) noexcept { return buffer_[index]; }
