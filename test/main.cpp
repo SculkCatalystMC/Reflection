@@ -38,6 +38,10 @@ struct Test26 {
     void call(std::string_view val) noexcept { std::println("value: {}", val); }
 };
 
+struct Test27 {
+    void call() noexcept { std::println("auto save"); }
+};
+
 struct Config {
     std::string                                                         test_1  = "test string";
     jr::Annotated<std::string, "xiwhgasdjjhoikwq">                      test_2  = "test string with comments";
@@ -72,6 +76,7 @@ struct Config {
     std::set<int>                       test_24 = {1, 23, 456};
     std::vector<jsonc::Object>          test_25{};
     jr::Dispatcher<std::string, Test26> test_26{};
+    jr::Dispatcher<int, Test27>         test_27{};
 };
 
 int main() {

@@ -9,9 +9,16 @@ public:
     using storage_type  = T;
     using listener_type = L;
 
-    void call() noexcept { listener_.call(storage_); }
+    void call() noexcept {
+        if constexpr (concepts::has_call_func_with_arg<L, T>) {
+            listener_.call(storage_);
+        } else {
+            listener_.call();
+        }
+    }
 
     template <class... Args>
+        requires std::constructible_from<T, Args...>
     Dispatcher(Args&&... args) noexcept : storage_(std::forward<Args>(args)...),
                                           listener_() {
         if constexpr (_CallInit) { call(); }

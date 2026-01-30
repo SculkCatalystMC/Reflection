@@ -161,7 +161,7 @@ constexpr bool is_big_int_serializable_v = requires(const T& t, std::string_view
 };
 
 template <typename T>
-constexpr bool is_string_convertible_v = std::is_constructible_v<std::string, T> || std::is_convertible_v<std::string, T>;
+constexpr bool is_string_convertible_v = std::is_nothrow_constructible_v<std::string, T> || std::is_nothrow_convertible_v<std::string, T>;
 
 template <typename T>
 constexpr bool is_boolean_type_v =

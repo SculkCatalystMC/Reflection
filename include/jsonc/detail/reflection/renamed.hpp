@@ -23,7 +23,7 @@ public:
     [[nodiscard]] constexpr Renamed(const char (&str)[N]) noexcept : storage_(std::string(str)) {}
 
     template <typename U>
-        requires std::is_constructible_v<T, std::initializer_list<U>>
+        requires std::is_nothrow_constructible_v<T, std::initializer_list<U>>
     [[nodiscard]] constexpr Renamed(std::initializer_list<U> init) noexcept : storage_(init) {}
 
     constexpr Renamed(T&& value) noexcept : storage_(std::move(value)) {}
@@ -59,13 +59,13 @@ public:
     }
 
     template <typename U>
-        requires(std::is_same_v<T, U> && std::convertible_to<T, U>)
+        requires(std::is_same_v<T, U> && std::is_nothrow_convertible_v<T, U>)
     [[nodiscard]] constexpr operator const U&() const noexcept {
         return storage_;
     }
 
     template <typename U>
-        requires(std::is_same_v<T, U> && std::convertible_to<T, U>)
+        requires(std::is_same_v<T, U> && std::is_nothrow_convertible_v<T, U>)
     [[nodiscard]] constexpr operator U&() noexcept {
         return storage_;
     }

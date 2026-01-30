@@ -16,7 +16,7 @@ public:
     [[nodiscard]] constexpr Annotated(U&& value) noexcept : storage_(std::forward<U>(value)) {}
 
     template <typename U>
-        requires(!std::convertible_to<T, U> && std::is_constructible_v<T, U>)
+        requires(!std::convertible_to<T, U> && std::is_nothrow_constructible_v<T, U>)
     [[nodiscard]] constexpr Annotated(U&& value) noexcept : storage_(std::forward<U>(value)) {}
 
     template <size_t N>
