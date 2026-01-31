@@ -80,15 +80,15 @@ struct Serializer<uint64_t> {
 };
 
 template <>
-struct Serializer<Object> {
-    static Object                to_object(const Object& o) noexcept { return o; }
-    static std::optional<Object> from_object(const Object& o) noexcept { return o; }
+struct Serializer<object_type> {
+    static object_type                to_object(const object_type& o) noexcept { return o; }
+    static std::optional<object_type> from_object(const object_type& o) noexcept { return o; }
 };
 
 template <>
-struct Serializer<Array> {
-    static Array                to_array(const Array& a) noexcept { return a; }
-    static std::optional<Array> from_array(const Array& a) noexcept { return a; }
+struct Serializer<array_type> {
+    static array_type                to_array(const array_type& a) noexcept { return a; }
+    static std::optional<array_type> from_array(const array_type& a) noexcept { return a; }
 };
 
 } // namespace jsonc::reflection

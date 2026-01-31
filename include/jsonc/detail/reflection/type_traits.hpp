@@ -137,16 +137,16 @@ constexpr bool is_string_serializable_v = requires(const T& t, std::string_view 
 };
 
 template <typename T>
-constexpr bool is_object_serializable_v = requires(const T& t, const Object& o) {
-    { ::jsonc::reflection::Serializer<T>::to_object(t) } -> std::convertible_to<Object>;
+constexpr bool is_object_serializable_v = requires(const T& t, const object_type& o) {
+    { ::jsonc::reflection::Serializer<T>::to_object(t) } -> std::convertible_to<object_type>;
     requires noexcept(::jsonc::reflection::Serializer<T>::to_object(t));
     { ::jsonc::reflection::Serializer<T>::from_object(o) } -> std::convertible_to<std::optional<T>>;
     requires noexcept(::jsonc::reflection::Serializer<T>::from_object(o));
 };
 
 template <typename T>
-constexpr bool is_array_serializable_v = requires(const T& t, const Array& a) {
-    { ::jsonc::reflection::Serializer<T>::to_array(t) } -> std::convertible_to<Array>;
+constexpr bool is_array_serializable_v = requires(const T& t, const array_type& a) {
+    { ::jsonc::reflection::Serializer<T>::to_array(t) } -> std::convertible_to<array_type>;
     requires noexcept(::jsonc::reflection::Serializer<T>::to_array(t));
     { ::jsonc::reflection::Serializer<T>::from_array(a) } -> std::convertible_to<std::optional<T>>;
     requires noexcept(::jsonc::reflection::Serializer<T>::from_array(a));
@@ -204,7 +204,7 @@ constexpr bool is_big_int_type_v =
     && !is_float_serializable_v<T> && !is_string_serializable_v<T> && !is_object_serializable_v<T> && !is_array_serializable_v<T>;
 
 template <typename T>
-constexpr bool is_jsonc_type_v = std::convertible_to<std::remove_cvref_t<T>, JsoncType>;
+constexpr bool is_jsonc_type_v = std::convertible_to<std::remove_cvref_t<T>, jsonc>;
 
 template <typename T>
 constexpr bool is_stringifiable_type_v = is_string_type_v<T> || is_string_convertible_v<T> || std::is_enum_v<T>;

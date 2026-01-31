@@ -13,7 +13,7 @@ namespace jsonc::reflection {
 
 template <typename T, concepts::is_key_formatter F>
 bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, const Options& options = {}) noexcept {
-    JsoncType data{};
+    jsonc data{};
 
     std::optional<std::string> content = file_utils::read_file(path);
     if (content) {
@@ -24,7 +24,7 @@ bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, 
 
     if (options.rewrite_policy == RewritePolicy::Always || (options.rewrite_policy == RewritePolicy::OnError && !result)
         || options.rewrite_policy == RewritePolicy::OnFormat) {
-        JsoncType res = serialize(t, key_formatter, options);
+        jsonc res = serialize(t, key_formatter, options);
         if (options.keep_extra_comments && !data.is_null() && !options.ignore_comments) {
             data.move_comments_to_before();
             res.merge_comments(data);
@@ -69,7 +69,7 @@ bool load_file(T& t, const std::filesystem::path& path, const Options& options =
 
 template <typename T, concepts::is_key_formatter F>
 bool save_file(const T& t, const std::filesystem::path& path, const F& key_formatter, const Options& options = {}) noexcept {
-    JsoncType res = serialize(t, key_formatter, options);
+    jsonc res = serialize(t, key_formatter, options);
     if (options.keep_extra_comments && !options.ignore_comments) {
         if (auto content = file_utils::read_file(path)) {
             if (auto data = parse(*content, options.allow_trailing_comma, options.ignore_comments)) {

@@ -74,7 +74,7 @@ struct Config {
         jr::Annotated<double, "double"> yyyyy = 64738.543;
     } test_23;
     std::set<int>                       test_24 = {1, 23, 456};
-    std::vector<jsonc::Object>          test_25{};
+    std::vector<jsonc::object_type>     test_25{};
     jr::Dispatcher<std::string, Test26> test_26{};
     jr::Dispatcher<int, Test27>         test_27{};
 };
