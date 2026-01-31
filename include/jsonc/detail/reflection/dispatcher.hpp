@@ -5,7 +5,7 @@
 namespace jsonc::reflection {
 
 template <typename T, concepts::is_dispatcher_listener<T> L, bool _CallInit = false>
-class Dispatcher {
+class dispatcher {
 public:
     using storage_type  = T;
     using listener_type = L;
@@ -20,18 +20,18 @@ public:
 
     template <typename... Args>
         requires std::constructible_from<T, Args...>
-    Dispatcher(Args&&... args) noexcept : storage_(std::forward<Args>(args)...),
+    dispatcher(Args&&... args) noexcept : storage_(std::forward<Args>(args)...),
                                           listener_() {
         if constexpr (_CallInit) { call(); }
     }
 
-    Dispatcher& operator=(const T& other) noexcept {
+    dispatcher& operator=(const T& other) noexcept {
         storage_ = other;
         call();
         return *this;
     }
 
-    Dispatcher& operator=(T&& other) noexcept {
+    dispatcher& operator=(T&& other) noexcept {
         storage_ = std::move(other);
         call();
         return *this;
@@ -57,7 +57,7 @@ public:
 
     const L& listener() const noexcept { return listener_; }
 
-    friend std::ostream& operator<<(std::ostream& os, const Dispatcher& dispatcher) noexcept { return os << dispatcher.storage(); }
+    friend std::ostream& operator<<(std::ostream& os, const dispatcher& dispatcher) noexcept { return os << dispatcher.storage(); }
 
 private:
     T storage_;
@@ -67,9 +67,9 @@ private:
 } // namespace jsonc::reflection
 
 template <typename T, jsonc::reflection::concepts::is_dispatcher_listener<T> L, bool _CallInit>
-struct std::formatter<jsonc::reflection::Dispatcher<T, L, _CallInit>> : std::formatter<T> {
+struct std::formatter<jsonc::reflection::dispatcher<T, L, _CallInit>> : std::formatter<T> {
     template <typename FormatContext>
-    auto format(const jsonc::reflection::Dispatcher<T, L, _CallInit>& dispatcher, FormatContext& ctx) const {
+    auto format(const jsonc::reflection::dispatcher<T, L, _CallInit>& dispatcher, FormatContext& ctx) const {
         return formatter<T>::format(dispatcher.storage(), ctx);
     }
 };
@@ -77,9 +77,9 @@ struct std::formatter<jsonc::reflection::Dispatcher<T, L, _CallInit>> : std::for
 #if __has_include(<fmt/format.h>)
 #include <fmt/format.h>
 template <typename T, jsonc::reflection::concepts::is_dispatcher_listener<T> L, bool _CallInit>
-struct fmt::formatter<jsonc::reflection::Dispatcher<T, L, _CallInit>> : fmt::formatter<T> {
+struct fmt::formatter<jsonc::reflection::dispatcher<T, L, _CallInit>> : fmt::formatter<T> {
     template <typename FormatContext>
-    auto format(const jsonc::reflection::Dispatcher<T, L, _CallInit>& dispatcher, FormatContext& ctx) const {
+    auto format(const jsonc::reflection::dispatcher<T, L, _CallInit>& dispatcher, FormatContext& ctx) const {
         return formatter<T>::format(dispatcher.storage(), ctx);
     }
 };

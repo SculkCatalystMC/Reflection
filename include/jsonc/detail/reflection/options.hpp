@@ -5,14 +5,14 @@
 
 namespace jsonc::reflection {
 
-enum class RewritePolicy {
-    Always   = 0,
-    OnFormat = 1,
-    OnError  = 2,
-    Never    = 3,
+enum class rewrite_policy {
+    always = 0,
+    format = 1,
+    error  = 2,
+    never  = 3,
 };
 
-struct Options {
+struct options {
     int                   indent{4};
     bool                  ignore_comments{false};
     bool                  allow_trailing_comma{true};
@@ -21,7 +21,7 @@ struct Options {
     bool                  keep_extra_comments{true};
     bool                  enum_cast_prefer_string{true};
     bool                  multi_line_comments_format{true};
-    RewritePolicy         rewrite_policy{};
+    rewrite_policy        rewrite_policy{};
     bool                  back_up_file_on_error{true};
     std::filesystem::path back_up_file_folder{};
     std::string           back_up_time_suffix{"-%Y%m%d-%H_%M_%S"};

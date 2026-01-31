@@ -3,8 +3,8 @@
 namespace jsonc::reflection {
 
 template <size_t N>
-struct PriorityTag : PriorityTag<N - 1> {};
+struct priority_tag : priority_tag<N - 1> {};
 template <>
-struct PriorityTag<0> {};
+struct priority_tag<0> {};
 
 } // namespace jsonc::reflection

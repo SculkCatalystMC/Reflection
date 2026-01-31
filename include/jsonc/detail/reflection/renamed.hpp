@@ -3,39 +3,39 @@
 
 namespace jsonc::reflection {
 
-template <typename T, FixedString AliasName>
-class Renamed {
+template <typename T, fixed_string AliasName>
+class renamed {
 public:
     using value_type = T;
 
-    [[nodiscard]] constexpr Renamed() noexcept = default;
+    [[nodiscard]] constexpr renamed() noexcept = default;
 
     template <typename U>
         requires(std::convertible_to<T, U>)
-    [[nodiscard]] constexpr Renamed(U&& value) noexcept : storage_(std::forward<U>(value)) {}
+    [[nodiscard]] constexpr renamed(U&& value) noexcept : storage_(std::forward<U>(value)) {}
 
     template <typename U>
         requires(!std::convertible_to<T, U> && std::is_constructible_v<T, U>)
-    [[nodiscard]] constexpr Renamed(U&& value) noexcept : storage_(std::forward<U>(value)) {}
+    [[nodiscard]] constexpr renamed(U&& value) noexcept : storage_(std::forward<U>(value)) {}
 
     template <size_t N>
         requires(std::is_same_v<T, std::string>)
-    [[nodiscard]] constexpr Renamed(const char (&str)[N]) noexcept : storage_(std::string(str)) {}
+    [[nodiscard]] constexpr renamed(const char (&str)[N]) noexcept : storage_(std::string(str)) {}
 
     template <typename U>
         requires std::is_nothrow_constructible_v<T, std::initializer_list<U>>
-    [[nodiscard]] constexpr Renamed(std::initializer_list<U> init) noexcept : storage_(init) {}
+    [[nodiscard]] constexpr renamed(std::initializer_list<U> init) noexcept : storage_(init) {}
 
-    constexpr Renamed(T&& value) noexcept : storage_(std::move(value)) {}
+    constexpr renamed(T&& value) noexcept : storage_(std::move(value)) {}
 
-    constexpr Renamed(const T& value) noexcept : storage_(value) {}
+    constexpr renamed(const T& value) noexcept : storage_(value) {}
 
-    constexpr Renamed& operator=(const T& value) noexcept {
+    constexpr renamed& operator=(const T& value) noexcept {
         storage_ = value;
         return *this;
     }
 
-    constexpr Renamed& operator=(T&& value) noexcept {
+    constexpr renamed& operator=(T&& value) noexcept {
         storage_ = std::move(value);
         return *this;
     }
@@ -70,7 +70,7 @@ public:
         return storage_;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const Renamed& rename) noexcept { return os << rename.storage(); }
+    friend std::ostream& operator<<(std::ostream& os, const renamed& rename) noexcept { return os << rename.storage(); }
 
 public:
     static constexpr std::string      name() noexcept { return AliasName.str(); }
@@ -82,20 +82,20 @@ private:
 
 } // namespace jsonc::reflection
 
-template <typename T, size_t N, jsonc::reflection::FixedString<N> AliasName>
-struct std::formatter<jsonc::reflection::Renamed<T, AliasName>> : std::formatter<T> {
+template <typename T, size_t N, jsonc::reflection::fixed_string<N> AliasName>
+struct std::formatter<jsonc::reflection::renamed<T, AliasName>> : std::formatter<T> {
     template <typename FormatContext>
-    auto format(const jsonc::reflection::Renamed<T, AliasName>& str, FormatContext& ctx) const {
+    auto format(const jsonc::reflection::renamed<T, AliasName>& str, FormatContext& ctx) const {
         return formatter<T>::format(str.storage(), ctx);
     }
 };
 
 #if __has_include(<fmt/format.h>)
 #include <fmt/format.h>
-template <typename T, jsonc::reflection::FixedString AliasName>
-struct fmt::formatter<jsonc::reflection::Renamed<T, AliasName>> : fmt::formatter<T> {
+template <typename T, jsonc::reflection::fixed_string AliasName>
+struct fmt::formatter<jsonc::reflection::renamed<T, AliasName>> : fmt::formatter<T> {
     template <typename FormatContext>
-    auto format(const jsonc::reflection::Renamed<T, AliasName>& str, FormatContext& ctx) const {
+    auto format(const jsonc::reflection::renamed<T, AliasName>& str, FormatContext& ctx) const {
         return formatter<T>::format(str.storage(), ctx);
     }
 };

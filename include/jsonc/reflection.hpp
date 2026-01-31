@@ -12,7 +12,7 @@
 namespace jsonc::reflection {
 
 template <typename T, concepts::is_key_formatter F>
-bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, const Options& options = {}) noexcept {
+bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, const options& options = {}) noexcept {
     jsonc data{};
 
     std::optional<std::string> content = file_utils::read_file(path);
@@ -22,8 +22,8 @@ bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, 
 
     bool result = deserialize(t, data, key_formatter, options);
 
-    if (options.rewrite_policy == RewritePolicy::Always || (options.rewrite_policy == RewritePolicy::OnError && !result)
-        || options.rewrite_policy == RewritePolicy::OnFormat) {
+    if (options.rewrite_policy == rewrite_policy::always || (options.rewrite_policy == rewrite_policy::error && !result)
+        || options.rewrite_policy == rewrite_policy::format) {
         jsonc res = serialize(t, key_formatter, options);
         if (options.keep_extra_comments && !data.is_null() && !options.ignore_comments) {
             data.move_comments_to_before();
@@ -51,7 +51,7 @@ bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, 
         }
 
         auto file = res.dump(options.indent, options.ensure_ascii, options.ignore_comments, options.multi_line_comments_format);
-        if (options.rewrite_policy == RewritePolicy::OnFormat && content) {
+        if (options.rewrite_policy == rewrite_policy::format && content) {
             if (file != *content) { file_utils::write_file(path, file); }
         } else {
             file_utils::write_file(path, file);
@@ -63,12 +63,12 @@ bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, 
 }
 
 template <typename T>
-bool load_file(T& t, const std::filesystem::path& path, const Options& options = {}) noexcept {
+bool load_file(T& t, const std::filesystem::path& path, const options& options = {}) noexcept {
     return load_file(t, path, builtin_key_formatter::default_key_formatter, options);
 }
 
 template <typename T, concepts::is_key_formatter F>
-bool save_file(const T& t, const std::filesystem::path& path, const F& key_formatter, const Options& options = {}) noexcept {
+bool save_file(const T& t, const std::filesystem::path& path, const F& key_formatter, const options& options = {}) noexcept {
     jsonc res = serialize(t, key_formatter, options);
     if (options.keep_extra_comments && !options.ignore_comments) {
         if (auto content = file_utils::read_file(path)) {
@@ -82,7 +82,7 @@ bool save_file(const T& t, const std::filesystem::path& path, const F& key_forma
 }
 
 template <typename T>
-bool save_file(const T& t, const std::filesystem::path& path, const Options& options = {}) noexcept {
+bool save_file(const T& t, const std::filesystem::path& path, const options& options = {}) noexcept {
     return save_file(t, path, builtin_key_formatter::default_key_formatter, options);
 }
 

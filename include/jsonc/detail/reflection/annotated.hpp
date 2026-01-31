@@ -5,39 +5,39 @@
 
 namespace jsonc::reflection {
 
-template <typename T, FixedString... Comments>
-class Annotated {
+template <typename T, fixed_string... Comments>
+class annotated {
 public:
     using value_type = T;
 
-    [[nodiscard]] constexpr Annotated() noexcept = default;
+    [[nodiscard]] constexpr annotated() noexcept = default;
 
     template <typename U>
         requires(std::convertible_to<T, U>)
-    [[nodiscard]] constexpr Annotated(U&& value) noexcept : storage_(std::forward<U>(value)) {}
+    [[nodiscard]] constexpr annotated(U&& value) noexcept : storage_(std::forward<U>(value)) {}
 
     template <typename U>
         requires(!std::convertible_to<T, U> && std::is_nothrow_constructible_v<T, U>)
-    [[nodiscard]] constexpr Annotated(U&& value) noexcept : storage_(std::forward<U>(value)) {}
+    [[nodiscard]] constexpr annotated(U&& value) noexcept : storage_(std::forward<U>(value)) {}
 
     template <size_t N>
         requires(std::is_same_v<T, std::string>)
-    [[nodiscard]] constexpr Annotated(const char (&str)[N]) noexcept : storage_(std::string(str)) {}
+    [[nodiscard]] constexpr annotated(const char (&str)[N]) noexcept : storage_(std::string(str)) {}
 
     template <typename U>
         requires std::is_constructible_v<T, std::initializer_list<U>>
-    [[nodiscard]] constexpr Annotated(std::initializer_list<U> init) noexcept : storage_(init) {}
+    [[nodiscard]] constexpr annotated(std::initializer_list<U> init) noexcept : storage_(init) {}
 
-    constexpr Annotated(T&& value) noexcept : storage_(std::move(value)) {}
+    constexpr annotated(T&& value) noexcept : storage_(std::move(value)) {}
 
-    constexpr Annotated(const T& value) noexcept : storage_(value) {}
+    constexpr annotated(const T& value) noexcept : storage_(value) {}
 
-    constexpr Annotated& operator=(const T& value) noexcept {
+    constexpr annotated& operator=(const T& value) noexcept {
         storage_ = value;
         return *this;
     }
 
-    constexpr Annotated& operator=(T&& value) noexcept {
+    constexpr annotated& operator=(T&& value) noexcept {
         storage_ = std::move(value);
         return *this;
     }
@@ -91,7 +91,7 @@ public:
 
     constexpr void clear_comments() noexcept { comments_.clear(); }
 
-    friend std::ostream& operator<<(std::ostream& os, const Annotated& annotated) noexcept { return os << annotated.storage(); }
+    friend std::ostream& operator<<(std::ostream& os, const annotated& annotated) noexcept { return os << annotated.storage(); }
 
 private:
     T                        storage_;
@@ -100,20 +100,20 @@ private:
 
 } // namespace jsonc::reflection
 
-template <typename T, jsonc::reflection::FixedString... Comments>
-struct std::formatter<jsonc::reflection::Annotated<T, Comments...>> : std::formatter<T> {
+template <typename T, jsonc::reflection::fixed_string... Comments>
+struct std::formatter<jsonc::reflection::annotated<T, Comments...>> : std::formatter<T> {
     template <typename FormatContext>
-    auto format(const jsonc::reflection::Annotated<T, Comments...>& annotated, FormatContext& ctx) const {
+    auto format(const jsonc::reflection::annotated<T, Comments...>& annotated, FormatContext& ctx) const {
         return formatter<T>::format(annotated.storage(), ctx);
     }
 };
 
 #if __has_include(<fmt/format.h>)
 #include <fmt/format.h>
-template <typename T, jsonc::reflection::FixedString... Comments>
-struct fmt::formatter<jsonc::reflection::Annotated<T, Comments...>> : fmt::formatter<T> {
+template <typename T, jsonc::reflection::fixed_string... Comments>
+struct fmt::formatter<jsonc::reflection::annotated<T, Comments...>> : fmt::formatter<T> {
     template <typename FormatContext>
-    auto format(const jsonc::reflection::Annotated<T, Comments...>& annotated, FormatContext& ctx) const {
+    auto format(const jsonc::reflection::annotated<T, Comments...>& annotated, FormatContext& ctx) const {
         return formatter<T>::format(annotated.storage(), ctx);
     }
 };
