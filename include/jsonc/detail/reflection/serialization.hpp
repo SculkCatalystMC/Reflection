@@ -114,8 +114,11 @@ constexpr jsonc serialize_impl(const T& t, const options&, const F&, priority_ta
 template <concepts::is_float_type T, concepts::is_key_formatter F>
 constexpr jsonc serialize_impl(const T& t, const options&, const F&, priority_tag<9>) noexcept {
     auto res = serializer<T>::to_float(t);
-    if constexpr (std::same_as<float, std::remove_cvref_t<decltype(res)>>) { return static_cast<float>(res); }
-    return static_cast<double>(res);
+    if constexpr (std::same_as<float, std::remove_cvref_t<decltype(res)>>) {
+        return static_cast<float>(res);
+    } else {
+        return static_cast<double>(res);
+    }
 }
 
 template <concepts::is_string_type T, concepts::is_key_formatter F>

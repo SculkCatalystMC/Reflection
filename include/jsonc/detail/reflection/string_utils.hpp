@@ -12,6 +12,28 @@ template <typename T>
     requires(std::is_arithmetic_v<T> && !std::same_as<T, bool>)
 constexpr std::optional<T> str_to_num(std::string_view sv) noexcept;
 
+template <concepts::is_enum T, bool _IntCast = false>
+constexpr std::optional<T> str_to_enum(std::string_view sv) noexcept {
+    using RT = std::remove_cvref_t<T>;
+    if (auto val = magic_enum::enum_cast<RT>(sv)) { return val; }
+    if (auto val = magic_enum::enum_flags_cast<RT>(sv)) { return val; }
+    if constexpr (_IntCast) {
+        if (auto num = str_to_num<std::underlying_type_t<T>>(sv)) { return static_cast<RT>(*num); }
+    }
+    return std::nullopt;
+}
+
+template <concepts::is_enum T, bool _IntCast = false>
+constexpr std::optional<std::string> enum_to_str(T val) noexcept {
+    if (auto name = magic_enum::enum_name(val); !name.empty()) { return std::string(name); }
+    if (auto flag = magic_enum::enum_flags_name(val); !flag.empty()) { return std::string(flag); }
+    if constexpr (_IntCast) {
+        return std::to_string(std::to_underlying(val));
+    } else {
+        return {};
+    }
+}
+
 constexpr bool is_upper(char c) noexcept { return c >= 'A' && c <= 'Z'; }
 constexpr bool is_lower(char c) noexcept { return c >= 'a' && c <= 'z'; }
 constexpr char to_upper(char c) noexcept { return is_lower(c) ? c - ('a' - 'A') : c; }
@@ -109,8 +131,9 @@ constexpr auto default_key_formatter = [](std::string_view sv) noexcept -> std::
 constexpr auto snake_case_formatter  = [](std::string_view sv) noexcept -> std::string { return string_utils::to_snake_case(sv); };
 constexpr auto pascal_case_formatter = [](std::string_view sv) noexcept -> std::string { return string_utils::to_pascal_case(sv); };
 constexpr auto camel_case_formatter  = [](std::string_view sv) noexcept -> std::string { return string_utils::to_camel_case(sv); };
-constexpr auto upper_case_formatter  = [](std::string_view sv) noexcept -> std::string { return string_utils::to_upper_case(sv); };
-constexpr auto lower_case_formatter  = [](std::string_view sv) noexcept -> std::string { return string_utils::to_lower_case(sv); };
+constexpr auto upper_case_formatter  = [](std::string_view sv) noexcept -> std::string {
+    return string_utils::to_upper_case(string_utils::to_snake_case(sv));
+};
 
 } // namespace builtin_key_formatter
 

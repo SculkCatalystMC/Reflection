@@ -80,6 +80,18 @@ struct serializer<uint64_t> {
 };
 
 template <>
+struct serializer<float> {
+    static std::string          to_string(float t) noexcept { return std::format("{}", t); }
+    static std::optional<float> from_string(std::string_view s) noexcept { return string_utils::str_to_num<float>(s); }
+};
+
+template <>
+struct serializer<double> {
+    static std::string           to_string(double t) noexcept { return std::format("{}", t); }
+    static std::optional<double> from_string(std::string_view s) noexcept { return string_utils::str_to_num<double>(s); }
+};
+
+template <>
 struct serializer<object_type> {
     static object_type                to_object(const object_type& o) noexcept { return o; }
     static std::optional<object_type> from_object(const object_type& o) noexcept { return o; }

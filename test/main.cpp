@@ -62,8 +62,8 @@ struct Config {
     std::vector<std::string>                                            test_17 = {"xxxxx", "yyyyy"};
     std::array<short, 4>                                                test_18 = {22, 33, 44, 55};
     bool                                                                test_19 = false;
-    std::unordered_map<int16_t, float>                                  test_20 = {
-        {{1, 2.3f}, {4, 5.32f}, {23, 2.45f}}
+    std::unordered_map<float, float>                                    test_20 = {
+        {{1.0f, 2.3f}, {4.3f, 5.32f}, {23.0f, 2.45f}}
     };
     std::map<TestEnum, std::variant<bool, int, std::string>> test_21 = {
         {{TestEnum::AAA, false}, {TestEnum::BBB, 123456}, {TestEnum::CCC, "test 21"}}
