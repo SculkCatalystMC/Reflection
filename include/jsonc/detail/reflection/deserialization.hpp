@@ -108,12 +108,12 @@ constexpr bool deserialize_arithmetic_force_match(T& t, const ordered_jsonc& j, 
             return true;
         }
     } else if constexpr (std::is_signed_v<RT>) {
-        if (j.is_number_signed()) {
+        if (j.is_number_signed() || j.is_number_big_inteager()) {
             t = static_cast<RT>(j.get<int64_t>());
             return true;
         }
     } else {
-        if (j.is_number_unsigned()) {
+        if (j.is_number_unsigned() || j.is_number_big_inteager()) {
             t = static_cast<RT>(j.get<uint64_t>());
             return true;
         }
@@ -245,7 +245,7 @@ constexpr bool deserialize_impl(T& t, const ordered_jsonc& j, const options&, co
 
 template <concepts::is_high_precision_type T, concepts::is_key_formatter F>
 constexpr bool deserialize_impl(T& t, const ordered_jsonc& j, const options&, const F&, priority_tag<9>) noexcept {
-    if (!j.is_any_number()) { return false; }
+    if (!j.is_number()) { return false; }
     auto res = serializer<T>::from_any_number(j.get_any_number_view());
     if (res.has_value()) { t = *res; }
     return res.has_value();
