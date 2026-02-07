@@ -17,7 +17,7 @@ bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, 
 
     std::optional<std::string> content = file_utils::read_file(path);
     if (content) {
-        if (auto value = ordered_jsonc::parse(*content, options.float_keep_precision, options.allow_trailing_comma, options.ignore_comments)) {
+        if (auto value = ordered_jsonc::parse(*content, options.allow_trailing_comma, options.ignore_comments, options.float_keep_precision)) {
             data = *value;
         }
     }
@@ -74,7 +74,7 @@ bool save_file(const T& t, const std::filesystem::path& path, const F& key_forma
     ordered_jsonc res = serialize(t, key_formatter, options);
     if (options.keep_extra_comments && !options.ignore_comments) {
         if (auto content = file_utils::read_file(path)) {
-            if (auto data = ordered_jsonc::parse(*content, options.float_keep_precision, options.allow_trailing_comma, options.ignore_comments)) {
+            if (auto data = ordered_jsonc::parse(*content, options.allow_trailing_comma, options.ignore_comments, options.float_keep_precision)) {
                 data->move_comments_to_before();
                 res.merge_comments(*data);
             };
