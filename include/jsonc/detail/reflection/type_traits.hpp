@@ -137,27 +137,27 @@ constexpr bool is_string_serializable_v = requires(const T& t, std::string_view 
 };
 
 template <typename T>
-constexpr bool is_object_serializable_v = requires(const T& t, const object_type& o) {
-    { ::jsonc::reflection::serializer<T>::to_object(t) } -> std::convertible_to<object_type>;
+constexpr bool is_object_serializable_v = requires(const T& t, const ordered_jsonc::object_type& o) {
+    { ::jsonc::reflection::serializer<T>::to_object(t) } -> std::convertible_to<ordered_jsonc::object_type>;
     requires noexcept(::jsonc::reflection::serializer<T>::to_object(t));
     { ::jsonc::reflection::serializer<T>::from_object(o) } -> std::convertible_to<std::optional<T>>;
     requires noexcept(::jsonc::reflection::serializer<T>::from_object(o));
 };
 
 template <typename T>
-constexpr bool is_array_serializable_v = requires(const T& t, const array_type& a) {
-    { ::jsonc::reflection::serializer<T>::to_array(t) } -> std::convertible_to<array_type>;
+constexpr bool is_array_serializable_v = requires(const T& t, const ordered_jsonc::array_type& a) {
+    { ::jsonc::reflection::serializer<T>::to_array(t) } -> std::convertible_to<ordered_jsonc::array_type>;
     requires noexcept(::jsonc::reflection::serializer<T>::to_array(t));
     { ::jsonc::reflection::serializer<T>::from_array(a) } -> std::convertible_to<std::optional<T>>;
     requires noexcept(::jsonc::reflection::serializer<T>::from_array(a));
 };
 
 template <typename T>
-constexpr bool is_big_int_serializable_v = requires(const T& t, std::string_view n) {
-    { ::jsonc::reflection::serializer<T>::to_big_int(t) } -> std::convertible_to<std::string>;
-    requires noexcept(::jsonc::reflection::serializer<T>::to_big_int(t));
-    { ::jsonc::reflection::serializer<T>::from_big_int(n) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(::jsonc::reflection::serializer<T>::from_big_int(n));
+constexpr bool is_high_precision_serializable_v = requires(const T& t, std::string_view n) {
+    { ::jsonc::reflection::serializer<T>::to_any_number(t) } -> std::convertible_to<std::string>;
+    requires noexcept(::jsonc::reflection::serializer<T>::to_any_number(t));
+    { ::jsonc::reflection::serializer<T>::from_any_number(n) } -> std::convertible_to<std::optional<T>>;
+    requires noexcept(::jsonc::reflection::serializer<T>::from_any_number(n));
 };
 
 template <typename T>
@@ -166,45 +166,45 @@ constexpr bool is_string_convertible_v = std::is_nothrow_constructible_v<std::st
 template <typename T>
 constexpr bool is_boolean_type_v =
     is_boolean_serializable_v<T> && !is_signed_serializable_v<T> && !is_unsigned_serializable_v<T> && !is_float_serializable_v<T>
-    && !is_string_serializable_v<T> && !is_object_serializable_v<T> && !is_array_serializable_v<T> && !is_big_int_serializable_v<T>;
+    && !is_string_serializable_v<T> && !is_object_serializable_v<T> && !is_array_serializable_v<T> && !is_high_precision_serializable_v<T>;
 
 template <typename T>
 constexpr bool is_signed_type_v =
     is_signed_serializable_v<T> && !is_boolean_serializable_v<T> && !is_unsigned_serializable_v<T> && !is_float_serializable_v<T>
-    && !is_string_serializable_v<T> && !is_object_serializable_v<T> && !is_array_serializable_v<T> && !is_big_int_serializable_v<T>;
+    && !is_string_serializable_v<T> && !is_object_serializable_v<T> && !is_array_serializable_v<T> && !is_high_precision_serializable_v<T>;
 
 template <typename T>
 constexpr bool is_unsigned_type_v =
     is_unsigned_serializable_v<T> && !is_boolean_serializable_v<T> && !is_signed_serializable_v<T> && !is_float_serializable_v<T>
-    && !is_string_serializable_v<T> && !is_object_serializable_v<T> && !is_array_serializable_v<T> && !is_big_int_serializable_v<T>;
+    && !is_string_serializable_v<T> && !is_object_serializable_v<T> && !is_array_serializable_v<T> && !is_high_precision_serializable_v<T>;
 
 template <typename T>
 constexpr bool is_float_type_v =
     is_float_serializable_v<T> && !is_boolean_serializable_v<T> && !is_signed_serializable_v<T> && !is_unsigned_serializable_v<T>
-    && !is_string_serializable_v<T> && !is_object_serializable_v<T> && !is_array_serializable_v<T> && !is_big_int_serializable_v<T>;
+    && !is_string_serializable_v<T> && !is_object_serializable_v<T> && !is_array_serializable_v<T> && !is_high_precision_serializable_v<T>;
 
 template <typename T>
 constexpr bool is_string_type_v =
     is_string_serializable_v<T> && !is_boolean_serializable_v<T> && !is_signed_serializable_v<T> && !is_unsigned_serializable_v<T>
-    && !is_float_serializable_v<T> && !is_object_serializable_v<T> && !is_array_serializable_v<T> && !is_big_int_serializable_v<T>;
+    && !is_float_serializable_v<T> && !is_object_serializable_v<T> && !is_array_serializable_v<T> && !is_high_precision_serializable_v<T>;
 
 template <typename T>
 constexpr bool is_object_type_v =
     is_object_serializable_v<T> && !is_boolean_serializable_v<T> && !is_signed_serializable_v<T> && !is_unsigned_serializable_v<T>
-    && !is_float_serializable_v<T> && !is_string_serializable_v<T> && !is_array_serializable_v<T> && !is_big_int_serializable_v<T>;
+    && !is_float_serializable_v<T> && !is_string_serializable_v<T> && !is_array_serializable_v<T> && !is_high_precision_serializable_v<T>;
 
 template <typename T>
 constexpr bool is_array_type_v =
     is_array_serializable_v<T> && !is_boolean_serializable_v<T> && !is_signed_serializable_v<T> && !is_unsigned_serializable_v<T>
-    && !is_float_serializable_v<T> && !is_string_serializable_v<T> && !is_object_serializable_v<T> && !is_big_int_serializable_v<T>;
+    && !is_float_serializable_v<T> && !is_string_serializable_v<T> && !is_object_serializable_v<T> && !is_high_precision_serializable_v<T>;
 
 template <typename T>
-constexpr bool is_big_int_type_v =
-    is_big_int_serializable_v<T> && !is_boolean_serializable_v<T> && !is_signed_serializable_v<T> && !is_unsigned_serializable_v<T>
+constexpr bool is_high_precision_type_v =
+    is_high_precision_serializable_v<T> && !is_boolean_serializable_v<T> && !is_signed_serializable_v<T> && !is_unsigned_serializable_v<T>
     && !is_float_serializable_v<T> && !is_string_serializable_v<T> && !is_object_serializable_v<T> && !is_array_serializable_v<T>;
 
 template <typename T>
-constexpr bool is_jsonc_type_v = std::convertible_to<std::remove_cvref_t<T>, jsonc>;
+constexpr bool is_jsonc_type_v = std::convertible_to<std::remove_cvref_t<T>, ordered_jsonc>;
 
 template <typename T>
 constexpr bool is_stringifiable_type_v = is_string_type_v<T> || is_string_convertible_v<T> || std::is_enum_v<T>;

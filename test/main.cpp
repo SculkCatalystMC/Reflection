@@ -25,8 +25,8 @@ struct serializer<TestType1> {
 };
 template <>
 struct serializer<TestType2> {
-    static std::string              to_big_int(const TestType2& t) noexcept { return t.data_; }
-    static std::optional<TestType2> from_big_int(std::string_view v) noexcept { return TestType2{v}; }
+    static std::string              to_any_number(const TestType2& t) noexcept { return t.data_; }
+    static std::optional<TestType2> from_any_number(std::string_view v) noexcept { return TestType2{v}; }
 };
 } // namespace jsonc::reflection
 
@@ -69,18 +69,18 @@ struct Config {
         {{TestEnum::AAA, false}, {TestEnum::BBB, 123456}, {TestEnum::CCC, "test 21"}}
     };
     TestType2 test_22 = {"123456787654323456789824324543454323456765432345676543765432345678"};
-    struct Test24 {
+    struct {
         int                             xxxxx = 123;
         jr::annotated<double, "double"> yyyyy = 64738.543;
     } test_23;
-    std::set<int>                       test_24 = {1, 23, 456};
-    std::vector<jsonc::object_type>     test_25{};
-    jr::dispatcher<std::string, Test26> test_26{};
-    jr::dispatcher<int, Test27>         test_27{};
+    std::set<int>                                  test_24 = {1, 23, 456};
+    std::vector<jsonc::ordered_jsonc::object_type> test_25{};
+    jr::dispatcher<std::string, Test26>            test_26{};
+    jr::dispatcher<int, Test27>                    test_27{};
 };
 
 int main() {
-    jr::annotated<std::variant<Config, std::vector<int>>, "test config", "xxxxx"> settings;
+    jr::annotated<Config, "test config", "xxxxx"> settings;
     jr::load_file(settings, "./test.jsonc");
     return 0;
 }

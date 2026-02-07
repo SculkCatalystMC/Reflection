@@ -69,7 +69,7 @@ template <typename T>
 concept is_array_type = traits::is_array_type_v<std::remove_cvref_t<T>>;
 
 template <typename T>
-concept is_big_int_type = traits::is_big_int_type_v<std::remove_cvref_t<T>>;
+concept is_high_precision_type = traits::is_high_precision_type_v<std::remove_cvref_t<T>>;
 
 template <typename T>
 concept is_enum = std::is_enum_v<std::remove_cvref_t<T>>;

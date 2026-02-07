@@ -92,15 +92,15 @@ struct serializer<double> {
 };
 
 template <>
-struct serializer<object_type> {
-    static object_type                to_object(const object_type& o) noexcept { return o; }
-    static std::optional<object_type> from_object(const object_type& o) noexcept { return o; }
+struct serializer<ordered_jsonc::object_type> {
+    static ordered_jsonc::object_type                to_object(const ordered_jsonc::object_type& o) noexcept { return o; }
+    static std::optional<ordered_jsonc::object_type> from_object(const ordered_jsonc::object_type& o) noexcept { return o; }
 };
 
 template <>
-struct serializer<array_type> {
-    static array_type                to_array(const array_type& a) noexcept { return a; }
-    static std::optional<array_type> from_array(const array_type& a) noexcept { return a; }
+struct serializer<ordered_jsonc::array_type> {
+    static ordered_jsonc::array_type                to_array(const ordered_jsonc::array_type& a) noexcept { return a; }
+    static std::optional<ordered_jsonc::array_type> from_array(const ordered_jsonc::array_type& a) noexcept { return a; }
 };
 
 } // namespace jsonc::reflection

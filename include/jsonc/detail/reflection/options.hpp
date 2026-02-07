@@ -21,6 +21,7 @@ struct options {
     bool                  keep_extra_comments{true};
     bool                  enum_cast_prefer_string{true};
     bool                  multi_line_comments_format{true};
+    bool                  float_keep_precision{false};
     rewrite_policy        rewrite_policy{};
     bool                  back_up_file_on_error{true};
     std::filesystem::path back_up_file_folder{};

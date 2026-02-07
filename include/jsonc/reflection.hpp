@@ -13,18 +13,20 @@ namespace jsonc::reflection {
 
 template <typename T, concepts::is_key_formatter F>
 bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, const options& options = {}) noexcept {
-    jsonc data{};
+    ordered_jsonc data{};
 
     std::optional<std::string> content = file_utils::read_file(path);
     if (content) {
-        if (auto value = parse(*content, options.allow_trailing_comma, options.ignore_comments)) { data = *value; }
+        if (auto value = ordered_jsonc::parse(*content, options.float_keep_precision, options.allow_trailing_comma, options.ignore_comments)) {
+            data = *value;
+        }
     }
 
     bool result = deserialize(t, data, key_formatter, options);
 
     if (options.rewrite_policy == rewrite_policy::always || (options.rewrite_policy == rewrite_policy::error && !result)
         || options.rewrite_policy == rewrite_policy::format) {
-        jsonc res = serialize(t, key_formatter, options);
+        ordered_jsonc res = serialize(t, key_formatter, options);
         if (options.keep_extra_comments && !data.is_null() && !options.ignore_comments) {
             data.move_comments_to_before();
             res.merge_comments(data);
@@ -69,10 +71,10 @@ bool load_file(T& t, const std::filesystem::path& path, const options& options =
 
 template <typename T, concepts::is_key_formatter F>
 bool save_file(const T& t, const std::filesystem::path& path, const F& key_formatter, const options& options = {}) noexcept {
-    jsonc res = serialize(t, key_formatter, options);
+    ordered_jsonc res = serialize(t, key_formatter, options);
     if (options.keep_extra_comments && !options.ignore_comments) {
         if (auto content = file_utils::read_file(path)) {
-            if (auto data = parse(*content, options.allow_trailing_comma, options.ignore_comments)) {
+            if (auto data = ordered_jsonc::parse(*content, options.float_keep_precision, options.allow_trailing_comma, options.ignore_comments)) {
                 data->move_comments_to_before();
                 res.merge_comments(*data);
             };
