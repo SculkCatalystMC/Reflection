@@ -50,13 +50,13 @@ struct Config {
     double                                                              test_5  = 3.526781;
     float                                                               test_6  = 26781.234f;
     int16_t                                                             test_7  = -2671;
-    std::optional<uint8_t>                                              test_8  = {123};
+    std::optional<std::uint8_t>                                         test_8  = {123};
     std::string                                                         test_9  = "str test";
     TestType1                                                           test_10 = {123.456f};
     jr::ranged<short, -3, 5678>                                         test_11 = 23345;
     TestEnum                                                            test_12 = TestEnum(3);
     TestEnumFlag                                                        test_13 = TestEnumFlag(6);
-    std::variant<bool, float, int, uint64_t>                            test_14 = 2.345f;
+    std::variant<bool, float, int, std::uint64_t>                       test_14 = 2.345f;
     std::tuple<int, int, std::string, float, TestEnum>                  test_15 = {234, -3782, "wyuhdsj", 7.492f, TestEnum::BBB};
     std::list<jr::annotated<int, "xwsaijnjhiknjk">>                     test_16 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     std::vector<std::string>                                            test_17 = {"xxxxx", "yyyyy"};
@@ -81,6 +81,6 @@ struct Config {
 
 int main() {
     jr::annotated<Config, "test config", "xxxxx"> settings;
-    jr::load_file<false, true>(settings, "./test.jsonc");
+    jr::load_file(settings, "./test.jsonc");
     return 0;
 }

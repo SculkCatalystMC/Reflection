@@ -32,51 +32,51 @@ struct serializer<bool> {
 };
 
 template <>
-struct serializer<int8_t> {
-    static std::string           to_string(int8_t t) noexcept { return std::format("{}", t); }
-    static std::optional<int8_t> from_string(std::string_view s) noexcept { return string_utils::str_to_num<int8_t>(s); }
+struct serializer<std::int8_t> {
+    static std::string                to_string(std::int8_t t) noexcept { return std::format("{}", t); }
+    static std::optional<std::int8_t> from_string(std::string_view s) noexcept { return string_utils::str_to_num<std::int8_t>(s); }
 };
 
 template <>
-struct serializer<uint8_t> {
-    static std::string            to_string(uint8_t t) noexcept { return std::format("{}", t); }
-    static std::optional<uint8_t> from_string(std::string_view s) noexcept { return string_utils::str_to_num<uint8_t>(s); }
+struct serializer<std::uint8_t> {
+    static std::string                 to_string(std::uint8_t t) noexcept { return std::format("{}", t); }
+    static std::optional<std::uint8_t> from_string(std::string_view s) noexcept { return string_utils::str_to_num<std::uint8_t>(s); }
 };
 
 template <>
-struct serializer<short> {
-    static std::string          to_string(short t) noexcept { return std::format("{}", t); }
-    static std::optional<short> from_string(std::string_view s) noexcept { return string_utils::str_to_num<short>(s); }
+struct serializer<std::int16_t> {
+    static std::string                 to_string(std::int16_t t) noexcept { return std::format("{}", t); }
+    static std::optional<std::int16_t> from_string(std::string_view s) noexcept { return string_utils::str_to_num<std::int16_t>(s); }
 };
 
 template <>
-struct serializer<uint16_t> {
-    static std::string             to_string(uint16_t t) noexcept { return std::format("{}", t); }
-    static std::optional<uint16_t> from_string(std::string_view s) noexcept { return string_utils::str_to_num<uint16_t>(s); }
+struct serializer<std::uint16_t> {
+    static std::string                  to_string(std::uint16_t t) noexcept { return std::format("{}", t); }
+    static std::optional<std::uint16_t> from_string(std::string_view s) noexcept { return string_utils::str_to_num<std::uint16_t>(s); }
 };
 
 template <>
-struct serializer<int> {
-    static std::string        to_string(int t) noexcept { return std::format("{}", t); }
-    static std::optional<int> from_string(std::string_view s) noexcept { return string_utils::str_to_num<int>(s); }
+struct serializer<std::int32_t> {
+    static std::string                 to_string(std::int32_t t) noexcept { return std::format("{}", t); }
+    static std::optional<std::int32_t> from_string(std::string_view s) noexcept { return string_utils::str_to_num<std::int32_t>(s); }
 };
 
 template <>
-struct serializer<uint32_t> {
-    static std::string             to_string(uint32_t t) noexcept { return std::format("{}", t); }
-    static std::optional<uint32_t> from_string(std::string_view s) noexcept { return string_utils::str_to_num<uint32_t>(s); }
+struct serializer<std::uint32_t> {
+    static std::string                  to_string(std::uint32_t t) noexcept { return std::format("{}", t); }
+    static std::optional<std::uint32_t> from_string(std::string_view s) noexcept { return string_utils::str_to_num<std::uint32_t>(s); }
 };
 
 template <>
-struct serializer<int64_t> {
-    static std::string            to_string(int64_t t) noexcept { return std::format("{}", t); }
-    static std::optional<int64_t> from_string(std::string_view s) noexcept { return string_utils::str_to_num<int64_t>(s); }
+struct serializer<std::int64_t> {
+    static std::string                 to_string(std::int64_t t) noexcept { return std::format("{}", t); }
+    static std::optional<std::int64_t> from_string(std::string_view s) noexcept { return string_utils::str_to_num<std::int64_t>(s); }
 };
 
 template <>
-struct serializer<uint64_t> {
-    static std::string             to_string(uint64_t t) noexcept { return std::format("{}", t); }
-    static std::optional<uint64_t> from_string(std::string_view s) noexcept { return string_utils::str_to_num<uint64_t>(s); }
+struct serializer<std::uint64_t> {
+    static std::string                  to_string(std::uint64_t t) noexcept { return std::format("{}", t); }
+    static std::optional<std::uint64_t> from_string(std::string_view s) noexcept { return string_utils::str_to_num<std::uint64_t>(s); }
 };
 
 template <>

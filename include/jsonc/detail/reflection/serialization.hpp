@@ -114,13 +114,13 @@ constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, c
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_signed_type_v<T, O, A>
 constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) noexcept {
-    return static_cast<int64_t>(serializer<T>::to_signed(t));
+    return static_cast<std::int64_t>(serializer<T>::to_signed(t));
 }
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_unsigned_type_v<T, O, A>
 constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) noexcept {
-    return static_cast<uint64_t>(serializer<T>::to_unsigned(t));
+    return static_cast<std::uint64_t>(serializer<T>::to_unsigned(t));
 }
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>

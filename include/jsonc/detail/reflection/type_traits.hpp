@@ -105,16 +105,16 @@ constexpr bool is_boolean_serializable_v = requires(const T& t, bool b) {
 };
 
 template <typename T>
-constexpr bool is_signed_serializable_v = requires(const T& t, int64_t n) {
-    { ::jsonc::reflection::serializer<T>::to_signed(t) } -> std::convertible_to<int64_t>;
+constexpr bool is_signed_serializable_v = requires(const T& t, std::int64_t n) {
+    { ::jsonc::reflection::serializer<T>::to_signed(t) } -> std::convertible_to<std::int64_t>;
     requires noexcept(::jsonc::reflection::serializer<T>::to_signed(t));
     { ::jsonc::reflection::serializer<T>::from_signed(n) } -> std::convertible_to<std::optional<T>>;
     requires noexcept(::jsonc::reflection::serializer<T>::from_signed(n));
 };
 
 template <typename T>
-constexpr bool is_unsigned_serializable_v = requires(const T& t, uint64_t n) {
-    { ::jsonc::reflection::serializer<T>::to_unsigned(t) } -> std::convertible_to<uint64_t>;
+constexpr bool is_unsigned_serializable_v = requires(const T& t, std::uint64_t n) {
+    { ::jsonc::reflection::serializer<T>::to_unsigned(t) } -> std::convertible_to<std::uint64_t>;
     requires noexcept(::jsonc::reflection::serializer<T>::to_unsigned(t));
     { ::jsonc::reflection::serializer<T>::from_unsigned(n) } -> std::convertible_to<std::optional<T>>;
     requires noexcept(::jsonc::reflection::serializer<T>::from_unsigned(n));

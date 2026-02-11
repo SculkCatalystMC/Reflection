@@ -42,15 +42,15 @@ constexpr char to_lower(char c) noexcept { return is_upper(c) ? c + ('a' - 'A') 
 constexpr std::string to_snake_case(std::string_view s, char split = '-') noexcept {
     std::string r{};
     for (size_t i = 0; i < s.size(); ++i) {
-        uint8_t c        = s[i];
-        bool    is_upper = std::isupper(c);
+        std::uint8_t c        = s[i];
+        bool         is_upper = std::isupper(c);
         if (c == '-' || c == ' ' || c == '_') { c = split; }
         if (is_upper && i > 0 && !r.empty() && r.back() != split) {
-            uint8_t prev = s[i - 1];
-            uint8_t next = (i + 1 < s.size()) ? s[i + 1] : 0;
+            std::uint8_t prev = s[i - 1];
+            std::uint8_t next = (i + 1 < s.size()) ? s[i + 1] : 0;
             if (std::islower(prev) || (std::isupper(prev) && std::islower(next))) { r.push_back(split); }
         }
-        r += is_upper ? static_cast<uint8_t>(std::tolower(c)) : c;
+        r += is_upper ? static_cast<std::uint8_t>(std::tolower(c)) : c;
     }
     return r;
 }
@@ -58,14 +58,14 @@ constexpr std::string to_snake_case(std::string_view s, char split = '-') noexce
 constexpr std::string to_pascal_case(std::string_view s) noexcept {
     std::string r;
     bool        new_word = true;
-    for (uint8_t c : s) {
+    for (std::uint8_t c : s) {
         if (c == '_' || c == '-' || c == ' ') {
             new_word = true;
         } else if (new_word) {
-            r        += static_cast<uint8_t>(std::toupper(c));
+            r        += static_cast<std::uint8_t>(std::toupper(c));
             new_word  = false;
         } else {
-            r += static_cast<uint8_t>(std::tolower(c));
+            r += static_cast<std::uint8_t>(std::tolower(c));
         }
     }
     return r;
@@ -73,7 +73,7 @@ constexpr std::string to_pascal_case(std::string_view s) noexcept {
 
 constexpr std::string to_camel_case(std::string_view s) noexcept {
     std::string r = to_pascal_case(s);
-    if (!r.empty()) { r[0] = static_cast<uint8_t>(std::tolower(static_cast<uint8_t>(r[0]))); }
+    if (!r.empty()) { r[0] = static_cast<std::uint8_t>(std::tolower(static_cast<std::uint8_t>(r[0]))); }
     return r;
 }
 

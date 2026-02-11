@@ -118,12 +118,12 @@ constexpr bool deserialize_arithmetic_force_match(T& t, const detail::basic_json
         }
     } else if constexpr (std::is_signed_v<RT>) {
         if (j.is_number_signed() || j.is_number_big_inteager()) {
-            t = static_cast<RT>(j.template get<int64_t>());
+            t = static_cast<RT>(j.template get<std::int64_t>());
             return true;
         }
     } else {
         if (j.is_number_unsigned() || j.is_number_big_inteager()) {
-            t = static_cast<RT>(j.template get<uint64_t>());
+            t = static_cast<RT>(j.template get<std::uint64_t>());
             return true;
         }
     }
@@ -208,7 +208,7 @@ template <typename T, concepts::is_key_formatter F, bool O, bool A>
 constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options&, const F&, priority_tag<9>) noexcept {
     if (!j.is_number_signed()) { return false; }
     using AT = traits::serializer_arg_t<decltype(&serializer<T>::from_signed)>;
-    auto res = serializer<T>::from_signed(static_cast<AT>(j.template get<int64_t>()));
+    auto res = serializer<T>::from_signed(static_cast<AT>(j.template get<std::int64_t>()));
     if (res) { t = *res; }
     return res.has_value();
 }
@@ -218,7 +218,7 @@ template <typename T, concepts::is_key_formatter F, bool O, bool A>
 constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options&, const F&, priority_tag<9>) noexcept {
     if (!j.is_number_unsigned()) { return false; }
     using AT = traits::serializer_arg_t<decltype(&serializer<T>::from_unsigned)>;
-    auto res = serializer<T>::from_unsigned(static_cast<AT>(j.template get<uint64_t>()));
+    auto res = serializer<T>::from_unsigned(static_cast<AT>(j.template get<std::uint64_t>()));
     if (res) { t = *res; }
     return res.has_value();
 }
@@ -320,10 +320,10 @@ constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const 
             return true;
         }
     } else if (j.is_number_signed()) {
-        t = static_cast<RT>(j.template get<int64_t>());
+        t = static_cast<RT>(j.template get<std::int64_t>());
         return true;
     } else if (j.is_number_unsigned()) {
-        t = static_cast<RT>(j.template get<uint64_t>());
+        t = static_cast<RT>(j.template get<std::uint64_t>());
         return true;
     }
     return false;
