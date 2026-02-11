@@ -95,7 +95,7 @@ constexpr std::string to_lower_case(std::string_view s) {
 
 namespace detail {
 
-template <concepts::is_stringifiable_type T>
+template <concepts::is_least_stringifiable_type T>
 constexpr std::string type_to_string(const T& t) noexcept {
     if constexpr (traits::is_string_convertible_v<T>) {
         return t;
@@ -108,7 +108,7 @@ constexpr std::string type_to_string(const T& t) noexcept {
     }
 }
 
-template <concepts::is_stringifiable_type T>
+template <concepts::is_least_stringifiable_type T>
 constexpr std::optional<T> string_to_type(std::string_view sv) noexcept {
     using RT = std::remove_cvref_t<T>;
     if constexpr (traits::is_string_convertible_v<T>) {

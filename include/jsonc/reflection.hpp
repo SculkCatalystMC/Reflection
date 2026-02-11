@@ -11,25 +11,32 @@
 
 namespace jsonc::reflection {
 
-template <typename T, concepts::is_key_formatter F>
+template <bool IsOrdered = true, bool AllowComments = true, typename T, concepts::is_key_formatter F>
 bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, const options& options = {}) noexcept {
-    ordered_jsonc data{};
+    detail::basic_jsonc<IsOrdered, AllowComments> data{};
 
     std::optional<std::string> content = file_utils::read_file(path);
     if (content) {
-        if (auto value = ordered_jsonc::parse(*content, options.allow_trailing_comma, options.ignore_comments, options.float_keep_precision)) {
+        if (auto value = detail::basic_jsonc<IsOrdered, AllowComments>::parse(
+                *content,
+                options.allow_trailing_comma,
+                options.ignore_comments,
+                options.float_keep_precision
+            )) {
             data = *value;
         }
     }
 
-    bool result = deserialize(t, data, key_formatter, options);
+    bool result = deserialize<IsOrdered, AllowComments>(t, data, key_formatter, options);
 
     if (options.rewrite_policy == rewrite_policy::always || (options.rewrite_policy == rewrite_policy::error && !result)
         || options.rewrite_policy == rewrite_policy::format) {
-        ordered_jsonc res = serialize(t, key_formatter, options);
-        if (options.keep_extra_comments && !data.is_null() && !options.ignore_comments) {
-            data.move_comments_to_before();
-            res.merge_comments(data);
+        detail::basic_jsonc<IsOrdered, AllowComments> res = serialize<IsOrdered, AllowComments>(t, key_formatter, options);
+        if constexpr (AllowComments) {
+            if (options.keep_extra_comments && !data.is_null() && !options.ignore_comments) {
+                data.move_comments_to_before();
+                res.merge_comments(data);
+            }
         }
 
         if (options.back_up_file_on_error && content && !result) {
@@ -64,17 +71,22 @@ bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, 
     return result;
 }
 
-template <typename T>
+template <bool IsOrdered = true, bool AllowComments = true, typename T>
 bool load_file(T& t, const std::filesystem::path& path, const options& options = {}) noexcept {
-    return load_file(t, path, builtin_key_formatter::default_key_formatter, options);
+    return load_file<IsOrdered, AllowComments>(t, path, builtin_key_formatter::default_key_formatter, options);
 }
 
-template <typename T, concepts::is_key_formatter F>
+template <bool IsOrdered = true, bool AllowComments = true, typename T, concepts::is_key_formatter F>
 bool save_file(const T& t, const std::filesystem::path& path, const F& key_formatter, const options& options = {}) noexcept {
-    ordered_jsonc res = serialize(t, key_formatter, options);
+    detail::basic_jsonc<IsOrdered, AllowComments> res = serialize<IsOrdered, AllowComments>(t, key_formatter, options);
     if (options.keep_extra_comments && !options.ignore_comments) {
         if (auto content = file_utils::read_file(path)) {
-            if (auto data = ordered_jsonc::parse(*content, options.allow_trailing_comma, options.ignore_comments, options.float_keep_precision)) {
+            if (auto data = detail::basic_jsonc<IsOrdered, AllowComments>::parse(
+                    *content,
+                    options.allow_trailing_comma,
+                    options.ignore_comments,
+                    options.float_keep_precision
+                )) {
                 data->move_comments_to_before();
                 res.merge_comments(*data);
             };
@@ -83,9 +95,9 @@ bool save_file(const T& t, const std::filesystem::path& path, const F& key_forma
     return file_utils::write_file(path, res.dump(options.indent, options.ensure_ascii, options.ignore_comments, options.multi_line_comments_format));
 }
 
-template <typename T>
+template <bool IsOrdered = true, bool AllowComments = true, typename T>
 bool save_file(const T& t, const std::filesystem::path& path, const options& options = {}) noexcept {
-    return save_file(t, path, builtin_key_formatter::default_key_formatter, options);
+    return save_file<IsOrdered, AllowComments>(t, path, builtin_key_formatter::default_key_formatter, options);
 }
 
 } // namespace jsonc::reflection

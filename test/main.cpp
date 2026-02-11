@@ -81,6 +81,6 @@ struct Config {
 
 int main() {
     jr::annotated<Config, "test config", "xxxxx"> settings;
-    jr::load_file(settings, "./test.jsonc");
+    jr::load_file<false, true>(settings, "./test.jsonc");
     return 0;
 }
