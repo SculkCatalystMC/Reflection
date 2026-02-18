@@ -73,10 +73,13 @@ struct Config {
         int                             xxxxx = 123;
         jr::annotated<double, "double"> yyyyy = 64738.543;
     } test_23;
-    std::set<int>                                  test_24 = {1, 23, 456};
-    std::vector<jsonc::ordered_jsonc::object_type> test_25{};
-    jr::dispatcher<std::string, Test26>            test_26{};
-    jr::dispatcher<int, Test27>                    test_27{};
+    std::set<int>                        test_24 = {1, 23, 456};
+    std::vector<jsonc::json::array_type> test_25{
+        {"aaa", 123},
+        {"bbb", 456}
+    };
+    jr::dispatcher<std::string, Test26> test_26{};
+    jr::dispatcher<int, Test27>         test_27{};
 };
 
 int main() {

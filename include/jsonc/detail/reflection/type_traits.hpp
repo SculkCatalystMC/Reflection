@@ -67,7 +67,7 @@ constexpr bool is_tuple_like_v = requires(T t) {
 namespace {
 
 template <typename T>
-constexpr bool has_emplace_back_method_v = requires {
+constexpr bool has_push_back_method_v = requires {
     { std::declval<T>().emplace_back() } -> std::same_as<typename std::remove_cvref_t<T>::value_type&>;
 };
 
@@ -77,7 +77,7 @@ constexpr bool has_insert_method_v = requires(typename std::remove_cvref_t<T>::v
 } // namespace
 
 template <typename T>
-constexpr bool is_array_like_v = is_range_loopable_v<T> && (has_emplace_back_method_v<T> || has_insert_method_v<T>)
+constexpr bool is_array_like_v = is_range_loopable_v<T> && (has_push_back_method_v<T> || has_insert_method_v<T>)
                               && !requires { typename std::remove_cvref_t<T>::mapped_type; } && requires { std::declval<T>().clear(); };
 
 template <typename T>
@@ -91,9 +91,27 @@ template <typename T>
 constexpr bool is_variant_v = requires { typename std::variant_size<std::remove_cvref_t<T>>::type; };
 
 template <typename T>
-constexpr bool is_associative_v = is_range_loopable_v<T> && requires { std::declval<T>().clear(); } && requires {
+constexpr bool is_jsonc_object_v = requires {
+    typename std::remove_cvref_t<T>::jsonc_type;
+    typename std::remove_cvref_t<T>::map_type;
+};
+
+template <typename T>
+constexpr bool is_jsonc_array_v =
+    requires { typename std::remove_cvref_t<T>::jsonc_type; } && !requires { typename std::remove_cvref_t<T>::map_type; };
+
+template <typename T>
+constexpr bool is_jsonc_variant_v = requires {
+    typename std::remove_cvref_t<T>::type_variant;
+    typename std::remove_cvref_t<T>::object_type;
+    typename std::remove_cvref_t<T>::array_type;
+};
+
+template <typename T>
+constexpr bool is_associative_v = is_range_loopable_v<T> && requires {
     typename std::remove_cvref_t<T>::key_type;
     typename std::remove_cvref_t<T>::mapped_type;
+    std::declval<T>().clear();
 };
 
 template <typename T>

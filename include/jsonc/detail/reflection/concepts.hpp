@@ -79,4 +79,13 @@ template <typename T, typename Arg0>
 concept is_dispatcher_listener =
     std::default_initializable<T> && std::is_nothrow_default_constructible_v<T> && (has_call_func_with_arg<T, Arg0> || has_call_func_no_arg<T>);
 
+template <typename T>
+concept is_jsonc_object = traits::is_jsonc_object_v<T>;
+
+template <typename T>
+concept is_jsonc_array = traits::is_jsonc_array_v<T>;
+
+template <typename T>
+concept is_jsonc_variant = traits::is_jsonc_variant_v<T>;
+
 } // namespace jsonc::reflection::concepts
