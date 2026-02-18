@@ -23,7 +23,7 @@ struct options {
     bool                  multi_line_comments_format{true};
     bool                  float_keep_precision{true};
     rewrite_policy        rewrite_policy{};
-    bool                  back_up_file_on_error{true};
+    bool                  back_up_file_on_error{false};
     std::filesystem::path back_up_file_folder{};
     std::string           back_up_time_suffix{"-%Y%m%d-%H_%M_%S"};
 };
