@@ -205,7 +205,7 @@ constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const 
 template <concepts::is_jsonc_array T, concepts::is_key_formatter F, bool O, bool A>
 constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options&, const F&, priority_tag<9>) noexcept {
     if (j.is_array()) {
-        for (const auto& e : j) { t.push_back(std::remove_cvref_t<T>::jsonc_type(e)); }
+        for (const auto& e : j) { t.push_back(typename std::remove_cvref_t<T>::jsonc_type(e)); }
         return true;
     }
     return false;
@@ -214,7 +214,7 @@ constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const 
 template <concepts::is_jsonc_object T, concepts::is_key_formatter F, bool O, bool A>
 constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options&, const F&, priority_tag<9>) noexcept {
     if (j.is_object()) {
-        for (const auto& [k, v] : j.items()) { t[k] = std::remove_cvref_t<T>::jsonc_type(v); }
+        for (const auto& [k, v] : j.items()) { t[k] = typename std::remove_cvref_t<T>::jsonc_type(v); }
         return true;
     }
     return false;
