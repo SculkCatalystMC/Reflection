@@ -15,6 +15,8 @@ template <bool IsOrdered = true, bool AllowComments = true, typename T, concepts
 bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, const options& options = {}) noexcept {
     detail::basic_jsonc<IsOrdered, AllowComments> data{};
 
+    bool result{false};
+
     std::optional<std::string> content = file_utils::read_file(path);
     if (content) {
         if (auto value = detail::basic_jsonc<IsOrdered, AllowComments>::parse(
@@ -23,11 +25,10 @@ bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, 
                 options.ignore_comments,
                 options.float_keep_precision
             )) {
-            data = *value;
+            data   = *value;
+            result = deserialize<IsOrdered, AllowComments>(t, data, key_formatter, options);
         }
     }
-
-    bool result = deserialize<IsOrdered, AllowComments>(t, data, key_formatter, options);
 
     if (options.rewrite_policy == rewrite_policy::always || (options.rewrite_policy == rewrite_policy::error && !result)
         || options.rewrite_policy == rewrite_policy::format) {
@@ -39,7 +40,7 @@ bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, 
             }
         }
 
-        if (options.back_up_file_on_error && content && !result) {
+        if (options.back_up_file_on_error && content && !content->empty() && !result) {
             std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
             std::tm     local_tm;
 #ifdef _WIN32
