@@ -6,5 +6,5 @@
 
 namespace jsonc::reflection::detail {
 template <bool O, bool A>
-using basic_jsonc = abi_v1_3_0::detail::basic_jsonc<O, A>;
+using basic_jsonc = abi_v1_3_1::detail::basic_jsonc<O, A>;
 }
