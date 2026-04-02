@@ -4,7 +4,7 @@
 #include <format>
 #include <type_traits>
 
-namespace jsonc::reflection {
+namespace sculk::jsonc::reflection {
 
 template <typename T>
     requires std::is_arithmetic_v<T>
@@ -31,12 +31,12 @@ struct fixed_number {
     T storage_;
 };
 
-} // namespace jsonc::reflection
+} // namespace sculk::jsonc::reflection
 
 template <typename T>
-struct std::formatter<jsonc::reflection::fixed_number<T>> : std::formatter<T> {
+struct std::formatter<sculk::jsonc::reflection::fixed_number<T>> : std::formatter<T> {
     template <typename FormatContext>
-    auto format(const jsonc::reflection::fixed_number<T>& num, FormatContext& ctx) const {
+    auto format(const sculk::jsonc::reflection::fixed_number<T>& num, FormatContext& ctx) const {
         return formatter<T>::format(num.storage_, ctx);
     }
 };
@@ -44,9 +44,9 @@ struct std::formatter<jsonc::reflection::fixed_number<T>> : std::formatter<T> {
 #if __has_include(<fmt/format.h>)
 #include <fmt/format.h>
 template <typename T>
-struct fmt::formatter<jsonc::reflection::fixed_number<T>> : fmt::formatter<T> {
+struct fmt::formatter<sculk::jsonc::reflection::fixed_number<T>> : fmt::formatter<T> {
     template <typename FormatContext>
-    auto format(const jsonc::reflection::fixed_number<T>& num, FormatContext& ctx) const {
+    auto format(const sculk::jsonc::reflection::fixed_number<T>& num, FormatContext& ctx) const {
         return formatter<T>::format(num.storage_, ctx);
     }
 };

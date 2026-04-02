@@ -3,7 +3,7 @@
 #include <print>
 #include <set>
 
-namespace jr = jsonc::reflection;
+namespace jr = sculk::jsonc::reflection;
 
 struct TestType1 {
     TestType1() = default;
@@ -17,7 +17,7 @@ struct TestType2 {
     std::string data_;
 };
 
-namespace jsonc::reflection {
+namespace sculk::jsonc::reflection {
 template <>
 struct serializer<TestType1> {
     static float                    to_float(const TestType1& t) noexcept { return t.data_; }
@@ -28,7 +28,7 @@ struct serializer<TestType2> {
     static std::string              to_any_number(const TestType2& t) noexcept { return t.data_; }
     static std::optional<TestType2> from_any_number(std::string_view v) noexcept { return TestType2{v}; }
 };
-} // namespace jsonc::reflection
+} // namespace sculk::jsonc::reflection
 
 enum class TestEnum { AAA = 0, BBB = 1, CCC = 2, DDD = 3 };
 
@@ -73,10 +73,10 @@ struct Config {
         int                             xxxxx = 123;
         jr::annotated<double, "double"> yyyyy = 64738.543;
     } test_23;
-    std::set<int>                                  test_24 = {1, 23, 456};
-    std::vector<jsonc::ordered_jsonc::object_type> test_25{};
-    jr::dispatcher<std::string, Test26>            test_26{};
-    jr::dispatcher<int, Test27>                    test_27{};
+    std::set<int>                                         test_24 = {1, 23, 456};
+    std::vector<sculk::jsonc::ordered_jsonc::object_type> test_25{};
+    jr::dispatcher<std::string, Test26>                   test_26{};
+    jr::dispatcher<int, Test27>                           test_27{};
 };
 
 int main() {

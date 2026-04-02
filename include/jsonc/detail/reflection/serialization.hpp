@@ -7,7 +7,7 @@
 #include "jsonc/detail/reflection/serializer.hpp"
 #include "jsonc/detail/reflection/string_utils.hpp"
 
-namespace jsonc::reflection {
+namespace sculk::jsonc::reflection {
 
 namespace {
 
@@ -288,4 +288,4 @@ constexpr detail::basic_jsonc<O, A> serialize_impl(const T&, const options&, con
 
 } // namespace
 
-} // namespace jsonc::reflection
+} // namespace sculk::jsonc::reflection

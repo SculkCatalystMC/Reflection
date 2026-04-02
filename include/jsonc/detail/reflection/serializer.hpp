@@ -5,7 +5,7 @@
 #include <optional>
 #include <string>
 
-namespace jsonc::reflection {
+namespace sculk::jsonc::reflection {
 
 template <typename T>
 struct serializer {};
@@ -139,4 +139,4 @@ struct serializer<ordered_jsonc::array_type> {
     static std::optional<ordered_jsonc::array_type> from_array(const ordered_jsonc::array_type& a) noexcept { return a; }
 };
 
-} // namespace jsonc::reflection
+} // namespace sculk::jsonc::reflection

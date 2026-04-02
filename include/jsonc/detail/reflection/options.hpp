@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <string>
 
-namespace jsonc::reflection {
+namespace sculk::jsonc::reflection {
 
 enum class rewrite_policy {
     always = 0,
@@ -28,4 +28,4 @@ struct options {
     std::string           back_up_time_suffix{"-%Y%m%d-%H_%M_%S"};
 };
 
-} // namespace jsonc::reflection
+} // namespace sculk::jsonc::reflection

@@ -2,7 +2,7 @@
 #include "jsonc/detail/reflection/fixed_number.hpp"
 #include <limits>
 
-namespace jsonc::reflection {
+namespace sculk::jsonc::reflection {
 
 template <typename T, fixed_number<T> Min = std::numeric_limits<T>::min(), fixed_number<T> Max = std::numeric_limits<T>::max()>
     requires std::is_arithmetic_v<T>
@@ -39,22 +39,22 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const ranged& num) noexcept { return os << num.storage(); }
 };
 
-} // namespace jsonc::reflection
+} // namespace sculk::jsonc::reflection
 
-template <typename T, jsonc::reflection::fixed_number<T> Min, jsonc::reflection::fixed_number<T> Max>
-struct std::formatter<jsonc::reflection::ranged<T, Min, Max>> : std::formatter<T> {
+template <typename T, sculk::jsonc::reflection::fixed_number<T> Min, sculk::jsonc::reflection::fixed_number<T> Max>
+struct std::formatter<sculk::jsonc::reflection::ranged<T, Min, Max>> : std::formatter<T> {
     template <typename FormatContext>
-    auto format(const jsonc::reflection::ranged<T, Min, Max>& num, FormatContext& ctx) const {
+    auto format(const sculk::jsonc::reflection::ranged<T, Min, Max>& num, FormatContext& ctx) const {
         return formatter<T>::format(num.storage(), ctx);
     }
 };
 
 #if __has_include(<fmt/format.h>)
 #include <fmt/format.h>
-template <typename T, jsonc::reflection::fixed_number<T> Min, jsonc::reflection::fixed_number<T> Max>
-struct fmt::formatter<jsonc::reflection::ranged<T, Min, Max>> : fmt::formatter<T> {
+template <typename T, sculk::jsonc::reflection::fixed_number<T> Min, sculk::jsonc::reflection::fixed_number<T> Max>
+struct fmt::formatter<sculk::jsonc::reflection::ranged<T, Min, Max>> : fmt::formatter<T> {
     template <typename FormatContext>
-    auto format(const jsonc::reflection::ranged<T, Min, Max>& num, FormatContext& ctx) const {
+    auto format(const sculk::jsonc::reflection::ranged<T, Min, Max>& num, FormatContext& ctx) const {
         return formatter<T>::format(num.storage(), ctx);
     }
 };

@@ -4,7 +4,7 @@
 #include <magic_enum/magic_enum.hpp>
 #include <magic_enum/magic_enum_flags.hpp>
 
-namespace jsonc::reflection {
+namespace sculk::jsonc::reflection {
 
 namespace string_utils {
 
@@ -137,4 +137,4 @@ constexpr auto upper_case_formatter  = [](std::string_view sv) noexcept -> std::
 
 } // namespace builtin_key_formatter
 
-} // namespace jsonc::reflection
+} // namespace sculk::jsonc::reflection

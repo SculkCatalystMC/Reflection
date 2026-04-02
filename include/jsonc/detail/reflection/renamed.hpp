@@ -1,7 +1,7 @@
 #pragma once
 #include "jsonc/detail/reflection/fixed_string.hpp"
 
-namespace jsonc::reflection {
+namespace sculk::jsonc::reflection {
 
 template <typename T, fixed_string AliasName>
 class renamed {
@@ -80,22 +80,22 @@ private:
     T storage_;
 };
 
-} // namespace jsonc::reflection
+} // namespace sculk::jsonc::reflection
 
-template <typename T, size_t N, jsonc::reflection::fixed_string<N> AliasName>
-struct std::formatter<jsonc::reflection::renamed<T, AliasName>> : std::formatter<T> {
+template <typename T, size_t N, sculk::jsonc::reflection::fixed_string<N> AliasName>
+struct std::formatter<sculk::jsonc::reflection::renamed<T, AliasName>> : std::formatter<T> {
     template <typename FormatContext>
-    auto format(const jsonc::reflection::renamed<T, AliasName>& str, FormatContext& ctx) const {
+    auto format(const sculk::jsonc::reflection::renamed<T, AliasName>& str, FormatContext& ctx) const {
         return formatter<T>::format(str.storage(), ctx);
     }
 };
 
 #if __has_include(<fmt/format.h>)
 #include <fmt/format.h>
-template <typename T, jsonc::reflection::fixed_string AliasName>
-struct fmt::formatter<jsonc::reflection::renamed<T, AliasName>> : fmt::formatter<T> {
+template <typename T, sculk::jsonc::reflection::fixed_string AliasName>
+struct fmt::formatter<sculk::jsonc::reflection::renamed<T, AliasName>> : fmt::formatter<T> {
     template <typename FormatContext>
-    auto format(const jsonc::reflection::renamed<T, AliasName>& str, FormatContext& ctx) const {
+    auto format(const sculk::jsonc::reflection::renamed<T, AliasName>& str, FormatContext& ctx) const {
         return formatter<T>::format(str.storage(), ctx);
     }
 };

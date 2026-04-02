@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-namespace jsonc::reflection {
+namespace sculk::jsonc::reflection {
 
 template <size_t N>
 struct fixed_string {
@@ -42,12 +42,12 @@ struct fixed_string {
 template <size_t N>
 fixed_string(char const (&)[N]) -> fixed_string<N - 1>;
 
-} // namespace jsonc::reflection
+} // namespace sculk::jsonc::reflection
 
 template <size_t N>
-struct std::formatter<jsonc::reflection::fixed_string<N>> : std::formatter<std::string_view> {
+struct std::formatter<sculk::jsonc::reflection::fixed_string<N>> : std::formatter<std::string_view> {
     template <typename FormatContext>
-    auto format(const jsonc::reflection::fixed_string<N>& str, FormatContext& ctx) const {
+    auto format(const sculk::jsonc::reflection::fixed_string<N>& str, FormatContext& ctx) const {
         return formatter<std::string_view>::format(str.view(), ctx);
     }
 };
@@ -55,9 +55,9 @@ struct std::formatter<jsonc::reflection::fixed_string<N>> : std::formatter<std::
 #if __has_include(<fmt/format.h>)
 #include <fmt/format.h>
 template <size_t N>
-struct fmt::formatter<jsonc::reflection::fixed_string<N>> : fmt::formatter<std::string_view> {
+struct fmt::formatter<sculk::jsonc::reflection::fixed_string<N>> : fmt::formatter<std::string_view> {
     template <typename FormatContext>
-    auto format(const jsonc::reflection::fixed_string<N>& str, FormatContext& ctx) const {
+    auto format(const sculk::jsonc::reflection::fixed_string<N>& str, FormatContext& ctx) const {
         return formatter<std::string_view>::format(str.view(), ctx);
     }
 };

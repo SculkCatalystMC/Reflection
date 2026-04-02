@@ -1,7 +1,7 @@
 #pragma once
 #include <boost/pfr.hpp>
 
-namespace jsonc::reflection::pfr {
+namespace sculk::jsonc::reflection::pfr {
 
 template <typename T, typename F>
 constexpr void for_each_field_with_name(T&& value, F&& func) {
@@ -17,4 +17,4 @@ constexpr void for_each_field_with_name(T&& value, F&& func) {
     });
 }
 
-} // namespace jsonc::reflection::pfr
+} // namespace sculk::jsonc::reflection::pfr

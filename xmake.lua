@@ -1,8 +1,8 @@
 add_rules("mode.debug", "mode.release")
 
-add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo.git")
+add_repositories("sculk-repo https://github.com/SculkCatalystMC/xmake-repo.git")
 
-add_requires("jsonc v1.3.0")
+add_requires("jsonc v1.4.0")
 add_requires("boost_pfr 2.2.0")
 add_requires("magic_enum 0.9.7")
 

@@ -8,7 +8,7 @@
 #include <magic_enum/magic_enum.hpp>
 #include <magic_enum/magic_enum_flags.hpp>
 
-namespace jsonc::reflection {
+namespace sculk::jsonc::reflection {
 
 namespace {
 
@@ -442,4 +442,4 @@ constexpr bool deserialize_impl(T&, const detail::basic_jsonc<O, A>&, const opti
 
 } // namespace
 
-} // namespace jsonc::reflection
+} // namespace sculk::jsonc::reflection
