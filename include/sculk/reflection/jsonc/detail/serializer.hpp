@@ -1,14 +1,11 @@
 #pragma once
-#include "jsonc/detail/reflection/jsonc_header.hpp"
+#include "sculk/reflection/jsonc/detail/jsonc_header.hpp"
 #include <charconv>
 #include <format>
 #include <optional>
 #include <string>
 
-namespace sculk::jsonc::reflection {
-
-template <typename T>
-struct serializer {};
+namespace sculk {
 
 namespace string_utils {
 template <typename T>
@@ -20,6 +17,11 @@ constexpr std::optional<T> str_to_num(std::string_view sv) noexcept {
     return res;
 }
 } // namespace string_utils
+
+namespace reflection::jsonc {
+
+template <typename T>
+struct serializer {};
 
 template <>
 struct serializer<bool> {
@@ -91,4 +93,6 @@ struct serializer<double> {
     static std::optional<double> from_string(std::string_view s) noexcept { return string_utils::str_to_num<double>(s); }
 };
 
-} // namespace sculk::jsonc::reflection
+} // namespace reflection::jsonc
+
+} // namespace sculk

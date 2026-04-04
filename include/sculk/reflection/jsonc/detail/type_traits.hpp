@@ -1,6 +1,6 @@
 #pragma once
-#include "jsonc/detail/reflection/ranged.hpp"
-#include "jsonc/detail/reflection/serializer.hpp"
+#include "sculk/reflection/jsonc/detail/serializer.hpp"
+#include "sculk/reflection/ranged.hpp"
 #include <array>
 #include <concepts>
 #include <string>
@@ -8,7 +8,7 @@
 #include <utility>
 #include <variant>
 
-namespace sculk::jsonc::reflection {
+namespace sculk::reflection {
 
 template <size_t N>
 struct fixed_string;
@@ -16,7 +16,7 @@ struct fixed_string;
 template <typename T, fixed_string AliasName>
 class renamed;
 
-namespace traits {
+namespace jsonc::traits {
 
 template <typename T>
 constexpr bool always_false_v = false;
@@ -97,6 +97,13 @@ constexpr bool is_jsonc_object_v = requires {
 };
 
 template <typename T>
+constexpr bool is_associative_v = !is_jsonc_object_v<T> && traits::is_range_loopable_v<T> && requires {
+    typename std::remove_cvref_t<T>::key_type;
+    typename std::remove_cvref_t<T>::mapped_type;
+    std::declval<std::remove_reference_t<T>&>().clear();
+};
+
+template <typename T>
 constexpr bool is_jsonc_array_v =
     requires { typename std::remove_cvref_t<T>::jsonc_type; } && !requires { typename std::remove_cvref_t<T>::map_type; };
 
@@ -108,74 +115,67 @@ constexpr bool is_jsonc_variant_v = requires {
 };
 
 template <typename T>
-constexpr bool is_associative_v = !is_jsonc_object_v<T> && is_range_loopable_v<T> && requires {
-    typename std::remove_cvref_t<T>::key_type;
-    typename std::remove_cvref_t<T>::mapped_type;
-    std::declval<std::remove_reference_t<T>&>().clear();
-};
-
-template <typename T>
 constexpr bool is_boolean_serializable_v = requires(const T& t, bool b) {
-    { sculk::jsonc::reflection::serializer<T>::to_boolean(t) } -> std::convertible_to<bool>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::to_boolean(t));
-    { sculk::jsonc::reflection::serializer<T>::from_boolean(b) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::from_boolean(b));
+    { sculk::reflection::jsonc::serializer<T>::to_boolean(t) } -> std::convertible_to<bool>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_boolean(t));
+    { sculk::reflection::jsonc::serializer<T>::from_boolean(b) } -> std::convertible_to<std::optional<T>>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_boolean(b));
 };
 
 template <typename T>
 constexpr bool is_signed_serializable_v = requires(const T& t, std::int64_t n) {
-    { sculk::jsonc::reflection::serializer<T>::to_signed(t) } -> std::convertible_to<std::int64_t>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::to_signed(t));
-    { sculk::jsonc::reflection::serializer<T>::from_signed(n) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::from_signed(n));
+    { sculk::reflection::jsonc::serializer<T>::to_signed(t) } -> std::convertible_to<std::int64_t>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_signed(t));
+    { sculk::reflection::jsonc::serializer<T>::from_signed(n) } -> std::convertible_to<std::optional<T>>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_signed(n));
 };
 
 template <typename T>
 constexpr bool is_unsigned_serializable_v = requires(const T& t, std::uint64_t n) {
-    { sculk::jsonc::reflection::serializer<T>::to_unsigned(t) } -> std::convertible_to<std::uint64_t>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::to_unsigned(t));
-    { sculk::jsonc::reflection::serializer<T>::from_unsigned(n) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::from_unsigned(n));
+    { sculk::reflection::jsonc::serializer<T>::to_unsigned(t) } -> std::convertible_to<std::uint64_t>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_unsigned(t));
+    { sculk::reflection::jsonc::serializer<T>::from_unsigned(n) } -> std::convertible_to<std::optional<T>>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_unsigned(n));
 };
 
 template <typename T>
 constexpr bool is_float_serializable_v = requires(const T& t, double n) {
-    { sculk::jsonc::reflection::serializer<T>::to_float(t) } -> std::convertible_to<double>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::to_float(t));
-    { sculk::jsonc::reflection::serializer<T>::from_float(n) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::from_float(n));
+    { sculk::reflection::jsonc::serializer<T>::to_float(t) } -> std::convertible_to<double>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_float(t));
+    { sculk::reflection::jsonc::serializer<T>::from_float(n) } -> std::convertible_to<std::optional<T>>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_float(n));
 };
 
 template <typename T>
 constexpr bool is_string_serializable_v = requires(const T& t, std::string_view sv) {
-    { sculk::jsonc::reflection::serializer<T>::to_string(t) } -> std::convertible_to<std::string>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::to_string(t));
-    { sculk::jsonc::reflection::serializer<T>::from_string(sv) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::from_string(sv));
+    { sculk::reflection::jsonc::serializer<T>::to_string(t) } -> std::convertible_to<std::string>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_string(t));
+    { sculk::reflection::jsonc::serializer<T>::from_string(sv) } -> std::convertible_to<std::optional<T>>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_string(sv));
 };
 
 template <typename T, bool O, bool A>
-constexpr bool is_object_serializable_v = requires(const T& t, const detail::basic_jsonc<O, A>::object_type& o) {
-    { sculk::jsonc::reflection::serializer<T>::to_object(t) } -> std::convertible_to<typename detail::basic_jsonc<O, A>::object_type>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::to_object(t));
-    { sculk::jsonc::reflection::serializer<T>::from_object(o) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::from_object(o));
+constexpr bool is_object_serializable_v = requires(const T& t, const jsonc::detail::basic_jsonc<O, A>::object_type& o) {
+    { sculk::reflection::jsonc::serializer<T>::to_object(t) } -> std::convertible_to<typename jsonc::detail::basic_jsonc<O, A>::object_type>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_object(t));
+    { sculk::reflection::jsonc::serializer<T>::from_object(o) } -> std::convertible_to<std::optional<T>>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_object(o));
 };
 
 template <typename T, bool O, bool A>
-constexpr bool is_array_serializable_v = requires(const T& t, const detail::basic_jsonc<O, A>::array_type& a) {
-    { sculk::jsonc::reflection::serializer<T>::to_array(t) } -> std::convertible_to<typename detail::basic_jsonc<O, A>::array_type>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::to_array(t));
-    { sculk::jsonc::reflection::serializer<T>::from_array(a) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::from_array(a));
+constexpr bool is_array_serializable_v = requires(const T& t, const jsonc::detail::basic_jsonc<O, A>::array_type& a) {
+    { sculk::reflection::jsonc::serializer<T>::to_array(t) } -> std::convertible_to<typename jsonc::detail::basic_jsonc<O, A>::array_type>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_array(t));
+    { sculk::reflection::jsonc::serializer<T>::from_array(a) } -> std::convertible_to<std::optional<T>>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_array(a));
 };
 
 template <typename T>
 constexpr bool is_high_precision_serializable_v = requires(const T& t, std::string_view n) {
-    { sculk::jsonc::reflection::serializer<T>::to_any_number(t) } -> std::convertible_to<std::string>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::to_any_number(t));
-    { sculk::jsonc::reflection::serializer<T>::from_any_number(n) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::jsonc::reflection::serializer<T>::from_any_number(n));
+    { sculk::reflection::jsonc::serializer<T>::to_any_number(t) } -> std::convertible_to<std::string>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_any_number(t));
+    { sculk::reflection::jsonc::serializer<T>::from_any_number(n) } -> std::convertible_to<std::optional<T>>;
+    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_any_number(n));
 };
 
 template <typename T>
@@ -222,7 +222,7 @@ constexpr bool is_high_precision_type_v =
     && !is_float_serializable_v<T> && !is_string_serializable_v<T> && !is_object_serializable_v<T, O, A> && !is_array_serializable_v<T, O, A>;
 
 template <typename T, bool O, bool A>
-constexpr bool is_jsonc_type_v = std::convertible_to<std::remove_cvref_t<T>, detail::basic_jsonc<O, A>>;
+constexpr bool is_jsonc_type_v = std::convertible_to<std::remove_cvref_t<T>, jsonc::detail::basic_jsonc<O, A>>;
 
 template <typename T, bool O, bool A>
 constexpr bool is_stringifiable_type_v = is_string_type_v<T, O, A> || is_string_convertible_v<T> || std::is_enum_v<T>;
@@ -232,7 +232,7 @@ constexpr bool is_least_stringifiable_type_v = is_string_serializable_v<T> || is
 
 template <typename T, bool O, bool A>
 constexpr bool is_reflectable_v = std::is_aggregate_v<T> || is_object_serializable_v<T, O, A> || is_array_serializable_v<T, O, A>
-                               || is_associative_v<T> || is_array_like_v<T> || is_tuple_like_v<T>;
+                               || is_associative_v<T> || traits::is_array_like_v<T> || traits::is_tuple_like_v<T>;
 
 template <typename>
 struct serializer_arg {};
@@ -251,6 +251,6 @@ constexpr bool is_key_formatter_v = requires(F f, std::string_view sv) {
     requires noexcept(f(sv));
 };
 
-} // namespace traits
+} // namespace jsonc::traits
 
-} // namespace sculk::jsonc::reflection
+} // namespace sculk::reflection

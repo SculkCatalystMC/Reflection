@@ -1,18 +1,18 @@
 #pragma once
-#include "jsonc/detail/reflection/concepts.hpp"
-#include "jsonc/detail/reflection/jsonc_header.hpp"
-#include "jsonc/detail/reflection/options.hpp"
-#include "jsonc/detail/reflection/pfr.hpp"
-#include "jsonc/detail/reflection/priority_tag.hpp"
-#include "jsonc/detail/reflection/string_utils.hpp"
+#include "sculk/reflection/jsonc/detail/concepts.hpp"
+#include "sculk/reflection/jsonc/detail/jsonc_header.hpp"
+#include "sculk/reflection/jsonc/detail/options.hpp"
+#include "sculk/reflection/pfr.hpp"
+#include "sculk/reflection/priority_tag.hpp"
+#include "sculk/reflection/string_utils.hpp"
 #include <magic_enum/magic_enum.hpp>
 #include <magic_enum/magic_enum_flags.hpp>
 
-namespace sculk::jsonc::reflection {
+namespace sculk::reflection::jsonc {
 
 namespace {
 
-template <concepts::is_arithmetic T, concepts::is_key_formatter F, bool O, bool A>
+template <reflection::concepts::is_arithmetic T, concepts::is_key_formatter F, bool O, bool A>
 constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options& options, const F& kfmt, priority_tag<10>) noexcept;
 
 template <concepts::is_jsonc_array T, concepts::is_key_formatter F, bool O, bool A>
@@ -71,7 +71,7 @@ constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const 
 template <concepts::is_ranged T, concepts::is_key_formatter F, bool O, bool A>
 constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options& options, const F& kfmt, priority_tag<5>) noexcept;
 
-template <concepts::is_enum T, concepts::is_key_formatter F, bool O, bool A>
+template <reflection::concepts::is_enum T, concepts::is_key_formatter F, bool O, bool A>
 constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options& options, const F& kfmt, priority_tag<5>) noexcept;
 
 template <concepts::is_variant T, concepts::is_key_formatter F, bool O, bool A>
@@ -112,7 +112,7 @@ namespace {
 
 namespace {
 
-template <concepts::is_arithmetic T, bool O, bool A>
+template <reflection::concepts::is_arithmetic T, bool O, bool A>
 constexpr bool deserialize_arithmetic_force_match(T& t, const detail::basic_jsonc<O, A>& j, const options&) noexcept {
     using RT = std::remove_cvref_t<T>;
     if constexpr (std::same_as<RT, bool>) {
@@ -185,7 +185,7 @@ constexpr void apply_key_comments(T&, const detail::basic_jsonc<O, true>&, std::
 
 } // namespace
 
-template <concepts::is_arithmetic T, concepts::is_key_formatter F, bool O, bool A>
+template <reflection::concepts::is_arithmetic T, concepts::is_key_formatter F, bool O, bool A>
 constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options&, const F&, priority_tag<10>) noexcept {
     using RT = std::remove_cvref_t<T>;
     if constexpr (std::same_as<RT, bool>) {
@@ -339,7 +339,7 @@ constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const 
     return result;
 }
 
-template <concepts::is_enum T, concepts::is_key_formatter F, bool O, bool A>
+template <reflection::concepts::is_enum T, concepts::is_key_formatter F, bool O, bool A>
 constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options&, const F&, priority_tag<5>) noexcept {
     using RT = std::remove_cvref_t<T>;
     if (j.is_string()) {
@@ -478,4 +478,4 @@ constexpr bool deserialize_impl(T&, const detail::basic_jsonc<O, A>&, const opti
 
 } // namespace
 
-} // namespace sculk::jsonc::reflection
+} // namespace sculk::reflection::jsonc

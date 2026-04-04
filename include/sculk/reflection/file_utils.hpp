@@ -3,7 +3,7 @@
 #include <fstream>
 #include <optional>
 
-namespace sculk::jsonc::reflection::file_utils {
+namespace sculk::reflection::file_utils {
 
 inline std::optional<std::string> read_file(const std::filesystem::path& path) noexcept {
     if (!std::filesystem::exists(path)) { return std::nullopt; }
@@ -18,4 +18,4 @@ inline bool write_file(const std::filesystem::path& path, std::string_view conte
     return true;
 }
 
-} // namespace sculk::jsonc::reflection::file_utils
+} // namespace sculk::reflection::file_utils

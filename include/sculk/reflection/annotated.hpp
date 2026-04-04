@@ -1,9 +1,9 @@
 #pragma once
-#include "jsonc/detail/reflection/fixed_string.hpp"
+#include "sculk/reflection/fixed_string.hpp"
 #include <format>
 #include <vector>
 
-namespace sculk::jsonc::reflection {
+namespace sculk::reflection {
 
 template <typename T, fixed_string... Comments>
 class annotated {
@@ -98,22 +98,22 @@ private:
     std::vector<std::string> comments_{Comments.str()...};
 };
 
-} // namespace sculk::jsonc::reflection
+} // namespace sculk::reflection
 
-template <typename T, sculk::jsonc::reflection::fixed_string... Comments>
-struct std::formatter<sculk::jsonc::reflection::annotated<T, Comments...>> : std::formatter<T> {
+template <typename T, sculk::reflection::fixed_string... Comments>
+struct std::formatter<sculk::reflection::annotated<T, Comments...>> : std::formatter<T> {
     template <typename FormatContext>
-    auto format(const sculk::jsonc::reflection::annotated<T, Comments...>& annotated, FormatContext& ctx) const {
+    auto format(const sculk::reflection::annotated<T, Comments...>& annotated, FormatContext& ctx) const {
         return formatter<T>::format(annotated.storage(), ctx);
     }
 };
 
 #if __has_include(<fmt/format.h>)
 #include <fmt/format.h>
-template <typename T, sculk::jsonc::reflection::fixed_string... Comments>
-struct fmt::formatter<sculk::jsonc::reflection::annotated<T, Comments...>> : fmt::formatter<T> {
+template <typename T, sculk::reflection::fixed_string... Comments>
+struct fmt::formatter<sculk::reflection::annotated<T, Comments...>> : fmt::formatter<T> {
     template <typename FormatContext>
-    auto format(const sculk::jsonc::reflection::annotated<T, Comments...>& annotated, FormatContext& ctx) const {
+    auto format(const sculk::reflection::annotated<T, Comments...>& annotated, FormatContext& ctx) const {
         return formatter<T>::format(annotated.storage(), ctx);
     }
 };

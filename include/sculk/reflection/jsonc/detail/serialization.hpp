@@ -1,17 +1,17 @@
 #pragma once
-#include "jsonc/detail/reflection/concepts.hpp"
-#include "jsonc/detail/reflection/jsonc_header.hpp"
-#include "jsonc/detail/reflection/options.hpp"
-#include "jsonc/detail/reflection/pfr.hpp"
-#include "jsonc/detail/reflection/priority_tag.hpp"
-#include "jsonc/detail/reflection/serializer.hpp"
-#include "jsonc/detail/reflection/string_utils.hpp"
+#include "sculk/reflection/concepts.hpp"
+#include "sculk/reflection/jsonc/detail/jsonc_header.hpp"
+#include "sculk/reflection/jsonc/detail/options.hpp"
+#include "sculk/reflection/jsonc/detail/serializer.hpp"
+#include "sculk/reflection/pfr.hpp"
+#include "sculk/reflection/priority_tag.hpp"
+#include "sculk/reflection/string_utils.hpp"
 
-namespace sculk::jsonc::reflection {
+namespace sculk::reflection::jsonc {
 
 namespace {
 
-template <concepts::is_arithmetic T, concepts::is_key_formatter F, bool O, bool A>
+template <reflection::concepts::is_arithmetic T, concepts::is_key_formatter F, bool O, bool A>
 constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<10>) noexcept;
 
 template <concepts::is_jsonc_array T, concepts::is_key_formatter F, bool O, bool A>
@@ -70,7 +70,7 @@ constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& op
 template <concepts::is_ranged T, concepts::is_key_formatter F, bool O, bool A>
 constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<5>) noexcept;
 
-template <concepts::is_enum T, concepts::is_key_formatter F, bool O, bool A>
+template <reflection::concepts::is_enum T, concepts::is_key_formatter F, bool O, bool A>
 constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<5>) noexcept;
 
 template <concepts::is_variant T, concepts::is_key_formatter F, bool O, bool A>
@@ -109,7 +109,7 @@ serialize(const T& t, const F& key_formatter, const options& options = {}) noexc
 
 namespace {
 
-template <concepts::is_arithmetic T, concepts::is_key_formatter F, bool O, bool A>
+template <reflection::concepts::is_arithmetic T, concepts::is_key_formatter F, bool O, bool A>
 constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<10>) noexcept {
     return t;
 }
@@ -119,7 +119,7 @@ constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, c
     detail::basic_jsonc<O, A> res{};
     for (const auto& e : t) { res.push_back(detail::basic_jsonc<O, A>(e)); }
     return res;
-} 
+}
 
 template <concepts::is_jsonc_object T, concepts::is_key_formatter F, bool O, bool A>
 constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) noexcept {
@@ -223,7 +223,7 @@ constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& op
     return serialize_impl<VT, F, O, A>(*t, options, kfmt, priority_tag<10>{});
 }
 
-template <concepts::is_enum T, concepts::is_key_formatter F, bool O, bool A>
+template <reflection::concepts::is_enum T, concepts::is_key_formatter F, bool O, bool A>
 constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F&, priority_tag<5>) noexcept {
     if (options.enum_cast_prefer_string) {
         if (auto name = magic_enum::enum_name(t); !name.empty()) { return name; }
@@ -316,4 +316,4 @@ constexpr detail::basic_jsonc<O, A> serialize_impl(const T&, const options&, con
 
 } // namespace
 
-} // namespace sculk::jsonc::reflection
+} // namespace sculk::reflection::jsonc

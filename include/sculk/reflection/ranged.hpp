@@ -1,8 +1,8 @@
 #pragma once
-#include "jsonc/detail/reflection/fixed_number.hpp"
+#include "sculk/reflection/fixed_number.hpp"
 #include <limits>
 
-namespace sculk::jsonc::reflection {
+namespace sculk::reflection {
 
 template <typename T, fixed_number<T> Min = std::numeric_limits<T>::min(), fixed_number<T> Max = std::numeric_limits<T>::max()>
     requires std::is_arithmetic_v<T>
@@ -39,22 +39,22 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const ranged& num) noexcept { return os << num.storage(); }
 };
 
-} // namespace sculk::jsonc::reflection
+} // namespace sculk::reflection
 
-template <typename T, sculk::jsonc::reflection::fixed_number<T> Min, sculk::jsonc::reflection::fixed_number<T> Max>
-struct std::formatter<sculk::jsonc::reflection::ranged<T, Min, Max>> : std::formatter<T> {
+template <typename T, sculk::reflection::fixed_number<T> Min, sculk::reflection::fixed_number<T> Max>
+struct std::formatter<sculk::reflection::ranged<T, Min, Max>> : std::formatter<T> {
     template <typename FormatContext>
-    auto format(const sculk::jsonc::reflection::ranged<T, Min, Max>& num, FormatContext& ctx) const {
+    auto format(const sculk::reflection::ranged<T, Min, Max>& num, FormatContext& ctx) const {
         return formatter<T>::format(num.storage(), ctx);
     }
 };
 
 #if __has_include(<fmt/format.h>)
 #include <fmt/format.h>
-template <typename T, sculk::jsonc::reflection::fixed_number<T> Min, sculk::jsonc::reflection::fixed_number<T> Max>
-struct fmt::formatter<sculk::jsonc::reflection::ranged<T, Min, Max>> : fmt::formatter<T> {
+template <typename T, sculk::reflection::fixed_number<T> Min, sculk::reflection::fixed_number<T> Max>
+struct fmt::formatter<sculk::reflection::ranged<T, Min, Max>> : fmt::formatter<T> {
     template <typename FormatContext>
-    auto format(const sculk::jsonc::reflection::ranged<T, Min, Max>& num, FormatContext& ctx) const {
+    auto format(const sculk::reflection::ranged<T, Min, Max>& num, FormatContext& ctx) const {
         return formatter<T>::format(num.storage(), ctx);
     }
 };
