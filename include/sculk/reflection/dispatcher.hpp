@@ -1,5 +1,5 @@
 #pragma once
-#include "sculk/reflection/concepts.hpp"
+#include "sculk/reflection/detail/concepts.hpp"
 #include <format>
 
 namespace sculk::reflection {

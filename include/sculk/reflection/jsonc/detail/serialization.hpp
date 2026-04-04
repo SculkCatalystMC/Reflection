@@ -1,11 +1,11 @@
 #pragma once
-#include "sculk/reflection/concepts.hpp"
+#include "sculk/reflection/detail/concepts.hpp"
+#include "sculk/reflection/detail/pfr.hpp"
+#include "sculk/reflection/detail/priority_tag.hpp"
 #include "sculk/reflection/jsonc/detail/jsonc_header.hpp"
 #include "sculk/reflection/jsonc/detail/options.hpp"
 #include "sculk/reflection/jsonc/detail/serializer.hpp"
-#include "sculk/reflection/pfr.hpp"
-#include "sculk/reflection/priority_tag.hpp"
-#include "sculk/reflection/string_utils.hpp"
+#include "sculk/reflection/utils/string_utils.hpp"
 
 namespace sculk::reflection::jsonc {
 

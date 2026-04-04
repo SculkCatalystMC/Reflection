@@ -1,9 +1,9 @@
 #pragma once
-#include "sculk/reflection/concepts.hpp"
+#include "sculk/reflection/detail/concepts.hpp"
 #include <magic_enum/magic_enum.hpp>
 #include <magic_enum/magic_enum_flags.hpp>
 
-namespace sculk {
+namespace sculk::reflection {
 
 namespace string_utils {
 
@@ -104,4 +104,4 @@ constexpr auto upper_case_formatter  = [](std::string_view sv) noexcept -> std::
 
 } // namespace builtin_key_formatter
 
-} // namespace sculk
+} // namespace sculk::reflection

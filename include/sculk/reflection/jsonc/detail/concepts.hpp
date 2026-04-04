@@ -1,5 +1,5 @@
 #pragma once
-#include "sculk/reflection/concepts.hpp"
+#include "sculk/reflection/detail/concepts.hpp"
 #include "sculk/reflection/jsonc/detail/type_traits.hpp"
 #include <magic_enum/magic_enum.hpp>
 #include <magic_enum/magic_enum_flags.hpp>

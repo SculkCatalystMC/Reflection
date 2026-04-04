@@ -1,12 +1,12 @@
 #pragma once
 #include "sculk/reflection/annotated.hpp"
 #include "sculk/reflection/dispatcher.hpp"
-#include "sculk/reflection/file_utils.hpp"
 #include "sculk/reflection/fixed_number.hpp"
 #include "sculk/reflection/fixed_string.hpp"
 #include "sculk/reflection/jsonc/detail/deserialization.hpp"
 #include "sculk/reflection/jsonc/detail/serialization.hpp"
 #include "sculk/reflection/renamed.hpp"
+#include "sculk/reflection/utils/file_utils.hpp"
 #include <chrono>
 
 namespace sculk::reflection::jsonc {
