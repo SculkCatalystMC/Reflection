@@ -1,7 +1,6 @@
 .vscode
 bin
 .xmake
-CmakeLists.txt
 build
 /.cache
 compile_commands.json
