@@ -15,6 +15,15 @@ namespace {
 template <concepts::is_arithmetic T, concepts::is_key_formatter F, bool O, bool A>
 constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options& options, const F& kfmt, priority_tag<10>) noexcept;
 
+template <concepts::is_jsonc_array T, concepts::is_key_formatter F, bool O, bool A>
+constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options& options, const F& kfmt, priority_tag<9>) noexcept;
+
+template <concepts::is_jsonc_object T, concepts::is_key_formatter F, bool O, bool A>
+constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options& options, const F& kfmt, priority_tag<9>) noexcept;
+
+template <concepts::is_jsonc_variant T, concepts::is_key_formatter F, bool O, bool A>
+constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options& options, const F& kfmt, priority_tag<9>) noexcept;
+
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_boolean_type_v<T, O, A>
 constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options& options, const F& kfmt, priority_tag<9>) noexcept;
@@ -191,6 +200,30 @@ constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const 
         }
     }
     return false;
+}
+
+template <concepts::is_jsonc_array T, concepts::is_key_formatter F, bool O, bool A>
+constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options&, const F&, priority_tag<9>) noexcept {
+    if (j.is_array()) {
+        for (const auto& e : j) { t.push_back(typename std::remove_cvref_t<T>::jsonc_type(e)); }
+        return true;
+    }
+    return false;
+}
+
+template <concepts::is_jsonc_object T, concepts::is_key_formatter F, bool O, bool A>
+constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options&, const F&, priority_tag<9>) noexcept {
+    if (j.is_object()) {
+        for (const auto& [k, v] : j.items()) { t[k] = typename std::remove_cvref_t<T>::jsonc_type(v); }
+        return true;
+    }
+    return false;
+}
+
+template <concepts::is_jsonc_variant T, concepts::is_key_formatter F, bool O, bool A>
+constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options&, const F&, priority_tag<9>) noexcept {
+    t = static_cast<std::remove_cvref_t<T>>(j);
+    return true;
 }
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
@@ -385,12 +418,15 @@ constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const 
     t.clear();
     bool result{true};
     for (std::size_t i = 0; i < j.size(); i++) {
-        if constexpr (traits::has_emplace_back_method_v<T>) {
-            result &= deserialize_impl(t.emplace_back(), j[i], options, kfmt, priority_tag<10>{});
+        typename std::remove_cvref_t<T>::value_type temp{};
+        if (deserialize_impl(temp, j[i], options, kfmt, priority_tag<10>{})) {
+            if constexpr (traits::has_push_back_method_v<T>) {
+                t.push_back(std::move(temp));
+            } else {
+                t.insert(std::move(temp));
+            }
         } else {
-            typename std::remove_cvref_t<T>::value_type temp{};
-            result &= deserialize_impl(temp, j[i], options, kfmt, priority_tag<10>{});
-            t.insert(std::move(temp));
+            result &= false;
         }
     }
     return result;

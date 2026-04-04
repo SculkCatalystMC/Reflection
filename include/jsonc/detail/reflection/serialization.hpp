@@ -14,6 +14,15 @@ namespace {
 template <concepts::is_arithmetic T, concepts::is_key_formatter F, bool O, bool A>
 constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<10>) noexcept;
 
+template <concepts::is_jsonc_array T, concepts::is_key_formatter F, bool O, bool A>
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<9>) noexcept;
+
+template <concepts::is_jsonc_object T, concepts::is_key_formatter F, bool O, bool A>
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<9>) noexcept;
+
+template <concepts::is_jsonc_variant T, concepts::is_key_formatter F, bool O, bool A>
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<9>) noexcept;
+
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_boolean_type_v<T, O, A>
 constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<9>) noexcept;
@@ -103,6 +112,25 @@ namespace {
 template <concepts::is_arithmetic T, concepts::is_key_formatter F, bool O, bool A>
 constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<10>) noexcept {
     return t;
+}
+
+template <concepts::is_jsonc_array T, concepts::is_key_formatter F, bool O, bool A>
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) noexcept {
+    detail::basic_jsonc<O, A> res{};
+    for (const auto& e : t) { res.push_back(detail::basic_jsonc<O, A>(e)); }
+    return res;
+} 
+
+template <concepts::is_jsonc_object T, concepts::is_key_formatter F, bool O, bool A>
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) noexcept {
+    detail::basic_jsonc<O, A> res{};
+    for (const auto& [k, v] : t) { res[k] = detail::basic_jsonc<O, A>(v); }
+    return res;
+}
+
+template <concepts::is_jsonc_variant T, concepts::is_key_formatter F, bool O, bool A>
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) noexcept {
+    return static_cast<detail::basic_jsonc<O, A>>(t);
 }
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
