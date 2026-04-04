@@ -43,6 +43,8 @@ if(NOT MSVC)
 endif()
 
 include(FetchContent)
+# Disable JSONC C API in this project; only C++ API is needed.
+set(JSONC_BUILD_C_API OFF CACHE BOOL "Disable JSONC C API" FORCE)
 FetchContent_Declare(
     jsonc
     GIT_REPOSITORY https://github.com/SculkCatalystMC/JSONC.git
