@@ -2,9 +2,11 @@
 
 [English](README.md)
 
-> 🧩 面向 JSON / JSONC 的 C++23 纯头文件反射库
+> 🧩 C++23 纯头文件反射库
 
-一个基于 C++23 的纯头文件反射库，专注于 JSON 与 JSON with Comments (JSONC) 的双向映射。
+一个基于 C++23 的纯头文件反射库，面向强类型数据映射与易于扩展的元编程工作流。
+
+当前内置后端提供 JSON 与 JSON with Comments (JSONC) 支持，核心反射模型可扩展到更广泛的后端。
 
 它适合以配置为中心的开发方式：
 
@@ -18,7 +20,7 @@
 
 - 纯头文件，无需构建主库二进制。
 - C++23。
-- 支持 JSON 与 JSONC 文件读写。
+- 内置 JSON 与 JSONC 文件读写支持。
 - 面向聚合类型的强类型映射。
 - 字段注释：`annotated<T, ...>`。
 - 字段重命名：`renamed<T, "alias">`。
@@ -167,3 +169,5 @@ MPL-2.0 核心要求（高层说明）：
 - 欢迎提交贡献（Pull Requests）：https://github.com/SculkCatalystMC/Reflection/pulls
 
 建议在反馈中附上复现步骤、环境信息与最小示例；提交 PR 时尽量附带测试。
+
+### 版权所有 © 2026 SculkCatalystMC。保留所有权利。

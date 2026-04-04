@@ -2,9 +2,11 @@
 
 [中文文档](README.zh.md)
 
-> 🧩 C++23 Header-only Reflection for JSON and JSONC
+> 🧩 C++23 Header-only Reflection Library
 
-A C++23 header-only reflection library focused on JSON and JSON with Comments (JSONC) mapping.
+A C++23 header-only reflection library for strongly typed data mapping and metaprogramming-friendly workflows.
+
+The current built-in backend provides JSON and JSON with Comments (JSONC) support, while the core reflection model is designed to support broader backends.
 
 It is designed for config-centric workflows where a C++ struct is the single source of truth:
 
@@ -18,7 +20,7 @@ It is designed for config-centric workflows where a C++ struct is the single sou
 
 - Header-only library (no core binary target required).
 - C++23.
-- JSON and JSONC file loading/saving.
+- Built-in JSON and JSONC file loading/saving.
 - Strong typed mapping with support for aggregates.
 - Field comments via `annotated<T, ...>`.
 - Field renaming via `renamed<T, "alias">`.
@@ -167,3 +169,5 @@ For legal certainty, review the full license text.
 - Contributions are welcome via Pull Requests: https://github.com/SculkCatalystMC/Reflection/pulls
 
 Please include reproducible steps, environment details, and tests when possible.
+
+### Copyright © 2026 SculkCatalystMC. All rights reserved.
