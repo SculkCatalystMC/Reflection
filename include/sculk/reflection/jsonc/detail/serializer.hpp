@@ -7,25 +7,13 @@
 
 #pragma once
 #include "sculk/reflection/jsonc/detail/jsonc_header.hpp"
+#include "sculk/reflection/utils/string_utils.hpp"
 #include <charconv>
 #include <format>
 #include <optional>
 #include <string>
 
-namespace sculk {
-
-namespace string_utils {
-template <typename T>
-    requires(std::is_arithmetic_v<T> && !std::same_as<T, bool>)
-constexpr std::optional<T> str_to_num(std::string_view sv) noexcept {
-    T res{};
-    auto [ptr, ec] = std::from_chars(sv.data(), sv.data() + sv.size(), res);
-    if (ec != std::errc() || ptr != sv.data() + sv.size()) { return std::nullopt; }
-    return res;
-}
-} // namespace string_utils
-
-namespace reflection::jsonc {
+namespace sculk::reflection::jsonc {
 
 template <typename T>
 struct serializer {};
@@ -100,6 +88,4 @@ struct serializer<double> {
     static std::optional<double> from_string(std::string_view s) noexcept { return string_utils::str_to_num<double>(s); }
 };
 
-} // namespace reflection::jsonc
-
-} // namespace sculk
+} // namespace sculk::reflection::jsonc

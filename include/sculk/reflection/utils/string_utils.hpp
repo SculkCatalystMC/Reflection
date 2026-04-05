@@ -16,7 +16,12 @@ namespace string_utils {
 
 template <typename T>
     requires(std::is_arithmetic_v<T> && !std::same_as<T, bool>)
-constexpr std::optional<T> str_to_num(std::string_view sv) noexcept;
+constexpr std::optional<T> str_to_num(std::string_view sv) noexcept {
+    T res{};
+    auto [ptr, ec] = std::from_chars(sv.data(), sv.data() + sv.size(), res);
+    if (ec != std::errc() || ptr != sv.data() + sv.size()) { return std::nullopt; }
+    return res;
+}
 
 template <reflection::concepts::is_enum T, bool _IntCast = false>
 constexpr std::optional<T> str_to_enum(std::string_view sv) noexcept {

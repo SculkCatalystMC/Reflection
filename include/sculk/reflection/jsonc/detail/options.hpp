@@ -10,7 +10,7 @@
 #include <filesystem>
 #include <string>
 
-namespace sculk::reflection {
+namespace sculk::reflection::jsonc {
 
 enum class rewrite_policy {
     always = 0,
@@ -35,4 +35,4 @@ struct options {
     std::string           back_up_time_suffix{"-%Y%m%d-%H_%M_%S"};
 };
 
-} // namespace sculk::reflection
+} // namespace sculk::reflection::jsonc
