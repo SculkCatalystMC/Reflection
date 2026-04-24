@@ -7,6 +7,7 @@
 
 #pragma once
 #include "sculk/reflection/detail/concepts.hpp"
+#include <charconv>
 #include <magic_enum/magic_enum.hpp>
 #include <magic_enum/magic_enum_flags.hpp>
 
