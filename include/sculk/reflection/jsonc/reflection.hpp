@@ -37,8 +37,8 @@ bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, 
         }
     }
 
-    if (options.rewrite_policy == rewrite_policy::always || (options.rewrite_policy == rewrite_policy::error && !result)
-        || options.rewrite_policy == rewrite_policy::format) {
+    if (options.rewrite_policy == policy::always || (options.rewrite_policy == policy::error && !result)
+        || options.rewrite_policy == policy::format) {
         detail::basic_jsonc<IsOrdered, AllowComments> res = serialize<IsOrdered, AllowComments>(t, key_formatter, options);
         if constexpr (AllowComments) {
             if (options.keep_extra_comments && !data.is_null() && !options.ignore_comments) {
@@ -68,7 +68,7 @@ bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, 
         }
 
         auto file = res.dump(options.indent, options.ensure_ascii, options.ignore_comments, options.multi_line_comments_format);
-        if (options.rewrite_policy == rewrite_policy::format && content) {
+        if (options.rewrite_policy == policy::format && content) {
             if (file != *content) { file_utils::write_file(path, file); }
         } else {
             file_utils::write_file(path, file);

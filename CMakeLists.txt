@@ -4,7 +4,7 @@ project(Reflection VERSION 0.1.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
-option(REFLECTION_BUILD_TESTS "Build test executable" ON)
+option(REFLECTION_BUILD_TESTS "Build test executable" OFF)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -48,7 +48,7 @@ set(JSONC_BUILD_C_API OFF CACHE BOOL "Disable JSONC C API" FORCE)
 FetchContent_Declare(
     jsonc
     GIT_REPOSITORY https://github.com/SculkCatalystMC/JSONC.git
-    GIT_TAG v1.4.0
+    GIT_TAG main
 )
 FetchContent_Declare(
     boost_pfr

@@ -481,6 +481,7 @@ constexpr bool deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
 constexpr bool deserialize_impl(T&, const detail::basic_jsonc<O, A>&, const options&, const F&, priority_tag<0>) noexcept {
     static_assert(traits::always_false_v<T>, "type is not reflectable.");
+    return false;
 }
 
 } // namespace
