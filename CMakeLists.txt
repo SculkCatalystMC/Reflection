@@ -22,8 +22,8 @@ add_library(reflection::reflection ALIAS reflection)
 
 target_include_directories(reflection
     INTERFACE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 target_compile_features(reflection INTERFACE cxx_std_23)
@@ -43,6 +43,7 @@ if(NOT MSVC)
 endif()
 
 include(FetchContent)
+
 # Disable JSONC C API in this project; only C++ API is needed.
 set(JSONC_BUILD_C_API OFF CACHE BOOL "Disable JSONC C API" FORCE)
 FetchContent_Declare(
@@ -121,4 +122,3 @@ install(EXPORT reflectionTargets
     NAMESPACE reflection::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/reflection
 )
-
