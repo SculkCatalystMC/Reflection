@@ -14,7 +14,7 @@
 - 从 JSON/JSONC 反序列化到强类型对象。
 - 将对象序列化回 JSON/JSONC。
 - 通过可配置策略保留注释与格式行为。
-- 同时支持 xmake 与 CMake 集成。
+- 支持 CMake 集成。
 
 ## ✨ 特性
 
@@ -32,7 +32,6 @@
 
 - `include/`: 公共头文件
 - `test/`: 示例与测试
-- `xmake.lua`: xmake 构建入口
 - `CMakeLists.txt`: CMake 构建入口
 
 ## 📦 依赖
@@ -115,14 +114,6 @@ add_executable(app main.cpp)
 target_link_libraries(app PRIVATE reflection::reflection)
 ```
 
-## ⚡ xmake 集成
-
-```lua
-add_repositories("sculk-repo https://github.com/SculkCatalystMC/xmake-repo.git")
-
-add_requires("reflection")
-```
-
 ## ⚙️ 常用配置
 
 `sculk::reflection::options` 的常用字段：
@@ -135,15 +126,6 @@ add_requires("reflection")
 - `rewrite_policy`: `always` / `format` / `error` / `never`
 
 ## 🧪 构建
-
-### xmake
-
-```bash
-xmake f -m release
-xmake
-```
-
-### CMake
 
 ```bash
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release

@@ -14,7 +14,7 @@ It is designed for config-centric workflows where a C++ struct is the single sou
 - Deserialize from JSON/JSONC into typed objects.
 - Serialize typed objects back to JSON/JSONC.
 - Preserve comments and formatting behavior through configurable policies.
-- Integrate with both xmake and CMake.
+- Integrate with CMake.
 
 ## ✨ Features
 
@@ -32,7 +32,6 @@ It is designed for config-centric workflows where a C++ struct is the single sou
 
 - `include/`: public headers
 - `test/`: examples and tests
-- `xmake.lua`: xmake build entry
 - `CMakeLists.txt`: CMake build entry
 
 ## 📦 Dependencies
@@ -115,14 +114,6 @@ add_executable(app main.cpp)
 target_link_libraries(app PRIVATE reflection::reflection)
 ```
 
-## ⚡ xmake Integration
-
-```lua
-add_repositories("sculk-repo https://github.com/SculkCatalystMC/xmake-repo.git")
-
-add_requires("reflection")
-```
-
 ## ⚙️ Common Options
 
 Useful fields in `sculk::reflection::options`:
@@ -135,15 +126,6 @@ Useful fields in `sculk::reflection::options`:
 - `rewrite_policy`: `always` / `format` / `error` / `never`
 
 ## 🧪 Build
-
-### xmake
-
-```bash
-xmake f -m release
-xmake
-```
-
-### CMake
 
 ```bash
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release

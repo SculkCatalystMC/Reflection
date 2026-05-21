@@ -13,5 +13,5 @@
 
 namespace sculk::reflection::jsonc::detail {
 template <bool O, bool A>
-using basic_jsonc = ::sculk::jsonc::abi_v1_4_0::detail::basic_jsonc<O, A>;
+using basic_jsonc = ::sculk::jsonc::abi_v1_4_1::detail::basic_jsonc<O, A>;
 }
