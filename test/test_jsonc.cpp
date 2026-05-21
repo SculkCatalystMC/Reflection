@@ -59,7 +59,7 @@ struct Config {
     float                                                          test_6{26781.234f};
     int16_t                                                        test_7{-2671};
     std::optional<std::uint8_t>                                    test_8{{123}};
-    std::string                                                    test_9{"str test"};
+    std::string                                                    test_9{"str\n\"\" test"};
     TestType1                                                      test_10{123.456f};
     sculk::reflection::ranged<short, -3, 5678>                     test_11{23345};
     TestEnum                                                       test_12{TestEnum(3)};
