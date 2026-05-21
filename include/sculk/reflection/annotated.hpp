@@ -17,34 +17,34 @@ class annotated {
 public:
     using value_type = T;
 
-    [[nodiscard]] constexpr annotated() noexcept = default;
+    [[nodiscard]] constexpr annotated() = default;
 
     template <typename U>
         requires(std::convertible_to<T, U>)
-    [[nodiscard]] constexpr annotated(U&& value) noexcept : storage_(std::forward<U>(value)) {}
+    [[nodiscard]] constexpr annotated(U&& value) : storage_(std::forward<U>(value)) {}
 
     template <typename U>
         requires(!std::convertible_to<T, U> && std::is_nothrow_constructible_v<T, U>)
-    [[nodiscard]] constexpr annotated(U&& value) noexcept : storage_(std::forward<U>(value)) {}
+    [[nodiscard]] constexpr annotated(U&& value) : storage_(std::forward<U>(value)) {}
 
     template <size_t N>
         requires(std::is_same_v<T, std::string>)
-    [[nodiscard]] constexpr annotated(const char (&str)[N]) noexcept : storage_(std::string(str)) {}
+    [[nodiscard]] constexpr annotated(const char (&str)[N]) : storage_(std::string(str)) {}
 
     template <typename U>
         requires std::is_constructible_v<T, std::initializer_list<U>>
-    [[nodiscard]] constexpr annotated(std::initializer_list<U> init) noexcept : storage_(init) {}
+    [[nodiscard]] constexpr annotated(std::initializer_list<U> init) : storage_(init) {}
 
-    constexpr annotated(T&& value) noexcept : storage_(std::move(value)) {}
+    constexpr annotated(T&& value) : storage_(std::move(value)) {}
 
-    constexpr annotated(const T& value) noexcept : storage_(value) {}
+    constexpr annotated(const T& value) : storage_(value) {}
 
-    constexpr annotated& operator=(const T& value) noexcept {
+    constexpr annotated& operator=(const T& value) {
         storage_ = value;
         return *this;
     }
 
-    constexpr annotated& operator=(T&& value) noexcept {
+    constexpr annotated& operator=(T&& value) {
         storage_ = std::move(value);
         return *this;
     }
@@ -68,13 +68,13 @@ public:
     }
 
     template <typename U>
-        requires(std::is_same_v<T, U> && std::convertible_to<T, U>)
+        requires(std::is_same_v<T, U>)
     [[nodiscard]] constexpr operator const U&() const noexcept {
         return storage_;
     }
 
     template <typename U>
-        requires(std::is_same_v<T, U> && std::convertible_to<T, U>)
+        requires(std::is_same_v<T, U>)
     [[nodiscard]] constexpr operator U&() noexcept {
         return storage_;
     }
@@ -84,21 +84,21 @@ public:
     [[nodiscard]] constexpr std::vector<std::string>&       get_comments() noexcept { return comments_; }
     [[nodiscard]] constexpr const std::vector<std::string>& get_comments() const noexcept { return comments_; }
 
-    constexpr void add_comment(std::string_view comment) noexcept { comments_.emplace_back(comment); }
+    constexpr void add_comment(std::string_view comment) { comments_.emplace_back(comment); }
 
-    constexpr void set_comments(const std::vector<std::string>& comments) noexcept { comments_ = comments; }
+    constexpr void set_comments(const std::vector<std::string>& comments) { comments_ = comments; }
 
-    constexpr void set_comment(size_t index, std::string_view newComment) noexcept {
+    constexpr void set_comment(size_t index, std::string_view newComment) {
         if (index < comments_.size()) { comments_[index] = newComment; }
     }
 
-    constexpr void remove_comment(size_t index) noexcept {
+    constexpr void remove_comment(size_t index) {
         if (index < comments_.size()) { comments_.erase(comments_.begin() + index); }
     }
 
-    constexpr void clear_comments() noexcept { comments_.clear(); }
+    constexpr void clear_comments() { comments_.clear(); }
 
-    friend std::ostream& operator<<(std::ostream& os, const annotated& annotated) noexcept { return os << annotated.storage(); }
+    friend std::ostream& operator<<(std::ostream& os, const annotated& annotated) { return os << annotated.storage(); }
 
 private:
     T                        storage_;

@@ -124,65 +124,49 @@ constexpr bool is_jsonc_variant_v = requires {
 template <typename T>
 constexpr bool is_boolean_serializable_v = requires(const T& t, bool b) {
     { sculk::reflection::jsonc::serializer<T>::to_boolean(t) } -> std::convertible_to<bool>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_boolean(t));
     { sculk::reflection::jsonc::serializer<T>::from_boolean(b) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_boolean(b));
 };
 
 template <typename T>
 constexpr bool is_signed_serializable_v = requires(const T& t, std::int64_t n) {
     { sculk::reflection::jsonc::serializer<T>::to_signed(t) } -> std::convertible_to<std::int64_t>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_signed(t));
     { sculk::reflection::jsonc::serializer<T>::from_signed(n) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_signed(n));
 };
 
 template <typename T>
 constexpr bool is_unsigned_serializable_v = requires(const T& t, std::uint64_t n) {
     { sculk::reflection::jsonc::serializer<T>::to_unsigned(t) } -> std::convertible_to<std::uint64_t>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_unsigned(t));
     { sculk::reflection::jsonc::serializer<T>::from_unsigned(n) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_unsigned(n));
 };
 
 template <typename T>
 constexpr bool is_float_serializable_v = requires(const T& t, double n) {
     { sculk::reflection::jsonc::serializer<T>::to_float(t) } -> std::convertible_to<double>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_float(t));
     { sculk::reflection::jsonc::serializer<T>::from_float(n) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_float(n));
 };
 
 template <typename T>
 constexpr bool is_string_serializable_v = requires(const T& t, std::string_view sv) {
     { sculk::reflection::jsonc::serializer<T>::to_string(t) } -> std::convertible_to<std::string>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_string(t));
     { sculk::reflection::jsonc::serializer<T>::from_string(sv) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_string(sv));
 };
 
 template <typename T, bool O, bool A>
 constexpr bool is_object_serializable_v = requires(const T& t, const jsonc::detail::basic_jsonc<O, A>::object_type& o) {
     { sculk::reflection::jsonc::serializer<T>::to_object(t) } -> std::convertible_to<typename jsonc::detail::basic_jsonc<O, A>::object_type>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_object(t));
     { sculk::reflection::jsonc::serializer<T>::from_object(o) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_object(o));
 };
 
 template <typename T, bool O, bool A>
 constexpr bool is_array_serializable_v = requires(const T& t, const jsonc::detail::basic_jsonc<O, A>::array_type& a) {
     { sculk::reflection::jsonc::serializer<T>::to_array(t) } -> std::convertible_to<typename jsonc::detail::basic_jsonc<O, A>::array_type>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_array(t));
     { sculk::reflection::jsonc::serializer<T>::from_array(a) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_array(a));
 };
 
 template <typename T>
 constexpr bool is_high_precision_serializable_v = requires(const T& t, std::string_view n) {
     { sculk::reflection::jsonc::serializer<T>::to_any_number(t) } -> std::convertible_to<std::string>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::to_any_number(t));
     { sculk::reflection::jsonc::serializer<T>::from_any_number(n) } -> std::convertible_to<std::optional<T>>;
-    requires noexcept(sculk::reflection::jsonc::serializer<T>::from_any_number(n));
 };
 
 template <typename T>
@@ -245,7 +229,7 @@ template <typename>
 struct serializer_arg {};
 
 template <typename R, typename A0>
-struct serializer_arg<R (*)(A0) noexcept> {
+struct serializer_arg<R (*)(A0)> {
     using arg_type = A0;
 };
 
@@ -255,7 +239,6 @@ using serializer_arg_t = typename serializer_arg<F>::arg_type;
 template <typename F>
 constexpr bool is_key_formatter_v = requires(F f, std::string_view sv) {
     { f(sv) } -> std::convertible_to<std::string>;
-    requires noexcept(f(sv));
 };
 
 } // namespace jsonc::traits

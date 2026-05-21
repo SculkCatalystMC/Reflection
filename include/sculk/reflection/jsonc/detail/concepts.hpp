@@ -80,7 +80,7 @@ concept is_string_convertible = traits::is_string_convertible_v<std::remove_cvre
 namespace detail {
 
 template <concepts::is_least_stringifiable_type T>
-constexpr std::string type_to_string(const T& t) noexcept {
+constexpr std::string type_to_string(const T& t) {
     if constexpr (traits::is_string_convertible_v<T>) {
         return t;
     } else if constexpr (traits::is_string_serializable_v<T>) {
@@ -93,7 +93,7 @@ constexpr std::string type_to_string(const T& t) noexcept {
 }
 
 template <concepts::is_least_stringifiable_type T>
-constexpr std::optional<T> string_to_type(std::string_view sv) noexcept {
+constexpr std::optional<T> string_to_type(std::string_view sv) {
     using RT = std::remove_cvref_t<T>;
     if constexpr (traits::is_string_convertible_v<T>) {
         return std::string(sv);

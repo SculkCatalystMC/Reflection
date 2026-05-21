@@ -17,7 +17,7 @@ namespace string_utils {
 
 template <typename T>
     requires(std::is_arithmetic_v<T> && !std::same_as<T, bool>)
-constexpr std::optional<T> str_to_num(std::string_view sv) noexcept {
+constexpr std::optional<T> str_to_num(std::string_view sv) {
     T res{};
     auto [ptr, ec] = std::from_chars(sv.data(), sv.data() + sv.size(), res);
     if (ec != std::errc() || ptr != sv.data() + sv.size()) { return std::nullopt; }
@@ -25,7 +25,7 @@ constexpr std::optional<T> str_to_num(std::string_view sv) noexcept {
 }
 
 template <reflection::concepts::is_enum T, bool _IntCast = false>
-constexpr std::optional<T> str_to_enum(std::string_view sv) noexcept {
+constexpr std::optional<T> str_to_enum(std::string_view sv) {
     using RT = std::remove_cvref_t<T>;
     if (auto val = magic_enum::enum_cast<RT>(sv)) { return val; }
     if (auto val = magic_enum::enum_flags_cast<RT>(sv)) { return val; }
@@ -36,7 +36,7 @@ constexpr std::optional<T> str_to_enum(std::string_view sv) noexcept {
 }
 
 template <reflection::concepts::is_enum T, bool _IntCast = false>
-constexpr std::optional<std::string> enum_to_str(T val) noexcept {
+constexpr std::optional<std::string> enum_to_str(T val) {
     if (auto name = magic_enum::enum_name(val); !name.empty()) { return std::string(name); }
     if (auto flag = magic_enum::enum_flags_name(val); !flag.empty()) { return std::string(flag); }
     if constexpr (_IntCast) {
@@ -46,12 +46,12 @@ constexpr std::optional<std::string> enum_to_str(T val) noexcept {
     }
 }
 
-constexpr bool is_upper(char c) noexcept { return c >= 'A' && c <= 'Z'; }
-constexpr bool is_lower(char c) noexcept { return c >= 'a' && c <= 'z'; }
-constexpr char to_upper(char c) noexcept { return is_lower(c) ? c - ('a' - 'A') : c; }
-constexpr char to_lower(char c) noexcept { return is_upper(c) ? c + ('a' - 'A') : c; }
+constexpr bool is_upper(char c) { return c >= 'A' && c <= 'Z'; }
+constexpr bool is_lower(char c) { return c >= 'a' && c <= 'z'; }
+constexpr char to_upper(char c) { return is_lower(c) ? c - ('a' - 'A') : c; }
+constexpr char to_lower(char c) { return is_upper(c) ? c + ('a' - 'A') : c; }
 
-constexpr std::string to_snake_case(std::string_view s, char split = '-') noexcept {
+constexpr std::string to_snake_case(std::string_view s, char split = '-') {
     std::string r{};
     for (size_t i = 0; i < s.size(); ++i) {
         std::uint8_t c        = s[i];
@@ -67,7 +67,7 @@ constexpr std::string to_snake_case(std::string_view s, char split = '-') noexce
     return r;
 }
 
-constexpr std::string to_pascal_case(std::string_view s) noexcept {
+constexpr std::string to_pascal_case(std::string_view s) {
     std::string r;
     bool        new_word = true;
     for (std::uint8_t c : s) {
@@ -83,7 +83,7 @@ constexpr std::string to_pascal_case(std::string_view s) noexcept {
     return r;
 }
 
-constexpr std::string to_camel_case(std::string_view s) noexcept {
+constexpr std::string to_camel_case(std::string_view s) {
     std::string r = to_pascal_case(s);
     if (!r.empty()) { r[0] = static_cast<std::uint8_t>(std::tolower(static_cast<std::uint8_t>(r[0]))); }
     return r;
@@ -107,13 +107,11 @@ constexpr std::string to_lower_case(std::string_view s) {
 
 namespace builtin_key_formatter {
 
-constexpr auto default_key_formatter = [](std::string_view sv) noexcept -> std::string { return std::string(sv); };
-constexpr auto snake_case_formatter  = [](std::string_view sv) noexcept -> std::string { return string_utils::to_snake_case(sv); };
-constexpr auto pascal_case_formatter = [](std::string_view sv) noexcept -> std::string { return string_utils::to_pascal_case(sv); };
-constexpr auto camel_case_formatter  = [](std::string_view sv) noexcept -> std::string { return string_utils::to_camel_case(sv); };
-constexpr auto upper_case_formatter  = [](std::string_view sv) noexcept -> std::string {
-    return string_utils::to_upper_case(string_utils::to_snake_case(sv));
-};
+constexpr auto default_key_formatter = [](std::string_view sv) -> std::string { return std::string(sv); };
+constexpr auto snake_case_formatter  = [](std::string_view sv) -> std::string { return string_utils::to_snake_case(sv); };
+constexpr auto pascal_case_formatter = [](std::string_view sv) -> std::string { return string_utils::to_pascal_case(sv); };
+constexpr auto camel_case_formatter  = [](std::string_view sv) -> std::string { return string_utils::to_camel_case(sv); };
+constexpr auto upper_case_formatter = [](std::string_view sv) -> std::string { return string_utils::to_upper_case(string_utils::to_snake_case(sv)); };
 
 } // namespace builtin_key_formatter
 

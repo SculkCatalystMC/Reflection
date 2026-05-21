@@ -26,13 +26,13 @@ struct TestType2 {
 namespace sculk::reflection::jsonc {
 template <>
 struct serializer<TestType1> {
-    static float                    to_float(const TestType1& t) noexcept { return t.data_; }
-    static std::optional<TestType1> from_float(float v) noexcept { return TestType1{v}; }
+    static float                    to_float(const TestType1& t) { return t.data_; }
+    static std::optional<TestType1> from_float(float v) { return TestType1{v}; }
 };
 template <>
 struct serializer<TestType2> {
-    static std::string              to_any_number(const TestType2& t) noexcept { return t.data_; }
-    static std::optional<TestType2> from_any_number(std::string_view v) noexcept { return TestType2{v}; }
+    static std::string              to_any_number(const TestType2& t) { return t.data_; }
+    static std::optional<TestType2> from_any_number(std::string_view v) { return TestType2{v}; }
 };
 } // namespace sculk::reflection::jsonc
 
@@ -41,11 +41,11 @@ enum class TestEnum { AAA = 0, BBB = 1, CCC = 2, DDD = 3 };
 enum class TestEnumFlag { AAA = 0, BBB = 1 << 0, CCC = 1 << 1, DDD = 1 << 2, EEE = BBB | DDD };
 
 struct Test26 {
-    void call(std::string_view val) noexcept { std::println("value: {}", val); }
+    void call(std::string_view val) { std::println("value: {}", val); }
 };
 
 struct Test27 {
-    void call() noexcept { std::println("auto save"); }
+    void call() { std::println("auto save"); }
 };
 
 struct Config {

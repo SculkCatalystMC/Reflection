@@ -16,9 +16,9 @@ namespace sculk::reflection {
 
 template <size_t N>
 struct fixed_string {
-    [[nodiscard]] consteval fixed_string() noexcept = default;
-    [[nodiscard]] consteval fixed_string(std::string_view str) noexcept { std::copy_n(str.data(), str.size(), buffer_); }
-    [[nodiscard]] consteval fixed_string(char const* str) noexcept { std::copy_n(str, N, buffer_); }
+    [[nodiscard]] consteval fixed_string() = default;
+    [[nodiscard]] consteval fixed_string(std::string_view str) { std::copy_n(str.data(), str.size(), buffer_); }
+    [[nodiscard]] consteval fixed_string(char const* str) { std::copy_n(str, N, buffer_); }
 
     [[nodiscard]] constexpr operator const char*() const noexcept { return buffer_.c_str(); }
     [[nodiscard]] constexpr operator std::string_view() const noexcept { return buffer_; }
@@ -26,7 +26,7 @@ struct fixed_string {
 
     [[nodiscard]] constexpr const char*      c_str() const noexcept { return buffer_; }
     [[nodiscard]] constexpr std::string_view view() const noexcept { return buffer_; }
-    [[nodiscard]] constexpr std::string      str() const noexcept { return buffer_; }
+    [[nodiscard]] constexpr std::string      str() const { return buffer_; }
     [[nodiscard]] constexpr size_t           size() const noexcept { return N; }
     [[nodiscard]] constexpr bool             empty() const noexcept { return N == 0; }
 
@@ -34,14 +34,14 @@ struct fixed_string {
     [[nodiscard]] constexpr char&       operator[](size_t index) noexcept { return buffer_[index]; }
 
     template <size_t Y>
-    consteval auto operator+(const fixed_string<Y>& other) noexcept {
+    consteval auto operator+(const fixed_string<Y>& other) {
         fixed_string<N + Y> result{};
         std::copy_n(buffer_, N, result.buffer_);
         std::copy_n(other.buffer_, Y, N + result.buffer_);
         return result;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const fixed_string& str) noexcept { return os << str.view(); }
+    friend std::ostream& operator<<(std::ostream& os, const fixed_string& str) { return os << str.view(); }
 
     char buffer_[N + 1]{};
 };

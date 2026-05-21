@@ -90,8 +90,8 @@ struct UserId {
 namespace sculk::reflection::jsonc {
 template <>
 struct serializer<UserId> {
-    static int to_int(const UserId& v) noexcept { return v.value; }
-    static std::optional<UserId> from_int(int v) noexcept { return UserId{v}; }
+    static int to_int(const UserId& v) { return v.value; }
+    static std::optional<UserId> from_int(int v) { return UserId{v}; }
 };
 } // namespace sculk::reflection::jsonc
 ```

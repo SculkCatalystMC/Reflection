@@ -17,7 +17,7 @@ public:
     using storage_type  = T;
     using listener_type = L;
 
-    void call() noexcept {
+    void call() {
         if constexpr (concepts::has_call_func_with_arg<L, T>) {
             listener_.call(storage_);
         } else {
@@ -27,18 +27,18 @@ public:
 
     template <typename... Args>
         requires std::constructible_from<T, Args...>
-    dispatcher(Args&&... args) noexcept : storage_(std::forward<Args>(args)...),
-                                          listener_() {
+    dispatcher(Args&&... args) : storage_(std::forward<Args>(args)...),
+                                 listener_() {
         if constexpr (_CallInit) { call(); }
     }
 
-    dispatcher& operator=(const T& other) noexcept {
+    dispatcher& operator=(const T& other) {
         storage_ = other;
         call();
         return *this;
     }
 
-    dispatcher& operator=(T&& other) noexcept {
+    dispatcher& operator=(T&& other) {
         storage_ = std::move(other);
         call();
         return *this;
@@ -64,7 +64,7 @@ public:
 
     const L& listener() const noexcept { return listener_; }
 
-    friend std::ostream& operator<<(std::ostream& os, const dispatcher& dispatcher) noexcept { return os << dispatcher.storage(); }
+    friend std::ostream& operator<<(std::ostream& os, const dispatcher& dispatcher) { return os << dispatcher.storage(); }
 
 private:
     T storage_;

@@ -15,34 +15,34 @@ class renamed {
 public:
     using value_type = T;
 
-    [[nodiscard]] constexpr renamed() noexcept = default;
+    [[nodiscard]] constexpr renamed() = default;
 
     template <typename U>
         requires(std::convertible_to<T, U>)
-    [[nodiscard]] constexpr renamed(U&& value) noexcept : storage_(std::forward<U>(value)) {}
+    [[nodiscard]] constexpr renamed(U&& value) : storage_(std::forward<U>(value)) {}
 
     template <typename U>
         requires(!std::convertible_to<T, U> && std::is_constructible_v<T, U>)
-    [[nodiscard]] constexpr renamed(U&& value) noexcept : storage_(std::forward<U>(value)) {}
+    [[nodiscard]] constexpr renamed(U&& value) : storage_(std::forward<U>(value)) {}
 
     template <size_t N>
         requires(std::is_same_v<T, std::string>)
-    [[nodiscard]] constexpr renamed(const char (&str)[N]) noexcept : storage_(std::string(str)) {}
+    [[nodiscard]] constexpr renamed(const char (&str)[N]) : storage_(std::string(str)) {}
 
     template <typename U>
         requires std::is_nothrow_constructible_v<T, std::initializer_list<U>>
-    [[nodiscard]] constexpr renamed(std::initializer_list<U> init) noexcept : storage_(init) {}
+    [[nodiscard]] constexpr renamed(std::initializer_list<U> init) : storage_(init) {}
 
-    constexpr renamed(T&& value) noexcept : storage_(std::move(value)) {}
+    constexpr renamed(T&& value) : storage_(std::move(value)) {}
 
-    constexpr renamed(const T& value) noexcept : storage_(value) {}
+    constexpr renamed(const T& value) : storage_(value) {}
 
-    constexpr renamed& operator=(const T& value) noexcept {
+    constexpr renamed& operator=(const T& value) {
         storage_ = value;
         return *this;
     }
 
-    constexpr renamed& operator=(T&& value) noexcept {
+    constexpr renamed& operator=(T&& value) {
         storage_ = std::move(value);
         return *this;
     }
@@ -67,21 +67,21 @@ public:
 
     template <typename U>
         requires(std::is_same_v<T, U> && std::is_nothrow_convertible_v<T, U>)
-    [[nodiscard]] constexpr operator const U&() const noexcept {
+    [[nodiscard]] constexpr operator const U&() const {
         return storage_;
     }
 
     template <typename U>
         requires(std::is_same_v<T, U> && std::is_nothrow_convertible_v<T, U>)
-    [[nodiscard]] constexpr operator U&() noexcept {
+    [[nodiscard]] constexpr operator U&() {
         return storage_;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const renamed& rename) noexcept { return os << rename.storage(); }
+    friend std::ostream& operator<<(std::ostream& os, const renamed& rename) { return os << rename.storage(); }
 
 public:
-    static constexpr std::string      name() noexcept { return AliasName.str(); }
-    static constexpr std::string_view view() noexcept { return AliasName.view(); }
+    static constexpr std::string      name() { return AliasName.str(); }
+    static constexpr std::string_view view() { return AliasName.view(); }
 
 private:
     T storage_;

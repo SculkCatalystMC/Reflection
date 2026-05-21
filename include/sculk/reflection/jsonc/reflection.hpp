@@ -19,7 +19,7 @@
 namespace sculk::reflection::jsonc {
 
 template <bool IsOrdered = true, bool AllowComments = true, typename T, concepts::is_key_formatter F>
-bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, const options& options = {}) noexcept {
+bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, const options& options = {}) {
     detail::basic_jsonc<IsOrdered, AllowComments> data{};
 
     bool result{false};
@@ -80,12 +80,12 @@ bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, 
 }
 
 template <bool IsOrdered = true, bool AllowComments = true, typename T>
-bool load_file(T& t, const std::filesystem::path& path, const options& options = {}) noexcept {
+bool load_file(T& t, const std::filesystem::path& path, const options& options = {}) {
     return load_file<IsOrdered, AllowComments>(t, path, builtin_key_formatter::default_key_formatter, options);
 }
 
 template <bool IsOrdered = true, bool AllowComments = true, typename T, concepts::is_key_formatter F>
-bool save_file(const T& t, const std::filesystem::path& path, const F& key_formatter, const options& options = {}) noexcept {
+bool save_file(const T& t, const std::filesystem::path& path, const F& key_formatter, const options& options = {}) {
     detail::basic_jsonc<IsOrdered, AllowComments> res = serialize<IsOrdered, AllowComments>(t, key_formatter, options);
     if (options.keep_extra_comments && !options.ignore_comments) {
         if (auto content = file_utils::read_file(path)) {
@@ -104,7 +104,7 @@ bool save_file(const T& t, const std::filesystem::path& path, const F& key_forma
 }
 
 template <bool IsOrdered = true, bool AllowComments = true, typename T>
-bool save_file(const T& t, const std::filesystem::path& path, const options& options = {}) noexcept {
+bool save_file(const T& t, const std::filesystem::path& path, const options& options = {}) {
     return save_file<IsOrdered, AllowComments>(t, path, builtin_key_formatter::default_key_formatter, options);
 }
 
