@@ -20,12 +20,12 @@ concept is_number = std::is_arithmetic_v<std::remove_cvref_t<T>> && !std::same_a
 
 template <typename T, typename Arg0>
 concept has_call_func_with_arg = requires(T l, Arg0 a) {
-    { l.call(a) } ;
+    { l.call(a) };
 };
 
 template <typename T>
 concept has_call_func_no_arg = requires(T l) {
-    { l.call() } ;
+    { l.call() };
 };
 
 template <typename T, typename Arg0>

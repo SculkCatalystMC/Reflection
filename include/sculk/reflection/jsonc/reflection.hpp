@@ -19,10 +19,10 @@
 namespace sculk::reflection::jsonc {
 
 template <bool IsOrdered = true, bool AllowComments = true, typename T, concepts::is_key_formatter F>
-bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, const options& options = {}) {
+std::expected<void, std::string> load_file(T& t, const std::filesystem::path& path, const F& key_formatter, const options& options = {}) {
     detail::basic_jsonc<IsOrdered, AllowComments> data{};
 
-    bool result{false};
+    std::expected<void, std::string> result{};
 
     std::optional<std::string> content = file_utils::read_file(path);
     if (content) {
@@ -73,14 +73,14 @@ bool load_file(T& t, const std::filesystem::path& path, const F& key_formatter, 
         } else {
             file_utils::write_file(path, file);
         }
-        if (!content) { result = true; }
+        if (!content) { result = {}; }
     }
 
     return result;
 }
 
 template <bool IsOrdered = true, bool AllowComments = true, typename T>
-bool load_file(T& t, const std::filesystem::path& path, const options& options = {}) {
+std::expected<void, std::string> load_file(T& t, const std::filesystem::path& path, const options& options = {}) {
     return load_file<IsOrdered, AllowComments>(t, path, builtin_key_formatter::default_key_formatter, options);
 }
 

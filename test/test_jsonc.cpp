@@ -89,5 +89,7 @@ struct Config {
 
 void test_jsonc() {
     sculk::reflection::annotated<Config, "test config", "xxxxx"> settings{};
-    sculk::reflection::jsonc::load_file(settings, "./test.jsonc");
+
+    auto res = sculk::reflection::jsonc::load_file(settings, "./test.jsonc");
+    if (!res) { std::println("{}", res.error()); }
 }

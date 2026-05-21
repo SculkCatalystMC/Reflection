@@ -109,6 +109,12 @@ if(REFLECTION_BUILD_TESTS)
     else()
         target_compile_options(test PRIVATE $<$<CONFIG:Release>:-O3>)
     endif()
+
+    add_custom_command(TARGET test POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<IF:$<BOOL:${CMAKE_RUNTIME_OUTPUT_DIRECTORY}>,${CMAKE_RUNTIME_OUTPUT_DIRECTORY},${CMAKE_CURRENT_BINARY_DIR}>/../bin"
+        COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:test>" "$<IF:$<BOOL:${CMAKE_RUNTIME_OUTPUT_DIRECTORY}>,${CMAKE_RUNTIME_OUTPUT_DIRECTORY},${CMAKE_CURRENT_BINARY_DIR}>/../bin/"
+        COMMENT "Copy test binary to bin directory after build"
+    )
 endif()
 
 install(TARGETS reflection EXPORT reflectionTargets)
