@@ -105,7 +105,12 @@ constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& op
 
 template <bool IsOrdered = true, bool AllowComments = true, typename T>
 [[nodiscard]] constexpr detail::basic_jsonc<IsOrdered, AllowComments> serialize(const T& t, const options& options = {}) {
-    return serialize_impl(t, options, builtin_key_formatter::default_key_formatter, priority_tag<10>{});
+    return serialize_impl<T, decltype(builtin_key_formatter::default_key_formatter), IsOrdered, AllowComments>(
+        t,
+        options,
+        builtin_key_formatter::default_key_formatter,
+        priority_tag<10>{}
+    );
 }
 
 template <bool IsOrdered = true, bool AllowComments = true, typename T, concepts::is_key_formatter F>
