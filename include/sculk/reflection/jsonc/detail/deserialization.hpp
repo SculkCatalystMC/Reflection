@@ -437,7 +437,8 @@ constexpr std::expected<void, std::string> deserialize_impl(T& t, const detail::
 template <concepts::is_variant T, concepts::is_key_formatter F, bool O, bool A>
 constexpr std::expected<void, std::string>
 deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options& options, const F& kfmt, priority_tag<4>) {
-    std::expected<void, std::string> result{};
+    std::expected<void, std::string> result =
+        std::unexpected(std::format("could not cast target {} ({}) to any type in the variant", j.type_name(), j.dump()));
     for_each_type_in_variant<T>([&]<typename Ts> {
         if (!result) {
             if constexpr (std::is_arithmetic_v<Ts>) {
@@ -538,7 +539,7 @@ deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options& option
     if (j.is_object()) {
         std::expected<void, std::string> result{};
         pfr::for_each_field_with_name(t, [&](std::string_view key, auto& val) {
-            std::string name = kfmt(key);
+            auto name = kfmt(key);
             if constexpr (traits::is_renamed_v<decltype(val)>) { name = val.view(); }
             if (j.contains(name)) {
                 auto res = deserialize_impl(val, j[name], options, kfmt, priority_tag<10>{});

@@ -303,8 +303,8 @@ template <concepts::is_aggregate T, concepts::is_key_formatter F, bool O, bool A
 constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<1>) {
     auto result = detail::basic_jsonc<O, A>::object();
     pfr::for_each_field_with_name(t, [&](std::string_view key, const auto& val) {
-        std::string name = kfmt(key);
-        using VT         = std::remove_cvref_t<decltype(val)>;
+        auto name = kfmt(key);
+        using VT  = std::remove_cvref_t<decltype(val)>;
         if constexpr (traits::is_renamed_v<VT>) { name = val.view(); }
         auto res = serialize_impl<VT, F, O, A>(val, options, kfmt, priority_tag<10>{});
         if (!res.is_null() || options.keep_null) {

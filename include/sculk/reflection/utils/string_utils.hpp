@@ -107,7 +107,7 @@ constexpr std::string to_lower_case(std::string_view s) {
 
 namespace builtin_key_formatter {
 
-constexpr auto default_key_formatter = [](std::string_view sv) -> std::string { return std::string(sv); };
+constexpr auto default_key_formatter = [](std::string_view sv) -> std::string_view { return sv; };
 constexpr auto snake_case_formatter  = [](std::string_view sv) -> std::string { return string_utils::to_snake_case(sv); };
 constexpr auto pascal_case_formatter = [](std::string_view sv) -> std::string { return string_utils::to_pascal_case(sv); };
 constexpr auto camel_case_formatter  = [](std::string_view sv) -> std::string { return string_utils::to_camel_case(sv); };

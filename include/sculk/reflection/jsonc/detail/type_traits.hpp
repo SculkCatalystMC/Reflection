@@ -239,6 +239,8 @@ using serializer_arg_t = typename serializer_arg<F>::arg_type;
 template <typename F>
 constexpr bool is_key_formatter_v = requires(F f, std::string_view sv) {
     { f(sv) } -> std::convertible_to<std::string>;
+} || requires(F f, std::string_view sv) {
+    { f(sv) } -> std::convertible_to<std::string_view>;
 };
 
 } // namespace jsonc::traits

@@ -81,7 +81,12 @@ std::expected<void, std::string> load_file(T& t, const std::filesystem::path& pa
 
 template <bool IsOrdered = true, bool AllowComments = true, typename T>
 std::expected<void, std::string> load_file(T& t, const std::filesystem::path& path, const options& options = {}) {
-    return load_file<IsOrdered, AllowComments>(t, path, builtin_key_formatter::default_key_formatter, options);
+    return load_file<IsOrdered, AllowComments, T, decltype(builtin_key_formatter::default_key_formatter)>(
+        t,
+        path,
+        builtin_key_formatter::default_key_formatter,
+        options
+    );
 }
 
 template <bool IsOrdered = true, bool AllowComments = true, typename T, concepts::is_key_formatter F>
