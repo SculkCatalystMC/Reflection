@@ -285,7 +285,7 @@ constexpr std::expected<void, std::string> deserialize_impl(T& t, const detail::
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_signed_type_v<T, O, A>
 constexpr std::expected<void, std::string> deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options&, const F&, priority_tag<9>) {
-    if (!j.is_number_signed()) { return std::unexpected(std::format("type must be a number, but got {}", j.type_name())); }
+    if (!j.is_number_integer()) { return std::unexpected(std::format("type must be a number, but got {}", j.type_name())); }
     using AT = traits::serializer_arg_t<decltype(&serializer<T>::from_signed)>;
     auto res = serializer<T>::from_signed(static_cast<AT>(j.template get<std::int64_t>()));
     if (res) {
@@ -298,7 +298,7 @@ constexpr std::expected<void, std::string> deserialize_impl(T& t, const detail::
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_unsigned_type_v<T, O, A>
 constexpr std::expected<void, std::string> deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options&, const F&, priority_tag<9>) {
-    if (!j.is_number_unsigned()) { return std::unexpected(std::format("type must be a number, but got {}", j.type_name())); }
+    if (!j.is_number_integer()) { return std::unexpected(std::format("type must be a number, but got {}", j.type_name())); }
     using AT = traits::serializer_arg_t<decltype(&serializer<T>::from_unsigned)>;
     auto res = serializer<T>::from_unsigned(static_cast<AT>(j.template get<std::uint64_t>()));
     if (res) {
