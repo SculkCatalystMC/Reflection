@@ -27,6 +27,7 @@ struct options {
     bool                  keep_null{false};
     bool                  keep_extra_comments{true};
     bool                  enum_cast_prefer_string{true};
+    bool                  enum_cast_case_sensitive{false};
     bool                  multi_line_comments_format{true};
     bool                  float_keep_precision{true};
     rewrite_policy        rewrite{};

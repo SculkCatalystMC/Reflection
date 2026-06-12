@@ -412,15 +412,12 @@ deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options& option
 }
 
 template <reflection::concepts::is_enum T, concepts::is_key_formatter F, bool O, bool A>
-constexpr std::expected<void, std::string> deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options&, const F&, priority_tag<5>) {
+constexpr std::expected<void, std::string>
+deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options& options, const F&, priority_tag<5>) {
     using RT = std::remove_cvref_t<T>;
     if (j.is_string()) {
         auto str = j.template get<std::string>();
-        if (auto val = magic_enum::enum_cast<RT>(str)) {
-            t = *val;
-            return {};
-        }
-        if (auto val = magic_enum::enum_flags_cast<RT>(str)) {
+        if (auto val = string_utils::str_to_enum<RT>(str, options.enum_cast_case_sensitive); val) {
             t = *val;
             return {};
         }
@@ -523,7 +520,7 @@ deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options& option
     std::expected<void, std::string> result{};
     t.clear();
     for (const auto& [k, v] : j.items()) {
-        if (auto kt = detail::string_to_type<KT>(k)) {
+        if (auto kt = detail::string_to_type<KT>(k, options.enum_cast_case_sensitive)) {
             auto res = deserialize_impl(t[*kt], v, options, kfmt, priority_tag<10>{});
             if (!res) { forward_error_msg(result, std::format("failed to deserialize value for key '{}': {}", k, res.error())); }
             continue;

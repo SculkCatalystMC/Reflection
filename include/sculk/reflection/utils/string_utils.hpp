@@ -25,10 +25,12 @@ constexpr std::optional<T> str_to_num(std::string_view sv) {
 }
 
 template <reflection::concepts::is_enum T, bool _IntCast = false>
-constexpr std::optional<T> str_to_enum(std::string_view sv) {
+constexpr std::optional<T> str_to_enum(std::string_view sv, bool case_sensitive = false) {
     using RT = std::remove_cvref_t<T>;
-    if (auto val = magic_enum::enum_cast<RT>(sv)) { return val; }
-    if (auto val = magic_enum::enum_flags_cast<RT>(sv)) { return val; }
+    if (auto val = case_sensitive ? magic_enum::enum_cast<RT>(sv) : magic_enum::enum_cast<RT>(sv, magic_enum::case_insensitive)) { return val; }
+    if (auto val = case_sensitive ? magic_enum::enum_flags_cast<RT>(sv) : magic_enum::enum_flags_cast<RT>(sv, magic_enum::case_insensitive)) {
+        return val;
+    }
     if constexpr (_IntCast) {
         if (auto num = str_to_num<std::underlying_type_t<T>>(sv)) { return static_cast<RT>(*num); }
     }
