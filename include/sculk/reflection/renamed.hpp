@@ -19,7 +19,7 @@ public:
 
     template <typename U>
         requires(std::convertible_to<T, U>)
-    [[nodiscard]] constexpr renamed(U&& value) : storage_(std::forward<U>(value)) {}
+    [[nodiscard]] constexpr renamed(U&& value) : storage_(static_cast<T>(std::forward<U>(value))) {}
 
     template <typename U>
         requires(!std::convertible_to<T, U> && std::is_constructible_v<T, U>)
