@@ -92,4 +92,6 @@ void test_jsonc() {
 
     auto res = sculk::reflection::jsonc::load_file(settings, "./test.jsonc");
     if (!res) { std::println("{}", res.error()); }
+    auto res2 = sculk::reflection::jsonc::serialize(settings);
+    (void)res2;
 }
