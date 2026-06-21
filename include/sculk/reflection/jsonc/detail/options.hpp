@@ -12,28 +12,25 @@
 
 namespace sculk::reflection::jsonc {
 
-enum class rewrite_policy {
-    always = 0,
-    format = 1,
-    error  = 2,
-    never  = 3,
-};
-
 struct options {
-    int                   indent{4};
-    bool                  ignore_comments{false};
-    bool                  allow_trailing_comma{true};
-    bool                  ensure_ascii{false};
-    bool                  keep_null{false};
-    bool                  keep_extra_comments{true};
-    bool                  enum_cast_prefer_string{true};
-    bool                  enum_cast_case_sensitive{false};
-    bool                  multi_line_comments_format{true};
-    bool                  float_keep_precision{true};
-    rewrite_policy        rewrite{};
-    bool                  back_up_file_on_error{false};
-    std::filesystem::path back_up_file_folder{};
-    std::string           back_up_time_suffix{"-%Y%m%d-%H_%M_%S"};
+    enum class policy : std::uint8_t {
+        always_rewrite    = 0,
+        rewrite_on_format = 1,
+        rewrite_on_error  = 2,
+        never_rewrite     = 3,
+    };
+
+    int    indent                     = 4;
+    bool   ignore_comments            = false;
+    bool   allow_trailing_comma       = true;
+    bool   ensure_ascii               = false;
+    bool   keep_null                  = false;
+    bool   keep_extra_comments        = true;
+    bool   enum_cast_prefer_string    = true;
+    bool   enum_cast_case_sensitive   = false;
+    bool   multi_line_comments_format = true;
+    bool   float_keep_precision       = true;
+    policy rewrite_condition          = policy::always_rewrite;
 };
 
 } // namespace sculk::reflection::jsonc

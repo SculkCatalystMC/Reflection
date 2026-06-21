@@ -243,6 +243,11 @@ constexpr bool is_key_formatter_v = requires(F f, std::string_view sv) {
     { f(sv) } -> std::convertible_to<std::string_view>;
 };
 
+template <typename F>
+constexpr bool is_error_handler_v = requires(F f, std::string_view sv) {
+    { f(sv) } -> std::same_as<void>;
+};
+
 } // namespace jsonc::traits
 
 } // namespace sculk::reflection

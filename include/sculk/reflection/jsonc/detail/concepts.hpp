@@ -57,6 +57,12 @@ concept is_reflectable = traits::is_reflectable_v<std::remove_cvref_t<T>, O, A>;
 template <typename F>
 concept is_key_formatter = traits::is_key_formatter_v<std::remove_cvref_t<F>>;
 
+template <typename F>
+concept is_error_handler = traits::is_error_handler_v<std::remove_cvref_t<F>>;
+
+template <typename F>
+concept is_optional_error_handler = is_error_handler<F> || std::is_null_pointer_v<std::remove_cvref_t<F>>;
+
 template <typename T>
 concept is_jsonc_object = traits::is_jsonc_object_v<T>;
 

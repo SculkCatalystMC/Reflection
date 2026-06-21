@@ -9,20 +9,35 @@
 #include <filesystem>
 #include <fstream>
 #include <optional>
+#include <string>
+#include <string_view>
 
 namespace sculk::reflection::file_utils {
 
 inline std::optional<std::string> read_file(const std::filesystem::path& path) {
-    if (!std::filesystem::exists(path)) { return std::nullopt; }
-    auto file = std::ifstream(path, std::ios_base::in);
+    std::error_code ec{};
+    if (!std::filesystem::exists(path, ec) || ec) { return std::nullopt; }
+
+    auto file = std::ifstream(path, std::ios_base::in | std::ios_base::binary);
+    if (!file.is_open()) { return std::nullopt; }
+
     return std::string(std::istreambuf_iterator<char>(file), {});
 }
 
 inline bool write_file(const std::filesystem::path& path, std::string_view content) {
-    if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
-    auto file = std::ofstream(path, std::ios_base::out);
+    std::error_code ec{};
+    const auto      parent = path.parent_path();
+    if (!parent.empty() && !std::filesystem::exists(parent, ec)) {
+        if (ec || !std::filesystem::create_directories(parent, ec) || ec) { return false; }
+    } else if (ec) {
+        return false;
+    }
+
+    auto file = std::ofstream(path, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+    if (!file.is_open()) { return false; }
+
     file << content;
-    return true;
+    return static_cast<bool>(file);
 }
 
 } // namespace sculk::reflection::file_utils

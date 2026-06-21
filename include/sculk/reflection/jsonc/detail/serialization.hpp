@@ -19,87 +19,87 @@ namespace sculk::reflection::jsonc {
 namespace {
 
 template <reflection::concepts::is_arithmetic T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<10>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<10>);
 
 template <concepts::is_jsonc_array T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<9>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<9>);
 
 template <concepts::is_jsonc_object T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<9>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<9>);
 
 template <concepts::is_jsonc_variant T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<9>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<9>);
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_boolean_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<9>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<9>);
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_signed_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<9>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<9>);
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_unsigned_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<9>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<9>);
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_float_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<9>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<9>);
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_string_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<9>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<9>);
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_object_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<9>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<9>);
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_array_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<9>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<9>);
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_high_precision_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<9>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<9>);
 
 template <concepts::is_renamed T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<8>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<8>);
 
 template <concepts::is_annotated T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<7>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<7>);
 
 template <concepts::is_dispatcher T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<6>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<6>);
 
 template <concepts::is_optional T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<6>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<6>);
 
 template <concepts::is_ranged T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<5>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<5>);
 
 template <reflection::concepts::is_enum T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<5>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<5>);
 
 template <concepts::is_variant T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<4>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<4>);
 
 template <concepts::is_string_convertible T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<3>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<3>);
 
 template <concepts::is_tuple_like T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<3>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<3>);
 
 template <concepts::is_array_like T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<2>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<2>);
 
 template <concepts::is_associative T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<2>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<2>);
 
 template <concepts::is_aggregate T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<1>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<1>);
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<0>);
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<0>);
 
 } // namespace
 
@@ -114,57 +114,57 @@ template <bool IsOrdered = true, bool AllowComments = true, typename T>
 }
 
 template <bool IsOrdered = true, bool AllowComments = true, typename T, concepts::is_key_formatter F>
-[[nodiscard]] constexpr detail::basic_jsonc<IsOrdered, AllowComments> serialize(const T& t, const F& key_formatter, const options& options = {}) {
-    return serialize_impl<T, F, IsOrdered, AllowComments>(t, options, key_formatter, priority_tag<10>{});
+[[nodiscard]] constexpr detail::basic_jsonc<IsOrdered, AllowComments> serialize(const T& t, F&& key_formatter, const options& options = {}) {
+    return serialize_impl<T, F, IsOrdered, AllowComments>(t, options, std::forward<F>(key_formatter), priority_tag<10>{});
 }
 
 namespace {
 
 template <reflection::concepts::is_arithmetic T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<10>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, F&&, priority_tag<10>) {
     return t;
 }
 
 template <concepts::is_jsonc_array T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, F&&, priority_tag<9>) {
     detail::basic_jsonc<O, A> res{};
     for (const auto& e : t) { res.push_back(detail::basic_jsonc<O, A>(e)); }
     return res;
 }
 
 template <concepts::is_jsonc_object T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, F&&, priority_tag<9>) {
     detail::basic_jsonc<O, A> res{};
     for (const auto& [k, v] : t) { res[k] = detail::basic_jsonc<O, A>(v); }
     return res;
 }
 
 template <concepts::is_jsonc_variant T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, F&&, priority_tag<9>) {
     return static_cast<detail::basic_jsonc<O, A>>(t);
 }
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_boolean_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, F&&, priority_tag<9>) {
     return static_cast<bool>(serializer<T>::to_boolean(t));
 }
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_signed_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, F&&, priority_tag<9>) {
     return static_cast<std::int64_t>(serializer<T>::to_signed(t));
 }
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_unsigned_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, F&&, priority_tag<9>) {
     return static_cast<std::uint64_t>(serializer<T>::to_unsigned(t));
 }
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_float_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, F&&, priority_tag<9>) {
     auto res = serializer<T>::to_float(t);
     if constexpr (std::same_as<float, std::remove_cvref_t<decltype(res)>>) {
         return static_cast<float>(res);
@@ -175,38 +175,38 @@ constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, c
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_string_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, F&&, priority_tag<9>) {
     return static_cast<std::string>(serializer<T>::to_string(t));
 }
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_object_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, F&&, priority_tag<9>) {
     return static_cast<detail::basic_jsonc<O, A>::object_type>(serializer<T>::to_object(t));
 }
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_array_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, F&&, priority_tag<9>) {
     return static_cast<detail::basic_jsonc<O, A>::array_type>(serializer<T>::to_array(t));
 }
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_high_precision_type_v<T, O, A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<9>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, F&&, priority_tag<9>) {
     return detail::basic_jsonc<O, A>::from_any_number(static_cast<std::string>(serializer<T>::to_any_number(t)), true).value_or(0);
 }
 
 template <concepts::is_renamed T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<8>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<8>) {
     using VT = std::remove_cvref_t<decltype(*t)>;
-    return serialize_impl<VT, F, O, A>(*t, options, kfmt, priority_tag<10>{});
+    return serialize_impl<VT, F, O, A>(*t, options, std::forward<F>(kfmt), priority_tag<10>{});
 }
 
 template <concepts::is_annotated T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<7>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<7>) {
     using VT    = std::remove_cvref_t<decltype(*t)>;
-    auto result = serialize_impl<VT, F, O, A>(*t, options, kfmt, priority_tag<10>{});
+    auto result = serialize_impl<VT, F, O, A>(*t, options, std::forward<F>(kfmt), priority_tag<10>{});
     if constexpr (A) {
         if (t.has_comments()) { result.set_before_comments(t.get_comments()); }
     }
@@ -214,28 +214,28 @@ constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& op
 }
 
 template <concepts::is_dispatcher T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<6>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<6>) {
     using VT = std::remove_cvref_t<decltype(*t)>;
-    return serialize_impl<VT, F, O, A>(*t, options, kfmt, priority_tag<10>{});
+    return serialize_impl<VT, F, O, A>(*t, options, std::forward<F>(kfmt), priority_tag<10>{});
 }
 
 template <concepts::is_optional T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<6>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<6>) {
     if (t) {
         using VT = std::remove_cvref_t<decltype(*t)>;
-        return serialize_impl<VT, F, O, A>(*t, options, kfmt, priority_tag<10>{});
+        return serialize_impl<VT, F, O, A>(*t, options, std::forward<F>(kfmt), priority_tag<10>{});
     }
     return nullptr;
 }
 
 template <concepts::is_ranged T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<5>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<5>) {
     using VT = std::remove_cvref_t<decltype(*t)>;
-    return serialize_impl<VT, F, O, A>(*t, options, kfmt, priority_tag<10>{});
+    return serialize_impl<VT, F, O, A>(*t, options, std::forward<F>(kfmt), priority_tag<10>{});
 }
 
 template <reflection::concepts::is_enum T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F&, priority_tag<5>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&&, priority_tag<5>) {
     if (options.enum_cast_prefer_string) {
         if (auto name = magic_enum::enum_name(t); !name.empty()) { return name; }
         if (auto flag = magic_enum::enum_flags_name(t); !flag.empty()) { return flag; }
@@ -244,29 +244,29 @@ constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& op
 }
 
 template <concepts::is_variant T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<4>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<4>) {
     return std::visit(
         [&](const auto& val) {
             using VT = std::remove_cvref_t<decltype(val)>;
-            return serialize_impl<VT, F, O, A>(val, options, kfmt, priority_tag<10>{});
+            return serialize_impl<VT, F, O, A>(val, options, std::forward<F>(kfmt), priority_tag<10>{});
         },
         t
     );
 }
 
 template <concepts::is_string_convertible T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, const F&, priority_tag<3>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, F&&, priority_tag<3>) {
     return static_cast<std::string>(t);
 }
 
 template <concepts::is_tuple_like T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<3>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<3>) {
     detail::basic_jsonc<O, A> res = detail::basic_jsonc<O, A>::array();
     std::apply(
         [&](const auto&... args) {
             (([&](const auto& val) {
                  using VT = std::remove_cvref_t<decltype(val)>;
-                 res.push_back(serialize_impl<VT, F, O, A>(val, options, kfmt, priority_tag<10>{}));
+                 res.push_back(serialize_impl<VT, F, O, A>(val, options, std::forward<F>(kfmt), priority_tag<10>{}));
              }(args)),
              ...);
         },
@@ -276,17 +276,17 @@ constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& op
 }
 
 template <concepts::is_array_like T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<2>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<2>) {
     detail::basic_jsonc<O, A> res = detail::basic_jsonc<O, A>::array();
     for (const auto& val : t) {
         using VT = std::remove_cvref_t<decltype(val)>;
-        res.push_back(serialize_impl<VT, F, O, A>(val, options, kfmt, priority_tag<10>{}));
+        res.push_back(serialize_impl<VT, F, O, A>(val, options, std::forward<F>(kfmt), priority_tag<10>{}));
     }
     return res;
 }
 
 template <concepts::is_associative T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<2>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<2>) {
     static_assert(
         traits::is_stringifiable_type_v<typename std::remove_cvref_t<T>::key_type, O, A>,
         "the key type of the associative container must be convertible to a string"
@@ -294,19 +294,19 @@ constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& op
     detail::basic_jsonc<O, A> res = detail::basic_jsonc<O, A>::object();
     for (const auto& [key, val] : t) {
         using VT                         = std::remove_cvref_t<decltype(val)>;
-        res[detail::type_to_string(key)] = serialize_impl<VT, F, O, A>(val, options, kfmt, priority_tag<10>{});
+        res[detail::type_to_string(key)] = serialize_impl<VT, F, O, A>(val, options, std::forward<F>(kfmt), priority_tag<10>{});
     }
     return res;
 }
 
 template <concepts::is_aggregate T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, const F& kfmt, priority_tag<1>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& options, F&& kfmt, priority_tag<1>) {
     auto result = detail::basic_jsonc<O, A>::object();
     pfr::for_each_field_with_name(t, [&](std::string_view key, const auto& val) {
-        auto name = kfmt(key);
+        auto name = std::invoke(kfmt, key);
         using VT  = std::remove_cvref_t<decltype(val)>;
         if constexpr (traits::is_renamed_v<VT>) { name = val.view(); }
-        auto res = serialize_impl<VT, F, O, A>(val, options, kfmt, priority_tag<10>{});
+        auto res = serialize_impl<VT, F, O, A>(val, options, std::forward<F>(kfmt), priority_tag<10>{});
         if (!res.is_null() || options.keep_null) {
             result[name] = res;
             if constexpr (A) {
@@ -321,7 +321,7 @@ constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options& op
 }
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
-constexpr detail::basic_jsonc<O, A> serialize_impl(const T&, const options&, const F&, priority_tag<0>) {
+constexpr detail::basic_jsonc<O, A> serialize_impl(const T&, const options&, F&&, priority_tag<0>) {
     static_assert(traits::always_false_v<T>, "type is not reflectable.");
 }
 
