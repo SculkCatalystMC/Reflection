@@ -46,10 +46,11 @@ include(FetchContent)
 
 # Disable JSONC C API in this project; only C++ API is needed.
 set(JSONC_BUILD_C_API OFF CACHE BOOL "Disable JSONC C API" FORCE)
+set(JSONC_NO_EXCEPTION ON CACHE BOOL "Disable JSONC exceptions" FORCE)
 FetchContent_Declare(
     jsonc
     GIT_REPOSITORY https://github.com/SculkCatalystMC/JSONC.git
-    GIT_TAG v1.4.1
+    GIT_TAG main
 )
 FetchContent_Declare(
     boost_pfr
