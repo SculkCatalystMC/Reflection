@@ -8,8 +8,13 @@
 #pragma once
 #include "sculk/reflection/detail/concepts.hpp"
 #include <charconv>
+#include <limits>
 #include <magic_enum/magic_enum.hpp>
 #include <magic_enum/magic_enum_flags.hpp>
+#if defined(__APPLE__) && (!defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) || __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 260000)
+#include <cerrno>
+#include <cstdlib>
+#endif
 
 namespace sculk::reflection {
 
@@ -18,10 +23,35 @@ namespace string_utils {
 template <typename T>
     requires(std::is_arithmetic_v<T> && !std::same_as<T, bool>)
 constexpr std::optional<T> str_to_num(std::string_view sv) {
+#if defined(__APPLE__) && (!defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) || __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 260000)
+    if constexpr (std::is_floating_point_v<T>) {
+        std::string input(sv);
+        char*       end = nullptr;
+        errno           = 0;
+
+        T res{};
+        if constexpr (std::same_as<T, float>) {
+            res = std::strtof(input.c_str(), &end);
+        } else if constexpr (std::same_as<T, double>) {
+            res = std::strtod(input.c_str(), &end);
+        } else {
+            res = std::strtold(input.c_str(), &end);
+        }
+
+        if (errno == ERANGE || end != input.c_str() + input.size()) { return std::nullopt; }
+        return res;
+    } else {
+        T res{};
+        auto [ptr, ec] = std::from_chars(sv.data(), sv.data() + sv.size(), res);
+        if (ec != std::errc() || ptr != sv.data() + sv.size()) { return std::nullopt; }
+        return res;
+    }
+#else
     T res{};
     auto [ptr, ec] = std::from_chars(sv.data(), sv.data() + sv.size(), res);
     if (ec != std::errc() || ptr != sv.data() + sv.size()) { return std::nullopt; }
     return res;
+#endif
 }
 
 template <reflection::concepts::is_enum T, bool _IntCast = false>
