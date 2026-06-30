@@ -44,6 +44,7 @@ load_file(T& t, const std::filesystem::path& path, F&& key_formatter, const opti
         }
     } else {
         result = std::unexpected("file not found");
+        if (!options.create_if_missing) { return result; }
     }
 
     if (options.rewrite_condition == options::policy::always_rewrite || (options.rewrite_condition == options::policy::rewrite_on_error && !result)

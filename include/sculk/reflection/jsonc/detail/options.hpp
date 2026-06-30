@@ -20,6 +20,7 @@ struct options {
         never_rewrite     = 3,
     };
 
+    bool   create_if_missing          = true;
     int    indent                     = 4;
     bool   ignore_comments            = false;
     bool   allow_trailing_comma       = true;
