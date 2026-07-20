@@ -543,7 +543,7 @@ deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options& option
                 if constexpr (A) { apply_key_comments(val, j, name, priority_tag<2>{}); }
             } else {
                 if (options.check_missing_fields) {
-                    forward_error_msg(result, std::format("missing field '{}'", name));
+                    if constexpr (!traits::is_optional_v<decltype(val)>) { forward_error_msg(result, std::format("missing field '{}'", name)); }
                 } else {
                     (void)deserialize_impl(val, detail::basic_jsonc<O, A>{}, options, std::forward<F>(kfmt), priority_tag<10>{});
                 }
