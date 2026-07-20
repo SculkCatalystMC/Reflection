@@ -542,7 +542,11 @@ deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options& option
                 if (!res) { forward_error_msg(result, std::format("failed to deserialize field '{}': {}", name, res.error())); }
                 if constexpr (A) { apply_key_comments(val, j, name, priority_tag<2>{}); }
             } else {
-                (void)deserialize_impl(val, detail::basic_jsonc<O, A>{}, options, std::forward<F>(kfmt), priority_tag<10>{});
+                if (options.check_missing_fields) {
+                    forward_error_msg(result, std::format("missing field '{}'", name));
+                } else {
+                    (void)deserialize_impl(val, detail::basic_jsonc<O, A>{}, options, std::forward<F>(kfmt), priority_tag<10>{});
+                }
             }
         });
         return result;

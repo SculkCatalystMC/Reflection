@@ -40,7 +40,7 @@ load_file(T& t, const std::filesystem::path& path, F&& key_formatter, const opti
             data   = *value;
             result = deserialize<IsOrdered, AllowComments>(t, data, std::forward<F>(key_formatter), options);
         } else {
-            result = std::unexpected("failed to parse jsonc file");
+            result = std::unexpected("invalid file format");
         }
     } else {
         result = std::unexpected("file not found");

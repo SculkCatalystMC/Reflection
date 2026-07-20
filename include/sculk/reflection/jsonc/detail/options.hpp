@@ -31,6 +31,7 @@ struct options {
     bool   enum_cast_case_sensitive   = false;
     bool   multi_line_comments_format = true;
     bool   float_keep_precision       = true;
+    bool   check_missing_fields       = false;
     policy rewrite_condition          = policy::always_rewrite;
 };
 
