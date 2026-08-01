@@ -160,12 +160,7 @@ constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, F
 template <typename T, concepts::is_key_formatter F, bool O, bool A>
     requires traits::is_float_type_v<T, O, A>
 constexpr detail::basic_jsonc<O, A> serialize_impl(const T& t, const options&, F&&, priority_tag<9>) {
-    auto res = serializer<T>::to_float(t);
-    if constexpr (std::same_as<float, std::remove_cvref_t<decltype(res)>>) {
-        return static_cast<float>(res);
-    } else {
-        return static_cast<double>(res);
-    }
+    return static_cast<long double>(serializer<T>::to_float(t));
 }
 
 template <typename T, concepts::is_key_formatter F, bool O, bool A>

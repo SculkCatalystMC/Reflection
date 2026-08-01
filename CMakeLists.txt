@@ -4,7 +4,7 @@ project(Reflection VERSION 0.1.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
-option(REFLECTION_BUILD_TESTS "Build test executable" OFF)
+option(REFLECTION_BUILD_TESTS "Build test executable" ON)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

@@ -88,4 +88,10 @@ struct serializer<double> {
     static std::optional<double> from_string(std::string_view s) { return string_utils::str_to_num<double>(s); }
 };
 
+template <>
+struct serializer<long double> {
+    static std::string                to_string(long double t) { return std::format("{}", t); }
+    static std::optional<long double> from_string(std::string_view s) { return string_utils::str_to_num<long double>(s); }
+};
+
 } // namespace sculk::reflection::jsonc

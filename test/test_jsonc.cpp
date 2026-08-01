@@ -85,6 +85,7 @@ struct Config {
     std::vector<sculk::jsonc::ordered_jsonc::object_type> test_25{};
     sculk::reflection::dispatcher<std::string, Test26>    test_26{};
     sculk::reflection::dispatcher<int, Test27>            test_27{};
+    long double                                           test_28{78901234567890.12335687654L};
 };
 
 void test_jsonc() {

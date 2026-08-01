@@ -140,8 +140,8 @@ constexpr bool is_unsigned_serializable_v = requires(const T& t, std::uint64_t n
 };
 
 template <typename T>
-constexpr bool is_float_serializable_v = requires(const T& t, double n) {
-    { sculk::reflection::jsonc::serializer<T>::to_float(t) } -> std::convertible_to<double>;
+constexpr bool is_float_serializable_v = requires(const T& t, long double n) {
+    { sculk::reflection::jsonc::serializer<T>::to_float(t) } -> std::convertible_to<long double>;
     { sculk::reflection::jsonc::serializer<T>::from_float(n) } -> std::convertible_to<std::optional<T>>;
 };
 

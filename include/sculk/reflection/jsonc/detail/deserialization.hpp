@@ -157,7 +157,7 @@ constexpr std::expected<void, std::string> deserialize_arithmetic_force_match(T&
         }
     } else if constexpr (std::is_floating_point_v<RT>) {
         if (j.is_number_float()) {
-            t = static_cast<RT>(j.template get<double>());
+            t = static_cast<RT>(j.template get<long double>());
             return {};
         }
     } else if constexpr (std::is_signed_v<RT>) {
@@ -313,7 +313,7 @@ template <typename T, concepts::is_key_formatter F, bool O, bool A>
 constexpr std::expected<void, std::string> deserialize_impl(T& t, const detail::basic_jsonc<O, A>& j, const options&, F&&, priority_tag<9>) {
     if (!j.is_number_float()) { return std::unexpected(std::format("type must be a number, but got {}", j.type_name())); }
     using AT = traits::serializer_arg_t<decltype(&serializer<T>::from_float)>;
-    auto res = serializer<T>::from_float(static_cast<AT>(j.template get<double>()));
+    auto res = serializer<T>::from_float(static_cast<AT>(j.template get<long double>()));
     if (res) {
         t = *res;
         return {};
